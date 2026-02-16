@@ -200,7 +200,6 @@ Caddy baseline config is in [`infra/Caddyfile`](infra/Caddyfile).
 
 - Operational contract: [`AGENTS.md`](AGENTS.md)
 - Identity contract: [`SOUL.md`](SOUL.md)
-- Qwik migration plan: [`docs/qwik-cutover-plan.md`](docs/qwik-cutover-plan.md)
 - Apps index: [`apps/README.md`](apps/README.md)
 - bedrock-template docs: [`apps/bedrock-template/README.md`](apps/bedrock-template/README.md)
 
