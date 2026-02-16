@@ -1,0 +1,28 @@
+{
+  "name": "scry-meta",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "bootstrap": "bun run scripts/bootstrap.ts",
+    "setup:minio": "bun run scripts/setup-minio.ts",
+    "setup:zig": "bun run scripts/setup-zig.ts",
+    "doctor": "bun run scripts/doctor.ts",
+    "app:scrybase:dev": "bun run --cwd apps/scrybase dev",
+    "app:scrybase:build": "bun run --cwd apps/scrybase build",
+    "app:scrybase:typecheck": "bun run --cwd apps/scrybase typecheck",
+    "app:scrybase:lint": "bun run --cwd apps/scrybase lint",
+    "app:scrybase:test": "bun run --cwd apps/scrybase test",
+    "infra:up": "docker compose --env-file infra/.env -f infra/docker-compose.yml up -d",
+    "infra:down": "docker compose --env-file infra/.env -f infra/docker-compose.yml down",
+    "infra:logs": "docker compose --env-file infra/.env -f infra/docker-compose.yml logs -f",
+    "lint": "bunx @biomejs/biome check scripts package.json tsconfig.json biome.json",
+    "format": "bunx @biomejs/biome format --write scripts package.json tsconfig.json biome.json",
+    "typecheck": "bunx tsc --noEmit",
+    "test": "bun test"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@types/bun": "^1.2.21",
+    "typescript": "^5.9.2"
+  }
+}

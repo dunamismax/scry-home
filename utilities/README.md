@@ -1,44 +1,36 @@
 # Utilities
 
-Third-party tools, scripts, and programs that live alongside the Claude repo.
-
-All scripts are Python, run with `uv run`.
+Utility and orchestration flows live in TypeScript and run with Bun.
 
 ## Setup
 
-**First time on a new machine?** Run the bootstrap script from the repo root -- it installs uv, Python, Ruff, and all utilities automatically:
-
 ```bash
-python3 bootstrap.py
+bun install
+bun run bootstrap
 ```
 
-To set up individual tools manually, run the setup script for each:
+## Script Entrypoints
 
 ```bash
-# Glances (system monitoring)
-uv run utilities/setup-glances.py
+bun run setup:minio
+bun run setup:zig
+bun run infra:up
+bun run infra:down
+bun run infra:logs
 ```
 
-Each `setup-*.py` script is self-contained -- clones, installs, and configures one tool.
+## Infrastructure
 
-## Tools
+Infra definitions are in `infra/`:
 
-| Tool | Description | Run |
-|---|---|---|
-| **Glances** | Cross-platform system monitoring (CPU, RAM, disk, network, containers) | `uv run utilities/glances/run-glances.py` |
+- PostgreSQL (`pgvector` image)
+- MinIO (S3-compatible object storage)
+- Caddy (reverse proxy)
 
-### Glances Quick Reference
+Default local ports (from `infra/.env.example`):
 
-```bash
-# TUI mode (default)
-uv run utilities/glances/run-glances.py
-
-# Web UI (http://localhost:61208)
-uv run utilities/glances/run-glances.py -- -w
-
-# Quick one-shot overview
-uv run utilities/glances/run-glances.py -- --fetch
-
-# JSON stats to stdout
-uv run utilities/glances/run-glances.py -- --stdout-json cpu,mem
-```
+- PostgreSQL: `15432`
+- MinIO API: `19000`
+- MinIO Console: `19001`
+- Caddy HTTP: `18080`
+- Caddy HTTPS: `18443`

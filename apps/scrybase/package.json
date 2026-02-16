@@ -6,8 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "start": "node .output/server/index.mjs",
+    "start": "bun .output/server/index.mjs",
     "typecheck": "tsc --noEmit",
+    "lint": "bunx @biomejs/biome check src",
+    "format": "bunx @biomejs/biome format --write src",
+    "test": "bun test",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio"
@@ -28,6 +31,7 @@
     "tw-animate-css": "^1.2.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
     "@tailwindcss/vite": "^4.0.0",
     "@types/node": "^25.2.3",
     "@types/react": "^19.0.0",
