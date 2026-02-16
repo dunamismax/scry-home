@@ -60,6 +60,7 @@ Read `SOUL.md` first and keep it current.
 - Use `bun run` for project scripts.
 - Prefer Bun-native tooling (`bun install`, `bun test`, `bunx`).
 - Do not introduce non-TypeScript orchestration scripts.
+- Always use SSH for Git/GitHub remotes and pushes (`git@github.com:...`), never HTTPS.
 
 ## Workflow
 
