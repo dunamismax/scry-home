@@ -455,4 +455,5 @@ docker-compose.yml     # App + PostgreSQL + Redis (for Dramatiq)
 - **Version philosophy:** Always latest. Python, uv, Ruff, FastAPI, and all dependencies should be the newest stable. No pinning to old versions "for safety." Bleeding edge is the default.
 - **uv is king.** If uv can do it, use uv. No pip, no pipx, no poetry, no conda. Ever.
 - **Ruff is law.** All Python code is linted and formatted by Ruff before commit. No exceptions.
-- **Repo URL:** `https://github.com/dunamismax/Claude.git` (GitHub, user: dunamismax)
+- **Repo URL:** `git@github.com:dunamismax/Claude.git` (SSH, GitHub, user: dunamismax)
+- **Git auth:** SSH key (`~/.ssh/id_ed25519`). Remote uses SSH, not HTTPS.
