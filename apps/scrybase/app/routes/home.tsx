@@ -45,7 +45,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 export async function action({ request }: Route.ActionArgs) {
   const [
     { getSession },
-    { createProject },
+    { createProject, getProjectByIdForUser },
     { uploadDocumentObject },
     { createDocument },
     { enqueueProjectCreated, enqueueDocumentProcessing },
@@ -53,6 +53,7 @@ export async function action({ request }: Route.ActionArgs) {
     import("~/services/auth.server").then((module) => ({ getSession: module.getSession })),
     import("~/services/projects.server").then((module) => ({
       createProject: module.createProject,
+      getProjectByIdForUser: module.getProjectByIdForUser,
     })),
     import("~/services/storage.server").then((module) => ({
       uploadDocumentObject: module.uploadDocumentObject,
@@ -132,14 +133,28 @@ export async function action({ request }: Route.ActionArgs) {
       );
     }
 
+    const project = await getProjectByIdForUser({
+      projectId,
+      userId: session.user.id,
+    });
+
+    if (!project) {
+      return data<ActionData>(
+        {
+          error: "Project not found or not accessible.",
+        },
+        { status: 403 },
+      );
+    }
+
     const object = await uploadDocumentObject({
       userId: session.user.id,
-      projectId,
+      projectId: project.id,
       file: upload,
     });
 
     const document = await createDocument({
-      projectId,
+      projectId: project.id,
       filename: upload.name,
       objectKey: object.objectKey,
       mimeType: object.mimeType,
@@ -148,7 +163,7 @@ export async function action({ request }: Route.ActionArgs) {
 
     await enqueueDocumentProcessing({
       documentId: document.id,
-      projectId,
+      projectId: project.id,
       objectKey: object.objectKey,
     });
 

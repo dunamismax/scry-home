@@ -1,6 +1,8 @@
-# scry
+# scryai
 
 This is the meta-repo for Stephen and **scry**: identity, standards, infrastructure, and monorepo apps.
+
+Canonical repository URL: <https://github.com/dunamismax/scryai>
 
 ## Core Stack (Mandatory)
 
@@ -29,8 +31,7 @@ Everything must be self-hostable.
 | `scripts/` | TypeScript orchestration scripts run through `bun run`. |
 | `infra/` | Self-host stack for PostgreSQL, MinIO, and Caddy. |
 | `SOUL.md` | Partnership constitution and long-term memory. |
-| `CLAUDE.md` | Runtime operating rules (canonical source). |
-| `AGENTS.md` | Exact mirror of `CLAUDE.md` for multi-agent compatibility. |
+| `AGENTS.md` | Runtime operating rules (single source of truth). |
 
 ## Quick Start
 
@@ -45,6 +46,8 @@ bun run app:scrybase:dev
 
 ```bash
 # Infra
+bun run setup:minio
+bun run setup:zig
 bun run infra:up
 bun run infra:down
 bun run infra:logs
@@ -63,6 +66,22 @@ bun run typecheck
 bun run doctor
 bun run check:agent-docs
 ```
+
+## Infra Defaults
+
+Infra definitions live in `infra/`:
+
+- PostgreSQL (`pgvector` image)
+- MinIO (S3-compatible object storage)
+- Caddy (reverse proxy)
+
+Default local ports are defined in `infra/.env.example`:
+
+- PostgreSQL: `15432`
+- MinIO API: `19000`
+- MinIO Console: `19001`
+- Caddy HTTP: `18080`
+- Caddy HTTPS: `18443`
 
 ## License
 

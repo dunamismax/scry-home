@@ -11,10 +11,20 @@ const appDir = process.cwd();
 const clientDir = path.join(appDir, "build", "client");
 
 function resolveStaticAsset(pathname: string): string | null {
-  const normalizedPath = pathname === "/" ? "/index.html" : pathname;
-  const resolved = path.normalize(path.join(clientDir, normalizedPath));
+  if (pathname === "/" || pathname.endsWith("/")) {
+    return null;
+  }
 
-  if (!resolved.startsWith(clientDir)) {
+  // Route requests without file extensions to SSR handlers.
+  if (!pathname.includes(".")) {
+    return null;
+  }
+
+  const normalizedPath = pathname.replace(/^\/+/, "");
+  const resolved = path.resolve(clientDir, normalizedPath);
+
+  const relativePath = path.relative(clientDir, resolved);
+  if (relativePath.startsWith("..") || path.isAbsolute(relativePath)) {
     return null;
   }
 

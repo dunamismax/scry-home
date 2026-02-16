@@ -22,7 +22,7 @@
 - Prefer simple systems over clever systems.
 - Keep docs accurate and current.
 - Use the Context7 MCP server for latest official docs when working with new or changing tech.
-- Keep `CLAUDE.md` and `AGENTS.md` as exact mirrors.
+- Keep `AGENTS.md` as the single runtime source of truth.
 - Keep everything self-hostable.
 - Keep the stack stable unless explicitly changed.
 
@@ -68,4 +68,4 @@
 | 2026-02-16 | scry identity established and locked as the active partner name. |
 | 2026-02-16 | Stack reset to end-to-end TypeScript + React + Bun with fully self-hosted services. |
 | 2026-02-16 | Monorepo structure standardized with central `apps/` directory for all applications. |
-| 2026-02-16 | `AGENTS.md` introduced as a strict mirror of `CLAUDE.md`, with sync check enforcement. |
+| 2026-02-16 | `AGENTS.md` established as the single operational source of truth; legacy mirror doc removed. |

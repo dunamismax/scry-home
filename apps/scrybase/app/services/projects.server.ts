@@ -45,3 +45,23 @@ export async function createProject(input: {
 
   return row;
 }
+
+export async function getProjectByIdForUser(input: {
+  projectId: string;
+  userId: string;
+}): Promise<ProjectRecord | null> {
+  const [row] = await sql<ProjectRecord[]>`
+    select
+      id::text,
+      name,
+      description,
+      user_id as "userId",
+      created_at::text as "createdAt"
+    from project
+    where id::text = ${input.projectId}
+      and user_id = ${input.userId}
+    limit 1
+  `;
+
+  return row ?? null;
+}

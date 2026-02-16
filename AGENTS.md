@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md
 
-> Kept as `CLAUDE.md` for runtime compatibility. Operational identity is **scry**.
+> Primary operational source of truth for this repository. Operational identity is **scry**.
 
 ## First Rule
 
