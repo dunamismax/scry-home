@@ -227,3 +227,5 @@ src/
 ## Notes
 
 *(Running notes, reminders, and context.)*
+
+- **Domain:** `scrybase.app` -- owned by Stephen, DNS managed on Cloudflare with full control.
