@@ -22,3 +22,12 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Utilities -- cloned third-party tools
+# Ignore everything inside cloned repos, then whitelist launcher scripts
+utilities/glances/
