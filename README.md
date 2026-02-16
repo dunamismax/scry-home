@@ -29,7 +29,8 @@ Everything must be self-hostable.
 | `scripts/` | TypeScript orchestration scripts run through `bun run`. |
 | `infra/` | Self-host stack for PostgreSQL, MinIO, and Caddy. |
 | `SOUL.md` | Partnership constitution and long-term memory. |
-| `CLAUDE.md` | Runtime operating rules (name retained for compatibility). |
+| `CLAUDE.md` | Runtime operating rules (canonical source). |
+| `AGENTS.md` | Exact mirror of `CLAUDE.md` for multi-agent compatibility. |
 
 ## Quick Start
 
@@ -52,12 +53,15 @@ bun run infra:logs
 bun run app:scrybase:dev
 bun run app:scrybase:build
 bun run app:scrybase:typecheck
+bun run app:scrybase:migrate
+bun run app:scrybase:worker
 
 # Tooling
 bun run lint
 bun run format
 bun run typecheck
 bun run doctor
+bun run check:agent-docs
 ```
 
 ## License

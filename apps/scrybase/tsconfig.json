@@ -1,21 +1,22 @@
 {
+  "include": ["app/**/*", "scripts/**/*", "server.ts", "vite.config.ts", ".react-router/types/**/*"],
   "compilerOptions": {
-    "jsx": "react-jsx",
-    "moduleResolution": "Bundler",
-    "module": "ESNext",
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "types": ["bun", "node", "vite/client"],
     "target": "ES2022",
-    "strict": true,
-    "strictNullChecks": true,
-    "skipLibCheck": true,
-    "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "outDir": "./dist",
-    "rootDir": ".",
+    "module": "ES2022",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "rootDirs": [".", "./.react-router/types"],
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
-    }
-  },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts", "drizzle.config.ts"],
-  "exclude": ["node_modules", "dist", ".output"]
+      "~/*": ["./app/*"]
+    },
+    "esModuleInterop": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true
+  }
 }

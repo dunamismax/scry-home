@@ -2,27 +2,71 @@ services:
   db:
     image: pgvector/pgvector:pg16
     restart: unless-stopped
-    ports:
-      - "15432:5432"
     environment:
       POSTGRES_USER: scrybase
       POSTGRES_PASSWORD: scrybase
       POSTGRES_DB: scrybase
+    ports:
+      - "15432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
 
   minio:
     image: minio/minio:latest
     restart: unless-stopped
+    command: server /data --console-address ":9001"
     environment:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin123
-    command: server /data --console-address ":9001"
     ports:
       - "19000:9000"
       - "19001:9001"
     volumes:
       - minio-data:/data
+
+  minio-init:
+    image: minio/mc:latest
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      set -e;
+      until /usr/bin/mc alias set local http://minio:9000 minioadmin minioadmin123; do
+        sleep 2;
+      done;
+      /usr/bin/mc mb --ignore-existing local/scrybase-documents;
+      /usr/bin/mc anonymous set private local/scrybase-documents;
+      "
+    restart: "no"
+
+  app:
+    build: .
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - minio
+      - minio-init
+    command: sh -c "bun run db:migrate && bun run start"
+    ports:
+      - "3000:3000"
+
+  worker:
+    build: .
+    env_file:
+      - .env
+    depends_on:
+      - app
+    command: bun run jobs:worker
+
+  caddy:
+    image: caddy:2-alpine
+    depends_on:
+      - app
+    ports:
+      - "18080:80"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
 
 volumes:
   pgdata:
