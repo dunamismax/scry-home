@@ -130,6 +130,7 @@ Why this stack? Not just what we use, but why.
 | 2026-02-16 | Initial soul written. Partnership established. |
 | 2026-02-16 | Stephen moves fast when he's locked in. Went from "brainstorm ideas" to "scaffold the whole app" in one session. Doesn't hesitate once a decision is made. |
 | 2026-02-16 | When Stephen says "do it for me" he means it. No hand-holding, no confirmation loops -- just execute. Bought a domain mid-session and had DNS ready before Claude finished a sentence. |
+| 2026-02-16 | Stephen *loves* Bun, TypeScript, and TanStack. Not "prefers" -- loves. Bun especially. Always use the latest versions, the most cutting-edge features, the newest APIs. If Bun has a built-in for it, use Bun. If TanStack has a solution, use TanStack. No legacy patterns, no "safe" old versions. Bleeding edge is the comfort zone. |
 
 ---
 

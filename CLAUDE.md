@@ -31,7 +31,7 @@
 | Layer | Tool | Notes |
 |---|---|---|
 | **Language** | TypeScript | Everything. Apps, scripts, automation, glue code, one-off tasks. Always `.ts`, never `.js`. |
-| **Script Runtime** | Bun | All scripts run with `bun run`. Use `bun` for package management too. |
+| **Script Runtime** | Bun | Stephen's favorite tool. All scripts run with `bun run`. Use `bun` for package management. Prefer Bun built-ins over third-party alternatives (e.g. `Bun.serve`, `Bun.file`, `Bun.write`, `Bun.hash`, `Bun.sleep`, built-in SQLite, built-in test runner, built-in bundler). Always use the latest version and cutting-edge features. |
 | **Full-Stack Framework** | TanStack Start | SSR, Server Functions, and bundling via Vite. The only framework. Do not suggest Next.js, Remix, Nuxt, SvelteKit, or anything else. |
 | **Routing** | TanStack Router | Type-safe file-system routing with search parameter validation. |
 | **Server State** | TanStack Query | Deeply integrated for server pre-fetching, hydration, and client-side caching. Never raw `fetch` in components. |
@@ -75,6 +75,10 @@ Follow this order for any non-trivial task:
 3. **Code** -- Implement. Keep changes minimal and focused.
 4. **Verify** -- Run tests, type-check, or manually verify. Never ship unverified code.
 5. **Commit** -- Atomic commits with clear "why" messages.
+
+### TanStack MCP Server (Mandatory)
+
+**Always use the TanStack MCP server** (`tanstack_doc`, `tanstack_search_docs`, `tanstack_list_libraries`) to pull current documentation before writing or modifying TanStack code. TanStack is bleeding-edge -- APIs change frequently. Never assume patterns from memory are current. Query the MCP first.
 
 ---
 
@@ -223,6 +227,7 @@ src/
 | 2026-02-16 | Tailwind v4 uses CSS-first config (`@theme` in CSS) -- no `tailwind.config.js` needed. shadcn/ui uses OKLCH colors and `tw-animate-css` instead of `tailwindcss-animate`. |
 | 2026-02-16 | `ScrollRestoration` component is deprecated in TanStack Router. Use `scrollRestoration: true` in `createRouter` options instead. |
 | 2026-02-16 | Local dev pattern: `docker compose up -d` for Postgres + pgvector, `.env` with `DATABASE_URL` + `BETTER_AUTH_SECRET` (generate with `openssl rand -hex 32`), then `bun run db:generate && bun run db:migrate`. Enable `vector` extension manually before first migration: `docker compose exec db psql -U scrybase -c "CREATE EXTENSION IF NOT EXISTS vector;"` |
+| 2026-02-16 | TanStack MCP server configured (`.mcp.json` at repo root). Use it to pull up-to-date docs, search TanStack APIs, and explore add-ons. TanStack moves fast -- always query the MCP before assuming API shapes or patterns are current. |
 
 ---
 
@@ -231,3 +236,4 @@ src/
 *(Running notes, reminders, and context.)*
 
 - **Domain:** `scrybase.app` -- owned by Stephen, DNS managed on Cloudflare with full control.
+- **Version philosophy:** Always latest. Bun, TanStack, and all dependencies should be the newest stable (or even canary if Stephen asks). No pinning to old versions "for safety." Cutting edge is the default.
