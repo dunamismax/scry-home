@@ -67,34 +67,42 @@ export const verification = pgTable("verification", {
 // Scrybase domain tables
 // =============================================================================
 
-export const project = pgTable("project", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  name: text("name").notNull(),
-  description: text("description"),
-  userId: text("user_id")
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+export const project = pgTable(
+  "project",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    name: text("name").notNull(),
+    description: text("description"),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (table) => [index("project_user_id_idx").on(table.userId)],
+);
 
-export const document = pgTable("document", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  projectId: uuid("project_id")
-    .notNull()
-    .references(() => project.id, { onDelete: "cascade" }),
-  filename: text("filename").notNull(),
-  mimeType: text("mime_type").notNull(),
-  sizeBytes: integer("size_bytes").notNull(),
-  status: text("status", {
-    enum: ["pending", "processing", "ready", "error"],
-  })
-    .notNull()
-    .default("pending"),
-  errorMessage: text("error_message"),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+export const document = pgTable(
+  "document",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    projectId: uuid("project_id")
+      .notNull()
+      .references(() => project.id, { onDelete: "cascade" }),
+    filename: text("filename").notNull(),
+    mimeType: text("mime_type").notNull(),
+    sizeBytes: integer("size_bytes").notNull(),
+    status: text("status", {
+      enum: ["pending", "processing", "ready", "error"],
+    })
+      .notNull()
+      .default("pending"),
+    errorMessage: text("error_message"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (table) => [index("document_project_id_idx").on(table.projectId)],
+);
 
 export const chunk = pgTable(
   "chunk",
@@ -109,6 +117,7 @@ export const chunk = pgTable(
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
   (table) => [
+    index("chunk_document_id_idx").on(table.documentId),
     index("chunk_embedding_idx").using(
       "hnsw",
       table.embedding.op("vector_cosine_ops"),
@@ -116,14 +125,18 @@ export const chunk = pgTable(
   ],
 );
 
-export const apiKey = pgTable("api_key", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  projectId: uuid("project_id")
-    .notNull()
-    .references(() => project.id, { onDelete: "cascade" }),
-  name: text("name").notNull(),
-  keyHash: text("key_hash").notNull().unique(),
-  keyPrefix: text("key_prefix").notNull(),
-  lastUsedAt: timestamp("last_used_at"),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-});
+export const apiKey = pgTable(
+  "api_key",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    projectId: uuid("project_id")
+      .notNull()
+      .references(() => project.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    keyHash: text("key_hash").notNull().unique(),
+    keyPrefix: text("key_prefix").notNull(),
+    lastUsedAt: timestamp("last_used_at"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [index("api_key_project_id_idx").on(table.projectId)],
+);

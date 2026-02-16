@@ -1,4 +1,4 @@
-import { Outlet, ScrollRestoration, HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
+import { Outlet, HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import type { QueryClient } from "@tanstack/react-query";
 import globalsCss from "@/styles/globals.css?url";
 
@@ -30,7 +30,6 @@ function RootLayout() {
       </head>
       <body className="min-h-screen bg-background text-foreground antialiased">
         <Outlet />
-        <ScrollRestoration />
         <Scripts />
       </body>
     </html>

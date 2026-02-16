@@ -14,10 +14,15 @@ RUN bun run build
 
 # Production
 FROM base AS runtime
-COPY --from=build /app/.output ./.output
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/package.json ./
 
+RUN addgroup --system --gid 1001 scrybase && \
+    adduser --system --uid 1001 --ingroup scrybase scrybase
+
+COPY --from=build --chown=scrybase:scrybase /app/.output ./.output
+COPY --from=build --chown=scrybase:scrybase /app/node_modules ./node_modules
+COPY --from=build --chown=scrybase:scrybase /app/package.json ./
+
+USER scrybase
 ENV NODE_ENV=production
 EXPOSE 3000
 
