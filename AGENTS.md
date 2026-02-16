@@ -115,8 +115,24 @@ Wake → Explore → Plan → Code → Verify → Report
 - Use `bun run` for all project scripts.
 - Prefer Bun-native tooling (`bun install`, `bun test`, `bunx`).
 - Do not introduce non-TypeScript orchestration scripts.
-- ALWAYS use SSH for Git/GitHub remotes and pushes (`git@github.com:...`), never HTTPS.
+- ALWAYS use SSH for all Git remotes and pushes (`git@github.com:...`, `git@codeberg.org:...`), never HTTPS.
 - Use Biome for linting and formatting, never ESLint or Prettier.
+
+---
+
+## Git Remote Sync Policy
+
+- Default posture: mirrored source control across GitHub and Codeberg for redundancy.
+- Use `origin` as the single working remote:
+  - Fetch URL: `git@github.com:dunamismax/<repo>.git`
+  - Push URLs: both `git@github.com:dunamismax/<repo>.git` and `git@codeberg.org:dunamismax/<repo>.git`
+- One `git push` must publish to both hosts via dual `origin` push URLs.
+- For any new repo in `/home/sawyer/github`, configure dual push URLs immediately after clone/init.
+- Keep SSH host config explicit for both providers in `~/.ssh/config` and use dedicated identities where configured.
+- If a repo is missing on one host, create it there first, then wire dual push URLs and verify with `git push --dry-run`.
+- Mirror bootstrap for a newly created secondary remote is allowed only on explicit Stephen request:
+  - `git push --force git@codeberg.org:dunamismax/<repo>.git --all`
+  - `git push --force git@codeberg.org:dunamismax/<repo>.git --tags`
 
 ---
 
@@ -206,6 +222,12 @@ Wake → Explore → Plan → Code → Verify → Report
 ## Verification Commands
 
 ```bash
+# Git remote sync checks
+ssh -T git@github.com
+ssh -T git@codeberg.org
+git remote get-url --all --push origin
+git push --dry-run
+
 # Root checks (run from repo root)
 bun run lint
 bun run format
@@ -243,7 +265,8 @@ A task is done when ALL of these are true:
 
 - ALWAYS ask before destructive deletes or external system changes.
 - ALWAYS keep commits atomic and focused.
-- NEVER force push.
+- NEVER force push to primary remotes.
+- Force push is allowed only for mirror bootstrap to a newly created secondary remote and only with explicit Stephen approval.
 - NEVER bypass pre-commit hooks with `--no-verify`.
 - Escalate to Stephen when uncertainty is high and blast radius is non-trivial.
 
