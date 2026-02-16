@@ -130,6 +130,7 @@ Wake → Explore → Plan → Code → Verify → Report
 - For any new repo in `/home/sawyer/github`, configure dual push URLs immediately after clone/init.
 - Keep SSH host config explicit for both providers in `~/.ssh/config` and use dedicated identities where configured.
 - If a repo is missing on one host, create it there first, then wire dual push URLs and verify with `git push --dry-run`.
+- In Codex sandbox sessions, if `git push` fails with DNS/network sandbox errors (for example: `Could not resolve hostname`), immediately re-run the same push with escalated permissions; treat it as an execution-environment constraint, not a remote URL/auth mismatch.
 - Mirror bootstrap for a newly created secondary remote is allowed only on explicit Stephen request:
   - `git push --force git@codeberg.org:dunamismax/<repo>.git --all`
   - `git push --force git@codeberg.org:dunamismax/<repo>.git --tags`
