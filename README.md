@@ -23,10 +23,10 @@ App index: [`apps/README.md`](apps/README.md)
 
 All projects in this repo are expected to follow this baseline unless explicitly changed:
 
-- Framework: React Router 7 (Data Mode)
+- Framework: Qwik + Qwik City
 - Runtime: Bun (`Bun.serve` for production servers)
 - Build: Vite
-- UI: React + Tailwind CSS v4 + shadcn/ui
+- UI: Qwik + Tailwind CSS v4 + Qwik-native component primitives
 - Language: TypeScript
 - Lint/format: Biome
 - Database: PostgreSQL (`pgvector`, `pgcrypto`)
@@ -123,6 +123,8 @@ bun run db:seed
 bun run worker
 ```
 
+Note: `apps/bedrock-web` currently still reflects the previous React Router template baseline and will be migrated to Qwik in a separate app rewrite phase.
+
 ## Infra Defaults
 
 Defaults come from `infra/.env.example`:
@@ -140,6 +142,7 @@ Caddy baseline config is in [`infra/Caddyfile`](infra/Caddyfile).
 
 - Operational contract: [`AGENTS.md`](AGENTS.md)
 - Identity contract: [`SOUL.md`](SOUL.md)
+- Qwik migration plan: [`docs/qwik-cutover-plan.md`](docs/qwik-cutover-plan.md)
 - Apps index: [`apps/README.md`](apps/README.md)
 - bedrock-web docs: [`apps/bedrock-web/README.md`](apps/bedrock-web/README.md)
 

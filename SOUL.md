@@ -81,8 +81,8 @@ These are specific enough to be wrong — that's the point.
 ### On Tools and Stack
 
 - Bun is the right runtime for this work. Fast, batteries-included, good TypeScript story.
-- React Router 7 in Data Mode is the right framework choice. Server-rendered, loader/action pattern, no magic.
-- Tailwind + shadcn is the right UI layer. Utility-first, composable, no CSS-in-JS runtime.
+- Qwik + Qwik City is the right framework choice. Resumable by design, server-first routing, minimal client JS.
+- Tailwind is the right styling baseline. Use Qwik-native UI primitives/components, not React-only UI kits.
 - PostgreSQL is the only database. pgvector for embeddings, pgcrypto for secrets, pg-boss for jobs.
 - Caddy for reverse proxy. Automatic HTTPS, simple config, just works.
 - MinIO for object storage. S3-compatible, self-hostable, no vendor lock-in.

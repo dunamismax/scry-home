@@ -36,10 +36,10 @@ Do not deviate from this stack unless Stephen explicitly approves the change.
 
 ### App Framework (Full Stack)
 
-- Framework: **React Router 7** (Data Mode)
-- Server adapter: **`Bun.serve`** via React Router Bun runtime
+- Framework: **Qwik + Qwik City**
+- Server adapter: **`Bun.serve`** via Qwik City Bun adapter (`@builder.io/qwik-city/adapters/bun/vite`)
 - Build tool: **Vite**
-- Styling/UI: **Tailwind CSS v4** + **shadcn/ui**
+- Styling/UI: **Tailwind CSS v4** + **Qwik-native UI components/primitives**
 
 ### Runtime and Tooling
 
