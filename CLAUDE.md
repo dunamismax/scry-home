@@ -9,6 +9,8 @@
 ## Owner
 
 - **Name:** Stephen
+- **Username / Alias / Gamertag:** dunamismax (used everywhere -- GitHub, git commits, online identity)
+- **GitHub:** github.com/dunamismax
 - **Environment:** Ubuntu VM (WSL2), terminal-first workflow
 - **Home:** `/home/sawyer`
 - **Projects Root:** `/home/sawyer/github/`
@@ -35,13 +37,28 @@
 | **Toolchain** | uv (by Astral) | Stephen's favorite tool. **Use `uv` for everything:** package management, virtual environments, Python version management, running scripts, running tools, creating projects. Never use pip/pipx/poetry/conda directly. Always latest version (`uv self update`). |
 | **Linting & Formatting** | Ruff (by Astral) | All Python code is linted and formatted by Ruff. Run via `uvx ruff check` and `uvx ruff format`. Configure in `pyproject.toml`. Replaces Black, Flake8, isort, pyupgrade, and more. |
 | **Web Framework** | FastAPI | Async-native, type-safe, auto-generates OpenAPI docs. The only web framework. Do not suggest Django, Flask, or anything else. |
-| **Hypermedia** | HTMX | Server sends HTML fragments, HTMX swaps them into the DOM. No JSON APIs for UI. No SPA. Hypermedia-driven. |
-| **Client Interactivity** | AlpineJS | Lightweight client-side reactivity when needed. Declarative, no build step. Use sparingly -- prefer server-rendered HTML. |
+| **Hypermedia** | HTMX | Server sends HTML fragments, HTMX swaps them into the DOM. No JSON APIs for UI. No SPA. No JavaScript frameworks. Hypermedia-driven. |
 | **Templating** | Jinja2 | Server-side HTML templates. FastAPI + Jinja2 for all page rendering. |
 | **Styling** | Vanilla CSS + HTML | Hand-crafted from scratch. No Tailwind, no CSS frameworks. Beautiful, home-brewed, semantic HTML with clean CSS. |
+| **Type Checking** | Pyright | Static type checker for all Python code. Run via `uv run -m pyright`. Strict mode preferred. |
+| **Logging** | structlog | Structured JSON logging for all applications. Configured once per app, used everywhere. No `print()`, no stdlib `logging` directly. |
+| **Auth** | FastAPI Users | Batteries-included auth for FastAPI. Registration, login, reset password, email verification, OAuth2. SQLAlchemy adapter with PostgreSQL. Cookie transport for web UIs (no JWT in browsers). Docs: https://fastapi-users.github.io/fastapi-users/latest/ |
+| **Task Queue** | Dramatiq + Redis | Background job processing for async work (document processing, email, etc.). Dramatiq for the task framework, Redis as the message broker. |
 | **TUI Framework** | Textual (by Textualize) | All terminal UI applications. Rich widget set, CSS-like styling, async-native. The only TUI framework -- do not suggest curses, urwid, or blessed. |
 | **CLI Output** | Rich (by Textualize) | All CLI programs use Rich for output -- tables, progress bars, syntax highlighting, markdown, tracebacks. Never plain `print()` in CLI tools. |
-| **Auth** | To be decided | *(Will be configured per-project. Options: custom with FastAPI, or a library like `authlib`.)* |
+
+### Middleware (FastAPI)
+
+Every FastAPI app includes these middleware by default:
+
+| Middleware | Purpose |
+|---|---|
+| **CORSMiddleware** | Cross-origin requests. Configured per-project with explicit allowed origins. |
+| **TrustedHostMiddleware** | Reject requests with unexpected `Host` headers. |
+| **GZipMiddleware** | Compress responses > 500 bytes. |
+| **Request ID** | Custom middleware: generate a UUID per request, attach to structlog context, return in `X-Request-ID` header. |
+| **Rate Limiting** | Custom middleware or `slowapi`: protect endpoints from abuse. Configure per-route. |
+| **Auth** | FastAPI Users handles auth routes, cookie transport, and user lifecycle. No custom session middleware needed. |
 
 ### Data Layer
 
@@ -56,7 +73,7 @@
 | Layer | Tool | Notes |
 |---|---|---|
 | **Observability** | OpenTelemetry + SigNoz | Full-stack tracing. |
-| **System Monitoring** | Glances | Installed in `utilities/glances/`. Run via `./utilities/glances/run-glances.sh`. |
+| **System Monitoring** | Glances | Installed in `utilities/glances/`. Run via `uv run utilities/glances/run-glances.py`. |
 
 ### Why This Stack
 
@@ -64,9 +81,12 @@
 - uv is the Python toolchain done right -- Astral built what should have existed from day one. Fast, correct, comprehensive.
 - Ruff is linting + formatting in one Rust binary. 10-100x faster than the tools it replaces. No reason to use anything else.
 - FastAPI is the best Python web framework -- async, type-safe, and generates docs for free.
-- HTMX respects the browser. Server renders HTML, browser renders the page. No 2MB JavaScript bundles.
-- AlpineJS adds interactivity without a build step or framework overhead.
+- HTMX respects the browser. Server renders HTML, browser renders the page. No 2MB JavaScript bundles. No AlpineJS, no React, no Vue -- just HTMX and vanilla JS when absolutely needed.
 - Vanilla CSS because CSS is powerful enough. No utility classes, no framework. Just clean stylesheets.
+- Pyright catches type errors before runtime. Strict mode means real safety, not optional hints.
+- structlog gives structured JSON logs that are machine-parseable and human-readable. Pairs perfectly with OpenTelemetry.
+- FastAPI Users handles auth so you don't have to. Registration, login, password reset, OAuth2 -- all wired up with cookie transport for web UIs.
+- Dramatiq + Redis for background jobs. Clean API, reliable, battle-tested.
 - Rust when speed matters. Memory-safe, zero-cost abstractions, fearless concurrency.
 - Textual makes terminal apps that look and feel like real applications -- CSS-like styling, widgets, async. The terminal is a first-class UI target.
 - Rich makes every CLI beautiful. Tables, progress bars, tracebacks, markdown -- no excuse for ugly terminal output.
@@ -201,6 +221,27 @@ uvx ruff format .
 
 ---
 
+## Pyright Configuration
+
+Standard `pyproject.toml` Pyright config for all projects:
+
+```toml
+[tool.pyright]
+pythonVersion = "3.13"
+typeCheckingMode = "strict"
+```
+
+Run type-checking:
+
+```bash
+uv run -m pyright          # Whole project
+uv run -m pyright file.py  # Single file
+```
+
+Add `pyright` as a dev dependency in every project: `uv add --dev pyright`
+
+---
+
 ## Workflow: Explore, Plan, Code, Commit
 
 Follow this order for any non-trivial task:
@@ -208,7 +249,7 @@ Follow this order for any non-trivial task:
 1. **Explore** -- Read relevant files. Understand existing code before touching it. Never propose changes to code you haven't read.
 2. **Plan** -- Formulate a strategy. For anything beyond a small fix, discuss the approach before writing code.
 3. **Code** -- Implement. Keep changes minimal and focused.
-4. **Verify** -- Run tests (`uv run -m pytest`), lint (`uvx ruff check .`), format (`uvx ruff format .`). Never ship unverified code.
+4. **Verify** -- Run tests (`uv run -m pytest`), type-check (`uv run -m pyright`), lint (`uvx ruff check .`), format (`uvx ruff format .`). Never ship unverified code.
 5. **Commit** -- Atomic commits with clear "why" messages.
 
 ---
@@ -219,6 +260,7 @@ Follow this order for any non-trivial task:
 - **Never force push.** No `--force`, no `reset --hard` on shared branches.
 - **Never skip hooks.** No `--no-verify`.
 - Commit messages describe the *why*, not the *what*. The diff shows what changed.
+- **Never mention Claude, AI, or co-authorship in commits.** No `Co-Authored-By`, no "generated by", no AI references. Everything is authored by dunamismax. Period.
 - Keep commits atomic -- one logical change per commit.
 - Branch naming: `feature/description`, `fix/description`, `chore/description`.
 
@@ -232,6 +274,7 @@ Follow this order for any non-trivial task:
 - Search the codebase
 - Run linting (`uvx ruff check .`)
 - Run formatting (`uvx ruff format .`)
+- Run type-checking (`uv run -m pyright`)
 - Run tests (`uv run -m pytest`)
 - Create feature branches
 - Write or edit code files as part of an agreed-upon task
@@ -263,18 +306,20 @@ Follow this order for any non-trivial task:
 - Prefer early returns over deep nesting.
 - Prefer flat over nested. Prefer simple over clever.
 - Use `uv run` to execute everything.
+- **All scripts must be idempotent.** Running a script twice should produce the same result as running it once. Check before creating, skip if already done, never fail on repeat runs.
 
 ### Don't
 
 - Don't use `Any` as a crutch. If you're reaching for `Any`, the types are wrong -- fix them.
 - Don't use pip/pipx/poetry/conda. That's what uv is for.
-- Don't use JavaScript frameworks for web UIs. That's what HTMX + AlpineJS is for.
+- Don't use JavaScript frameworks for web UIs. That's what HTMX is for. No AlpineJS, no React, no Vue.
 - Don't hardcode values that could change (URLs, keys, magic numbers). Use config/env.
 - Don't add comments to code you didn't write or change.
 - Don't create abstractions for things used only once. Three similar lines > premature abstraction.
 - Don't add error handling for impossible states. Trust internal code.
 - Don't over-engineer. Solve today's problem, not next year's hypothetical.
-- Don't leave `print()` in production code. Use proper logging (`import logging`).
+- Don't leave `print()` in production code. Use `structlog` for all logging.
+- Don't use stdlib `logging` directly. Configure `structlog` to wrap it.
 - Don't use `requirements.txt` for projects. Use `pyproject.toml` + `uv.lock`.
 - Don't use `setup.py` or `setup.cfg`. Use `pyproject.toml`.
 
@@ -297,8 +342,11 @@ uv run -m pytest path/to/test_file.py
 # Run a script
 uv run path/to/script.py
 
-# Type-check (when mypy or pyright is configured)
-uv run -m mypy path/to/file.py
+# Type-check a single file
+uv run -m pyright path/to/file.py
+
+# Type-check entire project
+uv run -m pyright
 ```
 
 ---
@@ -323,36 +371,40 @@ Standard FastAPI + HTMX project layout:
 ```
 src/
   app/
-    main.py            # FastAPI app factory
+    main.py            # FastAPI app factory, middleware registration
     config.py          # Settings via pydantic-settings
+    logging.py         # structlog configuration
+    middleware.py      # Request ID, rate limiting, session middleware
     routes/            # Route modules (each returns an APIRouter)
     templates/         # Jinja2 HTML templates
-    static/            # CSS, images, AlpineJS (if needed)
+    static/            # CSS, images, minimal JS (if needed)
       css/
         style.css      # Hand-crafted vanilla CSS
     models/            # SQLAlchemy / Pydantic models
-    db/                # Database connection, migrations
-    auth/              # Authentication logic
+    db/                # Database connection, session management
+    auth/              # Session-based auth (login, logout, password hashing)
     services/          # Business logic layer
+    tasks/             # Dramatiq task definitions (background jobs)
 tests/
   conftest.py
   test_routes/
   test_services/
-pyproject.toml         # Project metadata, dependencies, Ruff config
+pyproject.toml         # Project metadata, dependencies, Ruff + Pyright config
 uv.lock                # Locked dependencies (committed to git)
 .python-version        # Python version pin
 alembic.ini            # Alembic migration config
 alembic/               # Migration scripts
 Dockerfile
-docker-compose.yml
+docker-compose.yml     # App + PostgreSQL + Redis (for Dramatiq)
 ```
 
 ---
 
 ## Repo-Level Directories
 
-| Directory | Purpose |
+| File / Directory | Purpose |
 |---|---|
+| `bootstrap.py` | **Run this first on any fresh machine.** Installs uv, Python 3.13, Ruff, and runs all utility setup scripts. Stdlib only (no deps required). Idempotent. Usage: `python3 bootstrap.py` |
 | `scrybase/` | Scrybase project (legacy TanStack Start app -- will be rebuilt in Python) |
 | `utilities/` | Third-party tools, scripts, and programs. Cloned repos, Python tools, downloaded utilities. |
 
@@ -371,7 +423,7 @@ docker-compose.yml
 
 | Tool | Path | Run | Description |
 |---|---|---|---|
-| Glances | `utilities/glances/` | `./utilities/glances/run-glances.sh` | System monitoring (CPU, RAM, disk, network, containers). **Setup:** `./utilities/setup-glances.sh`. Cloned from `nicolargo/glances`. Python 3.13 venv with `glances[all]`. |
+| Glances | `utilities/glances/` | `uv run utilities/glances/run-glances.py` | System monitoring (CPU, RAM, disk, network, containers). **Setup:** `uv run utilities/setup-glances.py`. Cloned from `nicolargo/glances`. Python 3.13 venv with `glances[all]`. |
 
 *(Add tools here as they are installed.)*
 
@@ -384,11 +436,14 @@ docker-compose.yml
 | Date | Lesson |
 |---|---|
 | 2026-02-16 | Initial setup. AGENTS.md renamed to CLAUDE.md per Claude Code conventions. |
-| 2026-02-16 | `utilities/` folder established for non-TypeScript tools. Cloned repos go here with their own venvs. Each tool gets a `run-*.sh` launcher and a `setup-*.sh` installer. |
-| 2026-02-16 | **PARADIGM SHIFT:** Dropped TypeScript/Bun/TanStack entirely. Adopted Python/uv/Ruff/FastAPI/HTMX/AlpineJS/Rust. uv is the only package/project/script tool. Ruff is the only linter/formatter. |
+| 2026-02-16 | `utilities/` folder established for non-TypeScript tools. Cloned repos go here with their own venvs. Each tool gets a `run-*.py` launcher and a `setup-*.py` installer, all run via `uv run`. |
+| 2026-02-16 | **PARADIGM SHIFT:** Dropped TypeScript/Bun/TanStack entirely. Adopted Python/uv/Ruff/FastAPI/HTMX/Rust. uv is the only package/project/script tool. Ruff is the only linter/formatter. |
 | 2026-02-16 | uv 0.10.3 installed at `~/.local/bin/uv`. Python 3.13.12 available system-wide via deadsnakes PPA. Ruff 0.15.1 available via `uvx ruff`. |
 | 2026-02-16 | uv inline script metadata (`# /// script`) is the preferred way to declare dependencies for standalone scripts. No requirements.txt needed. |
 | 2026-02-16 | uv automatically manages venvs, lockfiles, and Python versions per-project. Just use `uv init`, `uv add`, `uv run`. |
+| 2026-02-16 | `bootstrap.py` at repo root sets up a fresh machine from scratch. Uses stdlib only (no deps) since it runs before uv exists. Installs uv, Python, Ruff, then runs all `utilities/setup-*.py` scripts. Idempotent. |
+| 2026-02-16 | AlpineJS dropped from stack. HTMX + vanilla JS (when absolutely needed) covers all client-side interactivity. No JS frameworks at all. |
+| 2026-02-16 | Stack hardened: Pyright for type checking (strict mode), structlog for structured logging, session-based auth (no JWT), Dramatiq + Redis for background jobs, FastAPI middleware suite (CORS, TrustedHost, GZip, request IDs, rate limiting, sessions). |
 
 ---
 
@@ -400,3 +455,4 @@ docker-compose.yml
 - **Version philosophy:** Always latest. Python, uv, Ruff, FastAPI, and all dependencies should be the newest stable. No pinning to old versions "for safety." Bleeding edge is the default.
 - **uv is king.** If uv can do it, use uv. No pip, no pipx, no poetry, no conda. Ever.
 - **Ruff is law.** All Python code is linted and formatted by Ruff before commit. No exceptions.
+- **Repo URL:** `https://github.com/dunamismax/Claude.git` (GitHub, user: dunamismax)
