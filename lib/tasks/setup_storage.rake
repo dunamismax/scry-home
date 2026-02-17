@@ -5,7 +5,7 @@ require 'scry/helpers'
 
 namespace :scry do
   namespace :setup do
-    desc 'Ensure infra env file exists and show compose hints'
+    desc 'Ensure storage-related env defaults exist'
     task :storage do
       include Scry::Helpers
 
@@ -53,19 +53,7 @@ namespace :scry do
         puts "created: #{env_path}"
       end
 
-      if ENV.key?('UP')
-        log_step 'Starting infra services'
-        run_or_throw([
-                       'docker', 'compose',
-                       '--env-file', File.join(repo_root, 'infra', '.env'),
-                       '-f', File.join(repo_root, 'infra', 'docker-compose.yml'),
-                       'up', '-d'
-                     ])
-      end
-
-      log_step 'Infra ready'
-      puts 'run: docker compose --env-file infra/.env -f infra/docker-compose.yml up -d'
-      puts 'logs: docker compose --env-file infra/.env -f infra/docker-compose.yml logs -f'
+      log_step 'Storage defaults ready'
     end
   end
 end

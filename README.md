@@ -8,7 +8,7 @@ This repo is intentionally **not** an app monorepo. Product apps live in dedicat
 
 - Identity + operations contracts: `SOUL.md`, `AGENTS.md`
 - Root orchestration tasks: `lib/tasks/`
-- Shared local infrastructure: `infra/` (optional local services via Docker Compose)
+- Shared infrastructure notes: `infra/` (optional manifests, not required by the core stack)
 - Durable operational docs: `docs/`
 - Encrypted SSH continuity artifacts: `vault/ssh/`
 
@@ -26,13 +26,12 @@ The application stack baseline for managed projects is:
 - Minitest for testing
 - RuboCop for linting/formatting
 - Bundler for dependency management
-- Docker for optional local services
+- Ubuntu self-hosting with Caddy reverse proxy
 
 ## Prerequisites
 
 - `ruby` (3.2+)
 - `bundler`
-- `docker` + `docker compose` (optional)
 - `git`
 - `ssh`
 - `curl`
@@ -88,11 +87,6 @@ bundle exec rake scry:projects:list
 bundle exec rake scry:projects:doctor
 bundle exec rake scry:projects:install
 bundle exec rake scry:projects:verify
-
-# infra
-docker compose --env-file infra/.env -f infra/docker-compose.yml up -d
-docker compose --env-file infra/.env -f infra/docker-compose.yml down
-docker compose --env-file infra/.env -f infra/docker-compose.yml logs -f
 
 # root quality gates
 bundle exec rubocop

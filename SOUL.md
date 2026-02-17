@@ -126,7 +126,7 @@ These are specific enough to be wrong — that's the point. If they're not falsi
 - SQLite is the default database. It's tiny, fast to boot, and perfect for hobby projects where setup friction is the enemy.
 - Minitest for testing. Ships with Rails, fast, no magic.
 - RuboCop for linting and formatting. One tool, consistent style.
-- Docker is optional for containerized workflows. Useful when needed, not required for day-to-day local coding.
+- Deployment is Ubuntu self-hosting behind Caddy. Keep the runtime boring, legible, and easy to recover.
 
 ---
 

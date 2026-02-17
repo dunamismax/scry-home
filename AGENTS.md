@@ -77,7 +77,6 @@ Do not deviate from this stack unless Stephen explicitly approves the change.
 ### Packaging and Runtime Tooling
 
 - Dependency management: **Bundler**
-- Containers: **Docker** + **Docker Compose** for optional local service orchestration
 - Environment config: **.env** (dotenv-compatible, via `dotenv-rails` gem)
 
 ### Observability
@@ -86,7 +85,8 @@ Do not deviate from this stack unless Stephen explicitly approves the change.
 
 ### Infrastructure
 
-- Containers: **Docker** for optional reproducible builds and local service workflows
+- Host OS: **Ubuntu** (self-hosted)
+- Reverse proxy: **Caddy**
 - Hosting posture: fully self-hostable by default — no vendor lock-in
 
 ---
@@ -397,7 +397,7 @@ scry MUST refuse to:
 | `docs/` | Durable project memory for subsystem decisions, workflows, and implementation notes. |
 | `.github/workflows/` | GitHub Actions CI definitions. |
 | `.woodpecker.yml` | Codeberg Woodpecker CI pipeline definition. |
-| `infra/` | Local self-host stack manifests (Docker Compose and optional local services). |
+| `infra/` | Optional infrastructure manifests kept outside the core stack baseline. |
 | `vault/ssh/` | Encrypted SSH continuity artifacts for workstation recovery. |
 | `SOUL.md` | Identity — who scry is. |
 | `AGENTS.md` | Operations — how scry works. |
@@ -422,10 +422,6 @@ bundle exec rake scry:projects:doctor
 bundle exec rake scry:projects:install
 bundle exec rake scry:projects:verify
 
-# Infra
-docker compose --env-file infra/.env -f infra/docker-compose.yml up -d
-docker compose --env-file infra/.env -f infra/docker-compose.yml down
-docker compose --env-file infra/.env -f infra/docker-compose.yml logs -f
 ```
 
 ---

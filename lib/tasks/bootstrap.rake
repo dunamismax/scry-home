@@ -6,7 +6,7 @@ REPO_ROOT = File.expand_path('../..', __dir__)
 REQUIRED_TOOLS = %w[ruby bundler git curl].freeze
 
 namespace :scry do
-  desc 'Bootstrap root dependencies, managed projects, and infrastructure'
+  desc 'Bootstrap root dependencies and managed projects'
   task :bootstrap do
     include Scry::Helpers
 
@@ -31,6 +31,5 @@ namespace :scry do
     bundler_version = run_or_throw(%w[bundler --version], quiet: true)
     puts "ruby: #{ruby_version}"
     puts "bundler: #{bundler_version}"
-    puts 'next: docker compose --env-file infra/.env -f infra/docker-compose.yml up -d'
   end
 end
