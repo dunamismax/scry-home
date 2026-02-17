@@ -5,6 +5,7 @@ Production-ready Qwik City starter for the scry stack:
 - Qwik + Qwik City
 - Bun runtime with Qwik City Bun adapter (`Bun.serve`)
 - Tailwind CSS v4
+- Self-hosted fonts via Fontsource (Space Grotesk Variable + IBM Plex Sans)
 - Better Auth
 - PostgreSQL (`postgres.js`) + plain SQL migrations
 - MinIO object storage
@@ -16,10 +17,13 @@ Production-ready Qwik City starter for the scry stack:
 - Protected routes and RBAC (`member`, `manager`, `admin`)
 - Admin user management (role + account activation)
 - Security defaults: CSP, strict headers, same-origin mutation checks
-- Auth form rate limiting
+- Route-level `cacheControl` headers (public caching on landing, no-cache on auth pages)
+- Auth form rate limiting with Zod schema validation
 - MinIO upload flow with asset metadata table
 - pg-boss worker scaffold and queue publishing example
 - SQL-first data access with `postgres.js`
+- Self-hosted fonts — zero external CDN requests for font loading
+- Server build minification enabled for production
 
 ## Quick Start
 
@@ -87,3 +91,5 @@ bun run worker
 - Better Auth user table is extended with `role` and `isActive`.
 - `ENABLE_JOBS=true` is required for live pg-boss queueing and worker processing.
 - Uploads are persisted to MinIO and indexed in the `asset` table.
+- Fonts are self-hosted via `@fontsource-variable/space-grotesk` and `@fontsource/ibm-plex-sans` (latin subset). No Google Fonts CDN dependency.
+- Static assets are served with `immutable` cache headers via the Bun adapter. Route responses use Qwik City's `cacheControl` API.

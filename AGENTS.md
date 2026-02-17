@@ -373,6 +373,10 @@ cd apps/bedrock-template
 bun run dev
 bun run build
 bun run serve
+bun run typecheck
+bun run lint
+bun run format
+bun run test
 bun run db:migrate
 bun run db:seed
 bun run worker
