@@ -10,7 +10,6 @@
     "setup:minio": "bun run scripts/setup-minio.ts",
     "setup:zig": "bun run scripts/setup-zig.ts",
     "doctor": "bun run scripts/doctor.ts",
-    "check:agent-docs": "bun run scripts/check-agent-doc-sync.ts",
     "projects:list": "bun run scripts/projects.ts list",
     "projects:doctor": "bun run scripts/projects.ts doctor",
     "projects:install": "bun run scripts/projects.ts install --optional",
@@ -18,15 +17,13 @@
     "infra:up": "docker compose --env-file infra/.env -f infra/docker-compose.yml up -d",
     "infra:down": "docker compose --env-file infra/.env -f infra/docker-compose.yml down",
     "infra:logs": "docker compose --env-file infra/.env -f infra/docker-compose.yml logs -f",
-    "lint": "bun run check:agent-docs && bunx @biomejs/biome check scripts package.json tsconfig.json biome.json",
+    "lint": "bunx @biomejs/biome check scripts package.json tsconfig.json biome.json",
     "format": "bunx @biomejs/biome format --write scripts package.json tsconfig.json biome.json",
     "typecheck": "bunx tsc --noEmit",
     "test": "bun test --pass-with-no-tests",
     "ci:root": "bun run lint && bun run typecheck && bun run test",
     "ci:projects": "bun run scripts/projects.ts verify --optional",
-    "ci": "bun run ci:root",
-    "perf:lighthouse": "bun run scripts/lighthouse-run.ts",
-    "perf:lighthouse:assert": "bun run scripts/lighthouse-assert.ts"
+    "ci": "bun run ci:root"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",

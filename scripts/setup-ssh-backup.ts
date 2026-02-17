@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import { type CipherGCM, createCipheriv, createHash, pbkdf2Sync, randomBytes } from "node:crypto";
 import {
   chmodSync,
   existsSync,
@@ -27,6 +27,12 @@ const metadataFile = process.env.SCRY_SSH_METADATA_FILE
   ? resolve(process.env.SCRY_SSH_METADATA_FILE)
   : resolve(vaultDir, "ssh-keys.meta.json");
 const kdfIterations = 250000;
+const kdfDigest = "sha256";
+const keyLengthBytes = 32;
+const saltLengthBytes = 16;
+const ivLengthBytes = 12;
+const authTagLengthBytes = 16;
+const encryptedFormatMagic = Buffer.from("SCRYSSH2", "ascii");
 
 type SourceSnapshot = {
   fingerprint: string;
@@ -39,8 +45,9 @@ type BackupMetadata = {
   host: string;
   sourceDir: string;
   encryptedBackupFile: string;
-  cipher: "aes-256-cbc";
+  cipher: "aes-256-gcm";
   kdf: "pbkdf2";
+  kdfDigest: "sha256";
   kdfIterations: number;
   sourceFingerprint: string;
   sourceFileCount: number;
@@ -50,7 +57,7 @@ type BackupMetadata = {
 
 function ensurePrereqs(): void {
   logStep("Checking SSH backup prerequisites");
-  const requiredTools = ["tar", "openssl"];
+  const requiredTools = ["tar"];
   for (const tool of requiredTools) {
     if (!commandExists(tool)) {
       throw new Error(`Missing required tool: ${tool}`);
@@ -144,6 +151,24 @@ function backupIsCurrent(sourceSnapshot: SourceSnapshot): boolean {
   return metadata.sourceFingerprint === sourceSnapshot.fingerprint;
 }
 
+function deriveKey(salt: Buffer): Buffer {
+  return pbkdf2Sync(passphrase, salt, kdfIterations, keyLengthBytes, kdfDigest);
+}
+
+function encryptArchive(plainTarPath: string, encryptedPath: string): void {
+  const plaintext = readFileSync(plainTarPath);
+  const salt = randomBytes(saltLengthBytes);
+  const iv = randomBytes(ivLengthBytes);
+  const key = deriveKey(salt);
+
+  const cipher = createCipheriv("aes-256-gcm", key, iv) as CipherGCM;
+  const ciphertext = Buffer.concat([cipher.update(plaintext), cipher.final()]);
+  const authTag = cipher.getAuthTag();
+
+  const payload = Buffer.concat([encryptedFormatMagic, salt, iv, authTag, ciphertext]);
+  writeFileSync(encryptedPath, payload);
+}
+
 function createEncryptedArchive(tempDir: string): void {
   logStep("Creating encrypted SSH archive");
   ensureDir(vaultDir);
@@ -152,21 +177,7 @@ function createEncryptedArchive(tempDir: string): void {
   const tempEncryptedFile = resolve(tempDir, "ssh-keys.tar.enc");
 
   runOrThrow(["tar", "-C", home, "-cf", tempTarFile, ".ssh"]);
-  runOrThrow([
-    "openssl",
-    "enc",
-    "-aes-256-cbc",
-    "-pbkdf2",
-    "-iter",
-    `${kdfIterations}`,
-    "-salt",
-    "-in",
-    tempTarFile,
-    "-out",
-    tempEncryptedFile,
-    "-pass",
-    "env:SCRY_SSH_BACKUP_PASSPHRASE",
-  ]);
+  encryptArchive(tempTarFile, tempEncryptedFile);
 
   chmodSync(tempEncryptedFile, 0o600);
   renameSync(tempEncryptedFile, encryptedBackupFile);
@@ -179,8 +190,9 @@ function writeMetadata(sourceSnapshot: SourceSnapshot): void {
     host: hostname(),
     sourceDir: sshDir,
     encryptedBackupFile,
-    cipher: "aes-256-cbc",
+    cipher: "aes-256-gcm",
     kdf: "pbkdf2",
+    kdfDigest,
     kdfIterations,
     sourceFingerprint: sourceSnapshot.fingerprint,
     sourceFileCount: sourceSnapshot.fileCount,

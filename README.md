@@ -29,7 +29,7 @@ The orchestrator tracks these projects via `scripts/projects-config.ts`.
 - `ssh`
 - `curl`
 - `tar`
-- `openssl`
+- `openssl` (optional, only for restoring legacy SSH backup archives)
 - `zig` (bootstrap can install/configure this path)
 
 ## Quick Start
@@ -69,7 +69,9 @@ bun run bootstrap
 `setup:workstation` guarantees:
 - `~/github/scryai` bootstrap anchor is present first
 - `~/github/dunamismax` profile repo is present second
-- repositories from `~/github/dunamismax/REPOS.md` are cloned/fetched
+- repositories parsed from `~/github/dunamismax/REPOS.md` are cloned/fetched
+- if parsing yields zero repos, the command fails fast by default
+- `--use-fallback` enables fallback discovery-only mode (no fallback remote mutations)
 - dual `origin` push URLs are enforced (GitHub + Codeberg)
 
 ## Root Commands
@@ -83,7 +85,6 @@ bun run setup:ssh:restore
 bun run setup:minio
 bun run setup:zig
 bun run doctor
-bun run check:agent-docs
 
 # managed projects
 bun run projects:list
@@ -102,10 +103,6 @@ bun run format
 bun run typecheck
 bun run test
 bun run ci
-
-# optional cross-repo lighthouse (defaults to ~/github/astro-web-template)
-bun run perf:lighthouse
-bun run perf:lighthouse:assert -- --report artifacts/lighthouse/current.json
 ```
 
 ## CI/CD Scope (This Repo)
@@ -123,7 +120,7 @@ Product app CI runs in their own repositories:
 | `scripts/` | Orchestration, setup, and verification scripts. |
 | `scripts/projects-config.ts` | Managed project inventory and command policy. |
 | `infra/` | Self-hostable local infrastructure manifests. |
-| `docs/` | Durable operations/performance docs. |
+| `docs/` | Durable operations docs. |
 | `vault/ssh/` | Encrypted SSH continuity artifacts. |
 | `SOUL.md` | Identity source of truth for scry. |
 | `AGENTS.md` | Operational source of truth for scry. |
@@ -132,7 +129,6 @@ Product app CI runs in their own repositories:
 
 - Runtime operations: [`AGENTS.md`](AGENTS.md)
 - Identity and voice: [`SOUL.md`](SOUL.md)
-- Performance tooling docs: [`docs/performance/README.md`](docs/performance/README.md)
 - SSH continuity docs: [`vault/ssh/README.md`](vault/ssh/README.md)
 
 ## License

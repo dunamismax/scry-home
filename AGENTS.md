@@ -184,6 +184,8 @@ Wake → Explore → Plan → Code → Verify → Report
   - Clone/fetch `~/github/scryai` first (bootstrap anchor).
   - Then clone/fetch `~/github/dunamismax`.
   - Parse `REPOS.md` and clone/fetch all active repos.
+  - Fail fast if zero repos are parsed from `REPOS.md`.
+  - Allow fallback discovery only when explicitly requested via `--use-fallback`.
   - Enforce dual `origin` push URLs (GitHub + Codeberg) on each repo.
 - SSH recovery must use encrypted vault files only:
   - Backup command: `bun run setup:ssh:backup`
@@ -309,12 +311,9 @@ bun run test
 bun run ci
 bun run projects:doctor
 bun run projects:verify
-bun run perf:lighthouse
-bun run perf:lighthouse:assert -- --report artifacts/lighthouse/current.json
 
 # Root system health
 bun run doctor
-bun run check:agent-docs
 
 # Project checks (run from each project repo)
 cd ~/github/astro-web-template
@@ -393,7 +392,6 @@ scry MUST refuse to:
 | `docs/` | Durable project memory for subsystem decisions, workflows, and implementation notes. |
 | `.github/workflows/` | GitHub Actions CI definitions. |
 | `.woodpecker.yml` | Codeberg Woodpecker CI pipeline definition. |
-| `docs/performance/` | Lighthouse thresholds and performance CI docs. |
 | `infra/` | Local self-host stack manifests. |
 | `vault/ssh/` | Encrypted SSH continuity artifacts for workstation recovery. |
 | `SOUL.md` | Identity — who scry is. |
@@ -416,7 +414,6 @@ bun run infra:up
 bun run infra:down
 bun run infra:logs
 bun run doctor
-bun run check:agent-docs
 bun run projects:list
 bun run projects:doctor
 bun run projects:install
@@ -424,8 +421,6 @@ bun run projects:verify
 bun run ci:root
 bun run ci:projects
 bun run ci
-bun run perf:lighthouse
-bun run perf:lighthouse:assert -- --report artifacts/lighthouse/current.json
 
 # ~/github/astro-web-template (full-stack website template baseline)
 cd ~/github/astro-web-template

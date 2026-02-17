@@ -1,3 +1,4 @@
+import { type DecipherGCM, createDecipheriv, pbkdf2Sync } from "node:crypto";
 import {
   chmodSync,
   cpSync,
@@ -26,6 +27,14 @@ const githubIdentity = process.env.SCRY_GITHUB_IDENTITY ?? "~/.ssh/id_ed25519";
 const codebergIdentity = process.env.SCRY_CODEBERG_IDENTITY ?? "~/.ssh/id_ed25519";
 const managedBlockStart = "# >>> scry managed git hosts >>>";
 const managedBlockEnd = "# <<< scry managed git hosts <<<";
+const kdfIterations = 250000;
+const kdfDigest = "sha256";
+const keyLengthBytes = 32;
+const saltLengthBytes = 16;
+const ivLengthBytes = 12;
+const authTagLengthBytes = 16;
+const encryptedFormatMagic = Buffer.from("SCRYSSH2", "ascii");
+const legacyOpenSslMagic = Buffer.from("Salted__", "ascii");
 
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -33,7 +42,7 @@ function escapeRegExp(value: string): string {
 
 function ensurePrereqs(): void {
   logStep("Checking SSH restore prerequisites");
-  const requiredTools = ["tar", "openssl"];
+  const requiredTools = ["tar"];
   for (const tool of requiredTools) {
     if (!commandExists(tool)) {
       throw new Error(`Missing required tool: ${tool}`);
@@ -50,28 +59,91 @@ function ensurePrereqs(): void {
       "Set SCRY_SSH_BACKUP_PASSPHRASE with at least 16 characters before restoring backups.",
     );
   }
+
+  if (isLegacyOpenSslArchive(encryptedBackupFile) && !commandExists("openssl")) {
+    throw new Error(
+      `Legacy backup detected at ${encryptedBackupFile}, but openssl is not installed. Install openssl or re-create backup with the current setup:ssh:backup command.`,
+    );
+  }
+}
+
+function deriveKey(salt: Buffer): Buffer {
+  return pbkdf2Sync(passphrase, salt, kdfIterations, keyLengthBytes, kdfDigest);
+}
+
+function isLegacyOpenSslArchive(path: string): boolean {
+  const payload = readFileSync(path);
+  if (payload.length < legacyOpenSslMagic.length) {
+    return false;
+  }
+  return payload.subarray(0, legacyOpenSslMagic.length).equals(legacyOpenSslMagic);
+}
+
+function decryptArchiveToTar(encryptedPath: string, tarPath: string): void {
+  const payload = readFileSync(encryptedPath);
+  if (payload.length >= legacyOpenSslMagic.length) {
+    const magic = payload.subarray(0, legacyOpenSslMagic.length);
+    if (magic.equals(legacyOpenSslMagic)) {
+      runOrThrow([
+        "openssl",
+        "enc",
+        "-d",
+        "-aes-256-cbc",
+        "-pbkdf2",
+        "-iter",
+        `${kdfIterations}`,
+        "-in",
+        encryptedPath,
+        "-out",
+        tarPath,
+        "-pass",
+        "env:SCRY_SSH_BACKUP_PASSPHRASE",
+      ]);
+      return;
+    }
+  }
+
+  const minimumLength =
+    encryptedFormatMagic.length + saltLengthBytes + ivLengthBytes + authTagLengthBytes + 1;
+
+  if (payload.length < minimumLength) {
+    throw new Error("Encrypted SSH backup is malformed or truncated.");
+  }
+
+  const magic = payload.subarray(0, encryptedFormatMagic.length);
+  if (!magic.equals(encryptedFormatMagic)) {
+    throw new Error("Encrypted SSH backup format is unsupported.");
+  }
+
+  let offset = encryptedFormatMagic.length;
+  const salt = payload.subarray(offset, offset + saltLengthBytes);
+  offset += saltLengthBytes;
+  const iv = payload.subarray(offset, offset + ivLengthBytes);
+  offset += ivLengthBytes;
+  const authTag = payload.subarray(offset, offset + authTagLengthBytes);
+  offset += authTagLengthBytes;
+  const ciphertext = payload.subarray(offset);
+
+  const key = deriveKey(salt);
+
+  try {
+    const decipher = createDecipheriv("aes-256-gcm", key, iv) as DecipherGCM;
+    decipher.setAuthTag(authTag);
+    const plaintext = Buffer.concat([decipher.update(ciphertext), decipher.final()]);
+    writeFileSync(tarPath, plaintext);
+  } catch {
+    throw new Error(
+      "Failed to decrypt and authenticate SSH backup. Check SCRY_SSH_BACKUP_PASSPHRASE and backup integrity.",
+    );
+  }
 }
 
 function decryptAndExtract(tempDir: string): void {
   const tempTarFile = resolve(tempDir, "ssh-keys.tar");
   const extractRoot = resolve(tempDir, "extract-root");
 
-  logStep("Decrypting SSH archive");
-  runOrThrow([
-    "openssl",
-    "enc",
-    "-d",
-    "-aes-256-cbc",
-    "-pbkdf2",
-    "-iter",
-    "250000",
-    "-in",
-    encryptedBackupFile,
-    "-out",
-    tempTarFile,
-    "-pass",
-    "env:SCRY_SSH_BACKUP_PASSPHRASE",
-  ]);
+  logStep("Decrypting and authenticating SSH archive");
+  decryptArchiveToTar(encryptedBackupFile, tempTarFile);
 
   logStep("Restoring ~/.ssh from decrypted archive");
   mkdirSync(home, { recursive: true });

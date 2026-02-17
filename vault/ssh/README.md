@@ -23,6 +23,8 @@ Notes:
 
 - Never store unencrypted private keys in this repository.
 - `SCRY_SSH_BACKUP_PASSPHRASE` should be at least 16 characters.
+- Backup encryption uses authenticated encryption (`AES-256-GCM`) with PBKDF2-SHA256 key derivation.
+- Restore keeps backward compatibility for legacy OpenSSL-CBC archives created by older script versions.
 - Re-running `bun run setup:ssh:backup` is idempotent: if `~/.ssh` is unchanged, backup files are not rewritten.
 - `bun run setup:ssh:restore` replaces `~/.ssh` with the encrypted backup contents, then enforces permissions and managed git host config entries.
 - Optional overrides:

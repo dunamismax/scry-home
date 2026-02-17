@@ -13,6 +13,7 @@ const profileRepo = process.env.GITHUB_PROFILE_REPO ?? "dunamismax";
 const managedProjectRepos = ["astro-web-template", "astro-blog-template"];
 const reposIndexPath = resolve(githubRoot, profileRepo, "REPOS.md");
 const localOnly = process.argv.includes("--local-only");
+const useFallback = process.argv.includes("--use-fallback");
 const fallbackRepos = [
   "scryai",
   "dunamismax",
@@ -191,9 +192,14 @@ function parseReposFromIndex(markdown: string): string[] {
   return uniqueOrdered(repos);
 }
 
-function loadRepoList(): string[] {
+type RepoPlan = {
+  discoveredRepos: string[];
+  source: "fallback" | "index";
+  syncedRepos: string[];
+};
+
+function loadRepoPlan(): RepoPlan {
   let parsedFromIndex: string[] = [];
-  let usingFallback = false;
 
   if (existsSync(reposIndexPath)) {
     const indexContents = readFileSync(reposIndexPath, "utf8");
@@ -201,25 +207,48 @@ function loadRepoList(): string[] {
   }
 
   if (parsedFromIndex.length === 0) {
-    usingFallback = true;
+    if (!useFallback) {
+      throw new Error(
+        `No repositories parsed from ${reposIndexPath}. Re-run with --use-fallback to load the built-in discovery list.`,
+      );
+    }
+
+    const syncedRepos = uniqueOrdered([anchorRepo, profileRepo, ...managedProjectRepos]);
+    const discoveredRepos = uniqueOrdered([...syncedRepos, ...fallbackRepos]);
+
+    logStep("Repository set");
+    console.log(`warning: using fallback discovery list from ${reposIndexPath}`);
+    console.log(
+      "warning: fallback mode is discovery-only; only anchor/profile/managed repos will be cloned or remote-configured",
+    );
+    for (const repo of discoveredRepos) {
+      console.log(`- ${repo}`);
+    }
+
+    return {
+      discoveredRepos,
+      source: "fallback",
+      syncedRepos,
+    };
   }
 
-  const repos = uniqueOrdered([
+  const syncedRepos = uniqueOrdered([
     anchorRepo,
     profileRepo,
     ...managedProjectRepos,
-    ...(usingFallback ? fallbackRepos : parsedFromIndex),
+    ...parsedFromIndex,
   ]);
 
   logStep("Repository set");
-  if (usingFallback) {
-    console.log(`warning: no repositories parsed from ${reposIndexPath}, using fallback list`);
-  }
-  for (const repo of repos) {
+  for (const repo of syncedRepos) {
     console.log(`- ${repo}`);
   }
 
-  return repos;
+  return {
+    discoveredRepos: syncedRepos,
+    source: "index",
+    syncedRepos,
+  };
 }
 
 function configureRemotes(repos: string[]): void {
@@ -244,6 +273,21 @@ function printRemoteSummary(repos: string[]): void {
   }
 }
 
+function printFallbackDiscoverySummary(discoveredRepos: string[], syncedRepos: string[]): void {
+  const synced = new Set(syncedRepos);
+  const discoveryOnlyRepos = discoveredRepos.filter((repo) => !synced.has(repo));
+  if (discoveryOnlyRepos.length === 0) {
+    return;
+  }
+
+  logStep("Fallback discovery-only repositories");
+  for (const repo of discoveryOnlyRepos) {
+    const targetDir = repoDir(repo);
+    const present = existsSync(targetDir) && existsSync(resolve(targetDir, ".git"));
+    console.log(`${repo}: ${present ? "present" : "missing"} (${targetDir})`);
+  }
+}
+
 function main(): void {
   ensurePrereqs();
   ensureGithubRoot();
@@ -251,21 +295,27 @@ function main(): void {
   maybeRestoreSshBackup();
 
   cloneOrFetch(profileRepo);
-  const repos = loadRepoList();
+  const repoPlan = loadRepoPlan();
 
-  for (const repo of repos) {
-    if (repo === profileRepo) {
+  for (const repo of repoPlan.syncedRepos) {
+    if (repo === anchorRepo || repo === profileRepo) {
       continue;
     }
     cloneOrFetch(repo);
   }
 
-  configureRemotes(repos);
-  printRemoteSummary(repos);
+  configureRemotes(repoPlan.syncedRepos);
+  printRemoteSummary(repoPlan.syncedRepos);
+  if (repoPlan.source === "fallback") {
+    printFallbackDiscoverySummary(repoPlan.discoveredRepos, repoPlan.syncedRepos);
+  }
 
   logStep("Workstation bootstrap complete");
   if (localOnly) {
     console.log("mode: local-only");
+  }
+  if (repoPlan.source === "fallback") {
+    console.log("mode: fallback-discovery-only");
   }
   console.log("next: bun run bootstrap");
 }
