@@ -164,7 +164,27 @@ bun run lint
 bun run format
 bun run typecheck
 bun run test
+bun run ci
+bun run perf:lighthouse
+bun run perf:lighthouse:assert -- --report artifacts/lighthouse/current.json
 ```
+
+## CI/CD
+
+Automated CI runs on both:
+
+- GitHub Actions: `.github/workflows/ci.yml`
+- Codeberg Woodpecker: `.woodpecker.yml`
+
+Pipelines run on push/pull-request and execute:
+
+- Root quality gates (`lint`, `typecheck`, `test`)
+- App quality gates for `apps/bedrock-template` (`lint`, `typecheck`, `test`, `build`)
+- Lighthouse audits in **mobile** + **desktop** modes
+- Lighthouse assertions for LCP/CLS/TBT + category scores
+- Lighthouse regression checks vs baseline commit when available
+
+Performance thresholds are defined in `docs/performance/lighthouse-thresholds.json`.
 
 ## App Commands
 
@@ -202,6 +222,7 @@ Caddy baseline config is in [`infra/Caddyfile`](infra/Caddyfile).
 - Identity contract: [`SOUL.md`](SOUL.md)
 - Apps index: [`apps/README.md`](apps/README.md)
 - bedrock-template docs: [`apps/bedrock-template/README.md`](apps/bedrock-template/README.md)
+- Performance CI docs: [`docs/performance/README.md`](docs/performance/README.md)
 
 ## Troubleshooting
 

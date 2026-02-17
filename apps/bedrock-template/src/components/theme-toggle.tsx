@@ -1,36 +1,15 @@
-import { $, component$, isServer, useSignal, useTask$ } from "@builder.io/qwik";
-
-type ThemeMode = "dark" | "light";
+import { $, component$ } from "@builder.io/qwik";
 
 const STORAGE_KEY = "scry-theme";
 
 export const ThemeToggle = component$(() => {
-  const currentTheme = useSignal<ThemeMode>("dark");
-
-  useTask$(() => {
-    if (isServer) {
-      return;
-    }
-
-    let savedTheme: string | null = null;
-    try {
-      savedTheme = window.localStorage.getItem(STORAGE_KEY);
-    } catch {
-      savedTheme = null;
-    }
-
-    const theme: ThemeMode = savedTheme === "light" ? "light" : "dark";
-    currentTheme.value = theme;
-    document.documentElement.dataset.theme = theme;
-    document.documentElement.style.colorScheme = theme;
-  });
-
   const toggleTheme = $(() => {
-    const nextTheme: ThemeMode = currentTheme.value === "dark" ? "light" : "dark";
-    currentTheme.value = nextTheme;
+    const root = document.documentElement;
+    const currentTheme = root.dataset.theme === "light" ? "light" : "dark";
+    const nextTheme = currentTheme === "dark" ? "light" : "dark";
 
-    document.documentElement.dataset.theme = nextTheme;
-    document.documentElement.style.colorScheme = nextTheme;
+    root.dataset.theme = nextTheme;
+    root.style.colorScheme = nextTheme;
 
     try {
       window.localStorage.setItem(STORAGE_KEY, nextTheme);
@@ -42,11 +21,11 @@ export const ThemeToggle = component$(() => {
   return (
     <button
       aria-label="Toggle dark and light theme"
-      class="btn btn-ghost h-9 px-3 text-xs sm:text-sm"
+      class="btn btn-ghost h-9 min-w-20 px-3 text-xs sm:text-sm"
       onClick$={toggleTheme}
       type="button"
     >
-      {currentTheme.value === "dark" ? "Dark" : "Light"}
+      Theme
     </button>
   );
 });

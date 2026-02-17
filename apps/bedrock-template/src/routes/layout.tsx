@@ -7,6 +7,7 @@ import { getAuthState } from "~/lib/auth-utils.server";
 import { getSecurityHeaders } from "~/lib/http.server";
 
 const noCachePrefixes = ["/auth", "/dashboard", "/profile", "/settings", "/admin"];
+const authAwarePrefixes = noCachePrefixes;
 
 export const onRequest: RequestHandler = async (event) => {
   const securityHeaders = getSecurityHeaders();
@@ -23,6 +24,11 @@ export const onRequest: RequestHandler = async (event) => {
 };
 
 export const useViewer = routeLoader$(async ({ request }) => {
+  const pathname = new URL(request.url).pathname;
+  if (!authAwarePrefixes.some((prefix) => pathname.startsWith(prefix))) {
+    return { user: null };
+  }
+
   const authState = await getAuthState(request);
   return {
     user: authState?.user ?? null,

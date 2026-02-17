@@ -36,7 +36,7 @@ export const AppShell = component$<AppShellProps>(({ isAdmin }) => {
                 loc.url.pathname.startsWith(item.href) && "nav-item-active",
               )}
               href={item.href}
-              prefetch="js"
+              prefetch={false}
             >
               {item.label}
             </Link>

@@ -37,7 +37,7 @@ const buildTargets = [
   "Launch user auth in hours instead of rebuilding session flows.",
   "Deploy on Bun with small runtime overhead and self-hosted infra.",
   "Maintain fast TTFB by keeping page rendering server-first.",
-  "Preserve SPA-like navigation with Qwik prefetch and resumability.",
+  "Preserve fast resumability without eager link prefetch overhead.",
 ] as const;
 
 export default component$(() => {
@@ -55,10 +55,10 @@ export default component$(() => {
         </p>
 
         <div class="mt-8 flex flex-wrap gap-3">
-          <Link class="btn btn-primary" href="/auth/sign-up" prefetch="js">
+          <Link class="btn btn-primary" href="/auth/sign-up" prefetch={false}>
             Start with an account
           </Link>
-          <Link class="btn btn-secondary" href="/dashboard" prefetch="js">
+          <Link class="btn btn-secondary" href="/dashboard" prefetch={false}>
             Open dashboard
           </Link>
         </div>
@@ -74,7 +74,7 @@ export default component$(() => {
           </article>
           <article class="surface-strong p-4">
             <p class="kpi-label">Navigation Feel</p>
-            <p class="kpi-value">Prefetched + instant</p>
+            <p class="kpi-value">No eager prefetch</p>
           </article>
         </div>
       </section>

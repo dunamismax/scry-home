@@ -31,6 +31,7 @@ node_modules/
 dist/
 build/
 .output/
+artifacts/
 
 # Infra data
 infra/data/

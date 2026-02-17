@@ -14,13 +14,12 @@ type NavItemConfig = {
   label: string;
   requiresAuth?: boolean;
   adminOnly?: boolean;
-  prefetch?: "js" | boolean;
 };
 
 const navItems: NavItemConfig[] = [
-  { href: "/", label: "Home", prefetch: "js" },
-  { href: "/dashboard", label: "Dashboard", requiresAuth: true, prefetch: "js" },
-  { href: "/admin/users", label: "Admin", adminOnly: true, prefetch: "js" },
+  { href: "/", label: "Home" },
+  { href: "/dashboard", label: "Dashboard", requiresAuth: true },
+  { href: "/admin/users", label: "Admin", adminOnly: true },
 ];
 
 export const SiteNav = component$<SiteNavProps>(({ user }) => {
@@ -37,7 +36,7 @@ export const SiteNav = component$<SiteNavProps>(({ user }) => {
 
   return (
     <header
-      class="sticky top-0 z-50 border-b backdrop-blur"
+      class="sticky top-0 z-50 border-b"
       style={{ background: "var(--nav-bg)", borderColor: "var(--border)" }}
     >
       <div class="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
@@ -45,7 +44,7 @@ export const SiteNav = component$<SiteNavProps>(({ user }) => {
           <Link
             class="inline-flex items-center gap-2 font-semibold tracking-tight"
             href="/"
-            prefetch="js"
+            prefetch={false}
           >
             <span
               class="inline-flex h-8 w-8 items-center justify-center rounded-md text-xs font-semibold"
@@ -67,7 +66,6 @@ export const SiteNav = component$<SiteNavProps>(({ user }) => {
                     ? loc.url.pathname === "/"
                     : loc.url.pathname.startsWith(item.href)
                 }
-                prefetch={item.prefetch}
               />
             ))}
           </nav>
@@ -86,10 +84,10 @@ export const SiteNav = component$<SiteNavProps>(({ user }) => {
             </>
           ) : (
             <>
-              <Link class="btn btn-ghost h-9" href="/auth/sign-in" prefetch="js">
+              <Link class="btn btn-ghost h-9" href="/auth/sign-in" prefetch={false}>
                 Sign in
               </Link>
-              <Link class="btn btn-primary h-9" href="/auth/sign-up" prefetch="js">
+              <Link class="btn btn-primary h-9" href="/auth/sign-up" prefetch={false}>
                 Create account
               </Link>
             </>
@@ -110,7 +108,6 @@ export const SiteNav = component$<SiteNavProps>(({ user }) => {
                   ? loc.url.pathname === "/"
                   : loc.url.pathname.startsWith(item.href)
               }
-              prefetch={item.prefetch}
             />
           ))}
         </div>
@@ -124,16 +121,15 @@ type NavItemProps = {
   label: string;
   active: boolean;
   compact?: boolean;
-  prefetch?: "js" | boolean;
 };
 
-export const NavItem = component$<NavItemProps>(({ href, label, active, compact, prefetch }) => {
+export const NavItem = component$<NavItemProps>(({ href, label, active, compact }) => {
   return (
     <Link
       aria-current={active ? "page" : undefined}
       class={cn("nav-item", active && "nav-item-active", compact && "nav-pill")}
       href={href}
-      prefetch={prefetch}
+      prefetch={false}
     >
       {label}
     </Link>

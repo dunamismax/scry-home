@@ -5,7 +5,7 @@ Production-ready Qwik City starter for the scry stack:
 - Qwik + Qwik City
 - Bun runtime with Qwik City Bun adapter (`Bun.serve`)
 - Tailwind CSS v4
-- Self-hosted fonts via Fontsource (Space Grotesk Variable + IBM Plex Sans)
+- Self-hosted fonts via Fontsource (Space Grotesk Variable)
 - Better Auth
 - PostgreSQL (`postgres.js`) + plain SQL migrations
 - MinIO object storage
@@ -27,6 +27,7 @@ Production-ready Qwik City starter for the scry stack:
 - Self-hosted fonts — zero external CDN requests for font loading
 - Reduced-motion handling and low-cost reveal transitions for smoother navigation feel
 - Server build minification enabled for production
+- No eager route prefetching by default (favors Lighthouse startup metrics)
 
 ## Quick Start
 
@@ -81,6 +82,17 @@ bun run db:seed
 bun run worker
 ```
 
+## Lighthouse (Mobile + Desktop)
+
+Run from repo root:
+
+```bash
+bun run perf:lighthouse
+bun run perf:lighthouse:assert -- --report artifacts/lighthouse/current.json
+```
+
+Threshold config lives at `docs/performance/lighthouse-thresholds.json`.
+
 ## Project Layout
 
 - `src/routes/` Qwik City pages and API routes
@@ -94,5 +106,5 @@ bun run worker
 - Better Auth user table is extended with `role` and `isActive`.
 - `ENABLE_JOBS=true` is required for live pg-boss queueing and worker processing.
 - Uploads are persisted to MinIO and indexed in the `asset` table.
-- Fonts are self-hosted via `@fontsource-variable/space-grotesk` and `@fontsource/ibm-plex-sans` (latin subset). No Google Fonts CDN dependency.
+- Fonts are self-hosted via `@fontsource-variable/space-grotesk`. No Google Fonts CDN dependency.
 - Static assets are served with `immutable` cache headers via the Bun adapter. Route responses use Qwik City's `cacheControl` API.

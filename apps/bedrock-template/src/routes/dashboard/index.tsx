@@ -113,7 +113,7 @@ export default component$(() => {
         </section>
 
         <div class="text-sm">
-          <Link class="inline-link" href="/settings" prefetch="js">
+          <Link class="inline-link" href="/settings" prefetch={false}>
             Open settings and jobs
           </Link>
         </div>

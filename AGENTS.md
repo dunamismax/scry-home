@@ -265,6 +265,9 @@ bun run lint
 bun run format
 bun run typecheck
 bun run test
+bun run ci
+bun run perf:lighthouse
+bun run perf:lighthouse:assert -- --report artifacts/lighthouse/current.json
 
 # Root system health
 bun run doctor
@@ -344,6 +347,9 @@ scry MUST refuse to:
 | `apps/<app-name>/` | One app per directory. |
 | `scripts/*.ts` | Root orchestration and setup scripts, run via `bun run`. |
 | `apps/<app-name>/scripts/*.ts` | App-local orchestration scripts (migrations, workers, seeders), run via app `bun run` scripts. |
+| `.github/workflows/` | GitHub Actions CI definitions. |
+| `.woodpecker.yml` | Codeberg Woodpecker CI pipeline definition. |
+| `docs/performance/` | Lighthouse thresholds and performance CI docs. |
 | `infra/` | Local self-host stack manifests. |
 | `vault/ssh/` | Encrypted SSH continuity artifacts for workstation recovery. |
 | `SOUL.md` | Identity — who scry is. |
@@ -367,6 +373,11 @@ bun run infra:down
 bun run infra:logs
 bun run doctor
 bun run check:agent-docs
+bun run ci:root
+bun run ci:app
+bun run ci
+bun run perf:lighthouse
+bun run perf:lighthouse:assert -- --report artifacts/lighthouse/current.json
 
 # apps/bedrock-template
 cd apps/bedrock-template

@@ -17,7 +17,12 @@
     "lint": "bun run check:agent-docs && bunx @biomejs/biome check scripts package.json tsconfig.json biome.json",
     "format": "bunx @biomejs/biome format --write scripts package.json tsconfig.json biome.json",
     "typecheck": "bunx tsc --noEmit",
-    "test": "bun test"
+    "test": "bun test",
+    "ci:root": "bun run lint && bun run typecheck && bun run test",
+    "ci:app": "cd apps/bedrock-template && bun run lint && bun run typecheck && bun run test && bun run build",
+    "ci": "bun run ci:root && bun run ci:app",
+    "perf:lighthouse": "bun run scripts/lighthouse-run.ts",
+    "perf:lighthouse:assert": "bun run scripts/lighthouse-assert.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",

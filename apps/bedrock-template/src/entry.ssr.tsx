@@ -16,6 +16,7 @@ import Root from "./root";
 export default function (opts: RenderToStreamOptions) {
   return renderToStream(<Root />, {
     ...opts,
+    prefetchStrategy: null,
     // Use container attributes to set attributes on the html tag.
     containerAttributes: {
       lang: "en",

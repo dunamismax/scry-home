@@ -1,5 +1,6 @@
 import { component$, isDev } from "@builder.io/qwik";
 import { QwikCityProvider, RouterOutlet } from "@builder.io/qwik-city";
+import spaceGroteskLatinWoff2Url from "@fontsource-variable/space-grotesk/files/space-grotesk-latin-wght-normal.woff2?url";
 
 import { RouterHead } from "~/components/router-head";
 
@@ -27,6 +28,14 @@ export default component$(() => {
       <head>
         <meta charSet="utf-8" />
         <script dangerouslySetInnerHTML={themeBootScript} />
+        <link
+          as="font"
+          crossOrigin="anonymous"
+          fetchPriority="high"
+          href={spaceGroteskLatinWoff2Url}
+          rel="preload"
+          type="font/woff2"
+        />
         {!isDev && <link rel="manifest" href={`${import.meta.env.BASE_URL}manifest.json`} />}
         <RouterHead />
       </head>

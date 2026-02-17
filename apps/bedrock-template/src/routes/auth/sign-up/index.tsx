@@ -147,7 +147,7 @@ export default component$(() => {
 
         <p class="muted mt-4 text-sm">
           Already have an account?{" "}
-          <Link class="inline-link" href="/auth/sign-in" prefetch="js">
+          <Link class="inline-link" href="/auth/sign-in" prefetch={false}>
             Sign in
           </Link>
           .

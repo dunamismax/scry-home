@@ -1,0 +1,40 @@
+{
+  "mobile": {
+    "minimumScores": {
+      "performance": 95,
+      "accessibility": 95,
+      "bestPractices": 95,
+      "seo": 95
+    },
+    "maximumMetrics": {
+      "lcpMs": 2500,
+      "cls": 0.1,
+      "tbtMs": 200
+    },
+    "maxRegression": {
+      "lcpMs": 200,
+      "cls": 0.02,
+      "tbtMs": 75,
+      "performanceScoreDrop": 2
+    }
+  },
+  "desktop": {
+    "minimumScores": {
+      "performance": 97,
+      "accessibility": 95,
+      "bestPractices": 95,
+      "seo": 95
+    },
+    "maximumMetrics": {
+      "lcpMs": 1800,
+      "cls": 0.05,
+      "tbtMs": 150
+    },
+    "maxRegression": {
+      "lcpMs": 150,
+      "cls": 0.01,
+      "tbtMs": 50,
+      "performanceScoreDrop": 2
+    }
+  }
+}
