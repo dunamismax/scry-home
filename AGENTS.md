@@ -277,6 +277,13 @@ bundle exec rake scry:setup:workstation
 bundle exec rubocop
 bundle exec rake test
 bundle exec rake scry:doctor
+
+# Web template checks (run from web-template/)
+bundle exec rake db:prepare
+bundle exec rubocop
+bundle exec rake test
+bundle exec rails routes
+bundle exec rake zeitwerk:check
 ```
 
 ---
