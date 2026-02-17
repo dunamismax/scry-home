@@ -56,14 +56,15 @@ Do not deviate from this stack unless Stephen explicitly approves the change.
 ### Data Layer
 
 - Database: **PostgreSQL 18** with `pgvector` and `pgcrypto`
-- Driver: **postgres.js**
-- Access pattern: SQL-first template literals — no ORM
-- Migrations: plain `.sql` files
+- ORM: **Drizzle ORM**
+- Driver: **postgres.js** via `drizzle-orm/postgres-js`
+- Access pattern: Drizzle schema/query builder by default; use Drizzle `sql` for advanced queries and hot paths
+- Migrations: **Drizzle Kit** generated SQL migrations committed in-repo
 
 ### Storage and Services
 
 - Object storage: **SeaweedFS** (S3-compatible API)
-- Auth: **Better Auth**
+- Auth: **Better Auth** (Drizzle adapter baseline)
 - Background jobs: **pg-boss**
 
 ### Storage Policy
@@ -157,6 +158,7 @@ Wake → Explore → Plan → Code → Verify → Report
 - Prefer terminal-native, scriptable workflows over IDE-only/manual flows.
 - ALWAYS use SSH for all Git remotes and pushes (`git@github.com:...`, `git@codeberg.org:...`), never HTTPS.
 - Use Biome for linting and formatting, never ESLint or Prettier.
+- Use Drizzle ORM + Drizzle Kit for PostgreSQL access and migrations; do not introduce a second ORM without explicit Stephen approval.
 - SSH key backup artifacts must be encrypted at rest before committing.
 
 ---
@@ -277,7 +279,7 @@ Wake → Explore → Plan → Code → Verify → Report
 ### While Writing Code
 
 - Keep diffs narrow and intention-revealing. One concern per change.
-- Prefer explicit SQL and predictable data flow over hidden abstraction.
+- Prefer Drizzle-first queries with explicit SQL escape hatches and predictable data flow.
 - Add comments only where intent would otherwise be ambiguous.
 - Don't add features, types, or error handling beyond what was requested.
 - Match existing code style in the file you're editing.

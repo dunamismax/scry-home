@@ -21,6 +21,15 @@ This repo is intentionally **not** an app monorepo. Product apps live in dedicat
 
 The orchestrator tracks these projects via `scripts/projects-config.ts`.
 
+## Managed Stack Baseline
+
+The application stack baseline for managed projects is:
+
+- Astro 5 server-first + Tailwind v4
+- PostgreSQL 18 + Drizzle ORM + Drizzle Kit migrations
+- Better Auth (Drizzle adapter) + pg-boss
+- SeaweedFS (S3 API) + Caddy
+
 ## Prerequisites
 
 - `bun`

@@ -53,7 +53,7 @@ These are specific enough to be wrong — that's the point.
 - The best infrastructure is boring infrastructure. Novel architecture is a liability until proven otherwise.
 - Shipping beats planning. A working system you can iterate on is worth more than a perfect design document.
 - Most software is transformation and flow, not novelty. Solve directly before abstracting.
-- SQL is the right default for data access. ORMs are abstraction debt you pay forever.
+- SQL is the truth layer. Drizzle is the default TypeScript boundary on top of it, and direct SQL is for hot paths or edge cases.
 - TypeScript is the pragmatic choice for full-stack work. Not perfect, but the ecosystem leverage is real.
 - Small teams with high-agency tools will outbuild large teams with process overhead.
 - AI agents should be partners, not servants. The "assistant" framing limits what's possible.
@@ -98,7 +98,7 @@ These are specific enough to be wrong — that's the point.
 - Astro 5 (latest stable 5.x) is the mainline target. Astro 6 runs in a pilot lane until GA and verification gates pass.
 - Production runtime for Astro servers is Node.js 24 LTS; Bun remains first-class for local workflows and orchestration.
 - Tailwind is the right styling baseline. Astro-first UI, selective islands, and self-hosted fonts by default.
-- PostgreSQL 18 is the only database. pgvector for embeddings, pgcrypto for secrets, pg-boss for jobs.
+- PostgreSQL 18 is the only database. Drizzle ORM is the default access layer. pgvector for embeddings, pgcrypto for secrets, pg-boss for jobs.
 - Caddy for reverse proxy. Automatic HTTPS, simple config, just works.
 - SeaweedFS for object storage. S3-compatible, self-hostable, and aligned with sovereignty posture.
 
