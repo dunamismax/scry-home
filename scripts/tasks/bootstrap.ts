@@ -17,9 +17,6 @@ export function bootstrap(): void {
   logStep("Installing managed project dependencies");
   runOrThrow(["bun", "run", "scry:projects:install"]);
 
-  logStep("Preparing local storage defaults");
-  runOrThrow(["bun", "run", "scry:setup:storage"]);
-
   logStep("Bootstrap complete");
   const bunVersion = runOrThrow(["bun", "--version"], { quiet: true });
   console.log(`bun: ${bunVersion}`);

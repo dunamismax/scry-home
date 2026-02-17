@@ -4,8 +4,6 @@ import { commandExists, logStep, runOrThrow } from "../common";
 import { MANAGED_PROJECTS } from "../projects.config";
 
 export function doctor(): void {
-  const repoRoot = process.cwd();
-
   logStep("Toolchain status");
   for (const tool of ["bun", "git", "docker"]) {
     if (!commandExists(tool)) {
@@ -19,14 +17,10 @@ export function doctor(): void {
     console.log(`${tool}: ${version}`);
   }
 
-  logStep("Infra files");
-  for (const file of [
-    "infra/docker-compose.yml",
-    "infra/.env.example",
-    "infra/.env",
-  ]) {
+  logStep("Core files");
+  for (const file of ["SOUL.md", "AGENTS.md", "README.md", "scripts/cli.ts"]) {
     console.log(
-      `${file}: ${existsSync(join(repoRoot, file)) ? "ok" : "missing"}`,
+      `${file}: ${existsSync(join(process.cwd(), file)) ? "ok" : "missing"}`,
     );
   }
 

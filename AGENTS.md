@@ -36,20 +36,12 @@ Do not deviate from this stack unless Stephen explicitly approves the change.
 
 - Runtime + package manager + task runner: **Bun** (`bun`, `bunx`)
 - Language: **TypeScript**
-- App framework: **Next.js (App Router + Server Actions)**
-- UI: **React + TypeScript**
-- Styling and components: **Tailwind CSS + shadcn/ui**
-- Database: **Postgres**
-- ORM + migrations: **Drizzle ORM + drizzle-kit**
-- Auth (when login is required): **Auth.js**
-- Validation (inputs + env): **Zod**
 - Formatting + linting: **Biome**
 
 ### Disallowed by default
 
 - No npm/pnpm/yarn scripts for this repo.
 - No ESLint/Prettier migration unless explicitly requested.
-- No Prisma swap-in unless explicitly requested.
 
 ---
 
@@ -95,25 +87,18 @@ Wake → Explore → Plan → Code → Verify → Report
 ## Command Policy
 
 - Use Bun for install/add/run/test and task orchestration.
-- Use `bunx` for one-off tooling (`drizzle-kit`, `tsc`, `@biomejs/biome`).
+- Use `bunx` for one-off tooling (`tsc`, `@biomejs/biome`).
 - Project task entrypoint is `scripts/cli.ts`.
 - All operational scripts are TypeScript under `scripts/`.
-- Use Drizzle + drizzle-kit for schema and migration work.
 - Use SSH remotes only for GitHub/Codeberg.
 
 ### Canonical commands
 
 ```bash
-# optional app/runtime
-bun install
-bun run dev
-bun run build
-bun run start
-
 # quality gates
+bun install
 bun run lint
 bun run typecheck
-bun test
 bun run scry:doctor
 
 # operations
@@ -121,15 +106,10 @@ bun run scry:bootstrap
 bun run scry:setup:workstation
 bun run scry:setup:ssh_backup
 bun run scry:setup:ssh_restore
-bun run scry:setup:storage
 bun run scry:projects:list
 bun run scry:projects:doctor
 bun run scry:projects:install
 bun run scry:projects:verify
-
-# database
-bun run db:generate
-bun run db:migrate
 ```
 
 ---
@@ -171,12 +151,6 @@ A task is done when all are true:
 | Path | Purpose |
 |---|---|
 | `scripts/` | Bun-first TypeScript operational commands. |
-| `components/` | Shared React components and shadcn/ui primitives. |
-| `lib/` | Shared app modules (env, db, utils). |
-| `test/` | Bun tests for operational scripts and app logic. |
-| `docs/` | Durable repo-local operational docs. |
-| `infra/` | Local infrastructure manifests and env templates. |
-| `vault/ssh/` | Encrypted SSH continuity artifacts. |
 | `SOUL.md` | Identity source of truth for scry. |
 | `AGENTS.md` | Operational source of truth for scry. |
 

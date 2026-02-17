@@ -4,15 +4,11 @@ node_modules/
 .bundle/
 vendor/
 
-# Next.js
-.next/
-out/
 tsconfig.tsbuildinfo
 
 # Environment & secrets
 .env
 .env.*
-!.env.example
 *.pem
 *.key
 *.cert
@@ -39,6 +35,3 @@ Thumbs.db
 *.swp
 *.swo
 *~
-
-# Infra data
-infra/data/
