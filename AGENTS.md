@@ -91,6 +91,40 @@ Do not deviate from this stack unless Stephen explicitly approves the change.
 
 ---
 
+## Rails Doctrine Alignment (Operational)
+
+These are execution defaults, not philosophy theater.
+
+- **Optimize for programmer happiness**: choose APIs and code shapes that are clear, expressive, and enjoyable to maintain at 2am.
+- **Convention over Configuration**: follow Rails naming/routing/loading conventions first; require a concrete reason before deviating.
+- **The menu is omakase**: prefer the integrated Rails stack before adding external gems or bespoke frameworks.
+- **No one paradigm**: use OO, procedural, and functional styles where each fits best; avoid ideological purity contests.
+- **Exalt beautiful code**: optimize for readability, intention-revealing names, and flow; short code is not automatically better code.
+- **Provide sharp knives**: use powerful Ruby/Rails features deliberately, with tests and code review discipline.
+- **Value integrated systems**: default to majestic monolith architecture and in-process boundaries until distribution is clearly required.
+- **Progress over stability**: prefer forward upgrades and modern Rails patterns; pay down legacy friction incrementally.
+- **Push up a big tent**: preserve interoperability and onboarding clarity; avoid style dogma as a gatekeeping tool.
+
+### Ruby Craft Rules
+
+- Prefer small, composable objects and intention-revealing public methods.
+- Favor plain Ruby objects when model/controller concerns grow muddy.
+- Keep method bodies tight; extract only when extraction improves clarity, not just line count.
+- Prefer guard clauses over deep nesting.
+- Keep data transformations explicit; avoid surprising metaprogramming unless it clearly pays for itself.
+- Use ActiveRecord scopes and query objects for query readability; drop to SQL when it materially improves correctness/performance.
+- Validate behavior with tests at the seam where risk lives (model, service, request/system), not by coverage vanity.
+
+### Rails Architecture Defaults
+
+- Prefer server-rendered HTML + Hotwire before introducing SPA complexity.
+- Keep business rules near the domain (models/services), not in views/controllers.
+- Treat migrations as durable operational artifacts: reversible where possible, explicit when irreversible.
+- Prefer built-in Rails facilities before new dependencies (ActiveJob, ActiveSupport, ActionMailer, etc.).
+- When introducing a gem, document why Rails-native options were insufficient.
+
+---
+
 ## Wake Ritual
 
 Every session begins the same way:
@@ -118,38 +152,51 @@ Wake → Explore → Plan → Code → Verify → Report
 
 ---
 
-## Inference-Speed Operating Mode
+## Execution Contract (v2)
 
-- Optimize for the real bottlenecks: inference latency and hard thinking, not ceremony.
-- Default to a tight loop: **prompt → execute → verify → refine**.
-- Start new capabilities as CLI-first when possible, then layer UI once behavior is proven.
-- Use queueing for follow-up ideas, but keep one primary in-focus task.
-- Let deep-read phases happen on large refactors before edits begin; this often reduces rework.
-- Treat compaction as normal on long runs; re-verify critical paths after major compaction steps.
-- Prefer iterative evolution over one-shot grand design: ship, touch, refine.
-- Default to linear evolution on `main`; use worktrees only when isolation is genuinely needed.
-- Serialize tasks that touch the same files; parallelize only clearly disjoint surfaces.
+### Operating cadence
 
----
+- Optimize for real bottlenecks: inference latency, deep thinking, and fast verification loops.
+- Default loop: **prompt → execute → verify → refine**.
+- Execute by default; avoid analysis paralysis.
+- Prefer iterative delivery on `main`; use worktrees only when isolation is clearly needed.
+- Serialize edits on shared files; parallelize only disjoint surfaces.
 
-## Runtime Contract
+### Task execution rules
 
-- Default behavior: execute, do not stall in analysis paralysis.
-- Start with local repo context, then web/Context7 docs when needed.
-- Keep prompts short and high-signal. Use concrete artifacts (logs, screenshots, failing output) over long narration.
-- Make assumptions explicit when constraints are unclear.
-- Prefer the smallest reliable change that satisfies the task.
-- Bias toward verifiable workflows. If a loop can be closed by CLI checks, do that first.
-- Report concrete verification results, not generic "should work."
+- Start with local repo context; use web/Context7 only when local context is insufficient or freshness is required.
+- Read before writing: inspect neighboring code, docs, and existing patterns first.
+- Prefer the smallest reliable change that satisfies the requirement.
+- Keep assumptions explicit when constraints are unclear.
 - Be resourceful before asking: inspect code, docs, and logs first.
-- Fresh context for each major task. Don't carry stale state across unrelated work.
+- Use CLI-first verification whenever a loop can be closed with deterministic command output.
+- Report concrete outcomes, not “should work” claims.
 
-### Current-State Documentation Policy
+### Code quality defaults
 
-- This repository is not a changelog.
-- Keep docs focused on current behavior and current stack only.
-- Do not add migration narratives, historical timelines, or "what changed from before" notes.
-- If historical context is needed, use git history instead of in-repo documentation.
+- Keep diffs narrow and intention-revealing; one concern per change.
+- Write Ruby that reads like prose: clear names, clear flow, clear intent.
+- Prefer ActiveRecord for standard access patterns; use raw SQL when it materially improves correctness or performance.
+- Keep abstractions earned: avoid one-off helpers, premature indirection, and speculative design.
+- Add comments only when intent would otherwise be ambiguous.
+- Match file-local style and conventions.
+
+### Agent and tool discipline
+
+- Single-agent loop first; split into multi-agent roles only for truly separable tracks or risk isolation.
+- Maintain compact context: objective, constraints, plan, completed work, open risks.
+- Compact stale notes aggressively; stale context is a bug.
+- Prefer typed/deterministic tool interfaces; document side effects and failure modes in task artifacts.
+- Use dedicated tools when available instead of shell equivalents.
+- Require explicit approval for high-risk operations.
+
+### Current-state documentation policy
+
+- This repo is not a changelog.
+- Keep docs current-state only: present behavior, current stack, active policy.
+- Do not add migration narratives, timelines, or “what changed from before” notes.
+- Prefer doctrine-aligned operational guidance over abstract principles.
+- If historical context is needed, use git history.
 
 ---
 
@@ -213,102 +260,6 @@ Wake → Explore → Plan → Code → Verify → Report
 
 ---
 
-## Agentic Engineering Playbook
-
-### 1) Workflow Architecture
-
-- Start with a single agent loop by default.
-- Split to multi-agent only when at least one condition is true:
-  - Work partitions cleanly into independent tracks (backend, frontend, infra).
-  - A dedicated reviewer/evaluator role materially improves safety or quality.
-  - Tool access boundaries or risk controls require separation.
-- One orchestrator owns final integration and quality gates.
-- Agents should be disposable — stateless between sessions, soul loaded from files.
-
-### 2) Context and Memory Discipline
-
-- Maintain a compact running context at all times:
-  - **Objective** — what are we doing and why.
-  - **Constraints** — stack rules, safety rules, user preferences.
-  - **Current plan** — the approach and its tradeoffs.
-  - **Completed work** — what's done and verified.
-  - **Open risks/blockers** — what could go wrong or is unresolved.
-- Compact context aggressively. Stale notes are worse than no notes.
-- Synchronize durable changes into `SOUL.md`, `AGENTS.md`, or `README.md` when behavior or policy changes.
-- Use Context7 MCP server for up-to-date library documentation. Don't guess at APIs.
-
-### 3) Tooling and Interface Discipline
-
-- Prefer typed schemas for tool inputs/outputs and API boundaries.
-- Use deterministic tool outputs where practical.
-- Keep tool descriptions explicit about side effects and failure modes.
-- Require explicit approval for high-risk operations.
-- When a dedicated tool exists (Read, Edit, Glob, Grep), use it instead of shell equivalents.
-
-### 4) Evals and Verification
-
-- Treat evals as ongoing gates, not end-of-task ceremony.
-- Verify changed surfaces first, then run broader checks.
-- If checks fail, either fix the issue or clearly report unresolved risk.
-- Never mark a task as done if verification failed.
-
-### 5) Task Decomposition
-
-- Break complex work into discrete, verifiable steps.
-- Each step should have a clear done condition.
-- Parallelize independent work. Serialize dependent work.
-- When blocked, investigate root cause before asking for help.
-
-### 6) Dependency and Ecosystem Selection
-
-- Spend design effort on ecosystem and dependency choice before coding.
-- Prefer well-maintained dependencies with clear release cadence and healthy issue response.
-- Check peer dependency stability and compatibility before adopting a library.
-- Prefer widely-used tooling with strong documentation and broad model familiarity.
-- Avoid introducing niche dependencies unless they solve a real, current problem.
-
----
-
-## Agentic Coding Tips and Tricks
-
-### Before Writing Code
-
-- Read before writing. Always inspect current patterns and adjacent files first.
-- Understand the existing architecture before proposing changes.
-- Check if the problem is already solved elsewhere in the codebase.
-- Check sibling repos in `~/github` for proven patterns worth reusing.
-- Read relevant `docs/` pages before editing subsystems with existing design notes.
-
-### While Writing Code
-
-- Keep diffs narrow and intention-revealing. One concern per change.
-- Prefer ActiveRecord models for data access; drop to raw SQL only when ActiveRecord is genuinely insufficient.
-- Add comments only where intent would otherwise be ambiguous.
-- Don't add features, types, or error handling beyond what was requested.
-- Match existing code style in the file you're editing.
-- Three similar lines of code is better than a premature abstraction.
-
-### After Writing Code
-
-- Run verification commands before claiming done.
-- Review your own diff. Would this pass code review?
-- Check that docs and scripts still reflect reality.
-- If a new durable pattern was introduced, document it in the local `docs/` tree.
-- If a reusable improvement emerged, propagate it across applicable sibling repos deliberately.
-
-### Anti-Patterns to Avoid
-
-- Don't over-engineer. Only make changes that are directly needed.
-- Don't add docstrings, comments, or type annotations to code you didn't change.
-- Don't create helpers or utilities for one-time operations.
-- Don't design for hypothetical future requirements.
-- Don't add backwards-compatibility shims when you can just change the code.
-- Don't default to checkpoint churn; prefer forward iterative edits unless rollback is required.
-- Don't narrate what you're about to do — just do it.
-- Don't produce filler output to seem productive.
-
----
-
 ## Verification Commands
 
 ```bash
@@ -325,9 +276,6 @@ bundle exec rake scry:setup:workstation
 # Root checks (run from repo root)
 bundle exec rubocop
 bundle exec rake test
-bundle exec rake scry:doctor
-
-# Root system health
 bundle exec rake scry:doctor
 ```
 
