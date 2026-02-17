@@ -85,7 +85,7 @@ function parseArgs(argv: string[]): CliOptions {
     flags.add(key);
   }
 
-  const appDir = resolve(values.get("app-dir") ?? "apps/bedrock-template");
+  const appDir = resolve(values.get("app-dir") ?? "apps/astro-web-template");
   const output = resolve(values.get("output") ?? "artifacts/lighthouse/current.json");
   const port = Number(values.get("port") ?? "4173");
   const runs = Number(values.get("runs") ?? "3");

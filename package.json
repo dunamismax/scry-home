@@ -19,7 +19,7 @@
     "typecheck": "bunx tsc --noEmit",
     "test": "bun test",
     "ci:root": "bun run lint && bun run typecheck && bun run test",
-    "ci:app": "cd apps/bedrock-template && bun run lint && bun run typecheck && bun run test && bun run build && cd ../astro-blog-template && bun run lint && bun run typecheck && bun run build",
+    "ci:app": "cd apps/astro-web-template && bun run build && cd ../astro-blog-template && bun run lint && bun run typecheck && bun run build",
     "ci": "bun run ci:root && bun run ci:app",
     "perf:lighthouse": "bun run scripts/lighthouse-run.ts",
     "perf:lighthouse:assert": "bun run scripts/lighthouse-assert.ts"

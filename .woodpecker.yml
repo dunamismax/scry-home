@@ -10,11 +10,11 @@ steps:
       - apt-get update
       - apt-get install -y --no-install-recommends chromium
       - bun install --frozen-lockfile
-      - cd apps/bedrock-template && bun install --frozen-lockfile && cd ../..
+      - cd apps/astro-web-template && bun install --frozen-lockfile && cd ../..
       - cd apps/astro-blog-template && bun install --frozen-lockfile && cd ../..
       - bun run ci:root
       - bun run ci:app
-      - CHROME_PATH=/usr/bin/chromium bun run perf:lighthouse -- --app-dir apps/bedrock-template --skip-build --output artifacts/lighthouse/head.json
+      - CHROME_PATH=/usr/bin/chromium bun run perf:lighthouse -- --app-dir apps/astro-web-template --skip-build --output artifacts/lighthouse/head.json
       - |
         set -euo pipefail
 
@@ -32,13 +32,13 @@ steps:
 
           cd "$BASE_DIR"
           bun install --frozen-lockfile
-          cd apps/bedrock-template
+          cd apps/astro-web-template
           bun install --frozen-lockfile
           cd ../astro-blog-template
           bun install --frozen-lockfile
           cd "$BASE_DIR"
 
-          CHROME_PATH=/usr/bin/chromium bun run perf:lighthouse -- --app-dir apps/bedrock-template --output "$ROOT_DIR/artifacts/lighthouse/base.json"
+          CHROME_PATH=/usr/bin/chromium bun run perf:lighthouse -- --app-dir apps/astro-web-template --output "$ROOT_DIR/artifacts/lighthouse/base.json"
           cd "$ROOT_DIR"
 
           bun run perf:lighthouse:assert -- --report artifacts/lighthouse/head.json --baseline artifacts/lighthouse/base.json

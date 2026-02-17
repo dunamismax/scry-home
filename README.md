@@ -183,7 +183,7 @@ Automated CI runs on both:
 Pipelines run on push/pull-request and execute:
 
 - Root quality gates (`lint`, `typecheck`, `test`)
-- App quality gates for the web template app (CI migration from previous `apps/bedrock-template` path to `apps/astro-web-template` is pending and will be completed during the rebuild session)
+- App quality gates for `apps/astro-web-template` (`build`)
 - App quality gates for `apps/astro-blog-template` (`lint`, `typecheck`, `build`)
 - Lighthouse audits in **mobile** + **desktop** modes
 - Lighthouse assertions for LCP/CLS/TBT + category scores

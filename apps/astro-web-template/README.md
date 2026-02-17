@@ -7,6 +7,7 @@ Primary full-stack Astro web template app (currently fresh scaffold baseline).
 - Created via `npm create astro@latest`
 - Template: Astro basics starter
 - Astro version: `5.17.1`
+- Lockfile: `bun.lock` (normalized for Bun-first workflows)
 - Current rendering output: static (starter default)
 - Current scope: minimal starter surface before full-stack rebuild
 
@@ -16,7 +17,7 @@ Primary full-stack Astro web template app (currently fresh scaffold baseline).
 apps/astro-web-template/
 ├── astro.config.mjs
 ├── package.json
-├── package-lock.json
+├── bun.lock
 ├── public/
 │   ├── favicon.ico
 │   └── favicon.svg
