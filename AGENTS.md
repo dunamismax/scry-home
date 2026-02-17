@@ -186,11 +186,14 @@ Wake → Explore → Plan → Code → Verify → Report
   - Parse `REPOS.md` and clone/fetch all active repos.
   - Fail fast if zero repos are parsed from `REPOS.md`.
   - Allow fallback discovery only when explicitly requested via `--use-fallback`.
+  - In fallback mode, treat fallback repos as discovery-only; only anchor/profile/managed repos are cloned/fetched and remote-configured.
   - Enforce dual `origin` push URLs (GitHub + Codeberg) on each repo.
 - SSH recovery must use encrypted vault files only:
   - Backup command: `bun run setup:ssh:backup`
   - Restore command: `bun run setup:ssh:restore`
   - Required secret: `SCRY_SSH_BACKUP_PASSPHRASE` (minimum 16 chars)
+  - Backup encryption format: AES-256-GCM with PBKDF2-SHA256.
+  - Restore supports legacy OpenSSL-CBC archives created by earlier script versions.
 
 ---
 
@@ -318,12 +321,16 @@ bun run doctor
 # Project checks (run from each project repo)
 cd ~/github/astro-web-template
 bun run build
+bun run perf:lighthouse
+bun run perf:lighthouse:assert -- --report artifacts/lighthouse/current.json
 
 cd ../astro-blog-template
 bun run lint
 bun run format
 bun run typecheck
 bun run build
+bun run perf:lighthouse
+bun run perf:lighthouse:assert -- --report artifacts/lighthouse/current.json
 ```
 
 ---

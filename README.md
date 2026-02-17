@@ -102,6 +102,8 @@ bun run lint
 bun run format
 bun run typecheck
 bun run test
+bun run ci:root
+bun run ci:projects
 bun run ci
 ```
 
@@ -112,6 +114,10 @@ bun run ci
 Product app CI runs in their own repositories:
 - `~/github/astro-web-template`
 - `~/github/astro-blog-template`
+
+Performance and Lighthouse quality gates are owned by each product repo (not `scryai`):
+- `~/github/astro-web-template/docs/performance/README.md`
+- `~/github/astro-blog-template/docs/performance/README.md`
 
 ## Repository Layout
 
@@ -129,6 +135,7 @@ Product app CI runs in their own repositories:
 
 - Runtime operations: [`AGENTS.md`](AGENTS.md)
 - Identity and voice: [`SOUL.md`](SOUL.md)
+- Local docs ownership: [`docs/README.md`](docs/README.md)
 - SSH continuity docs: [`vault/ssh/README.md`](vault/ssh/README.md)
 
 ## License
