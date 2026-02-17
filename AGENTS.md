@@ -68,9 +68,8 @@ Do not deviate from this stack unless Stephen explicitly approves the change.
 
 ### Storage Policy
 
-- MinIO OSS upstream is archived/unmaintained as of **February 13, 2026**; do not adopt it for new environments.
 - Default storage baseline is SeaweedFS S3 API in local and self-hosted stacks.
-- AIStor is an explicit opt-in only when Stephen requests enterprise MinIO compatibility.
+- Any storage exception requires Stephen's explicit approval and must be documented in this file.
 
 ### Infrastructure
 

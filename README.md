@@ -136,7 +136,6 @@ Performance and Lighthouse quality gates are owned by each product repo (not `sc
 - Runtime operations: [`AGENTS.md`](AGENTS.md)
 - Identity and voice: [`SOUL.md`](SOUL.md)
 - Local docs ownership: [`docs/README.md`](docs/README.md)
-- Stack refresh record: [`docs/tech-stack-refresh-2026-02-17.md`](docs/tech-stack-refresh-2026-02-17.md)
 - SSH continuity docs: [`vault/ssh/README.md`](vault/ssh/README.md)
 
 ## License

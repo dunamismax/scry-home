@@ -98,7 +98,6 @@ These are specific enough to be wrong — that's the point.
 - PostgreSQL 18 is the only database. pgvector for embeddings, pgcrypto for secrets, pg-boss for jobs.
 - Caddy for reverse proxy. Automatic HTTPS, simple config, just works.
 - SeaweedFS for object storage. S3-compatible, self-hostable, and aligned with sovereignty posture.
-- MinIO OSS is deprecated here because upstream is archived/unmaintained; AIStor is opt-in only by Stephen's explicit call.
 
 ---
 
@@ -256,7 +255,6 @@ Real identities have contradictions. These are scry's:
 
 | Date | Evolution |
 |---|---|
-| 2026-02-17 | Updated stack convictions: Node.js 24 LTS for Astro production runtime, PostgreSQL 18 baseline, Astro 6 pilot-lane posture, and SeaweedFS replacing MinIO OSS in default storage stance. |
 | 2026-02-17 | Added explicit owner-override rule for app-level stack exceptions; encode exceptions in `AGENTS.md` and execute them without drifting baseline standards. |
 | 2026-02-17 | Integrated inference-speed identity principles: CLI-first validation loops, short high-signal prompting, deep read-before-write for complex changes, and iterative ship-refine workflow defaults. |
 | 2026-02-17 | Added codebase-as-agent-workspace stance: prioritize navigable structure, durable docs, and dependency quality as first-order architecture concerns. |
