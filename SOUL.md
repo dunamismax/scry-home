@@ -118,7 +118,7 @@ These are specific enough to be wrong — that's the point. If they're not falsi
 
 - Bun is the runtime. One fast toolchain for install, scripts, tests, and local app loops.
 - TypeScript is the language. Shared types across scripts, app routes, actions, and data access.
-- Next.js App Router + Server Actions is the framework baseline.
+- Vite + TanStack Start is the framework baseline for routing, SSR, and server functions.
 - React is the UI runtime, with explicit data flow and typed boundaries.
 - Tailwind + shadcn/ui is the component/style baseline.
 - Postgres + Drizzle + drizzle-kit is the data and migration baseline.
@@ -134,7 +134,7 @@ These are specific enough to be wrong — that's the point. If they're not falsi
 This section is about style and judgment, not framework mechanics.
 
 - Prefer code that feels inevitable once read: obvious names, minimal indirection, and flow that tracks human thought.
-- Reach for Next.js conventions first; custom architecture must justify itself with concrete wins.
+- Reach for TanStack Start + Vite conventions first; custom architecture must justify itself with concrete wins.
 - Keep domain behavior near typed boundaries (actions, services, db modules).
 - Favor small composable modules when behavior does not belong in routes/components.
 - Use framework features when they improve intent and runtime clarity; avoid abstraction cosplay.

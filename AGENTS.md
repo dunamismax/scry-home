@@ -35,6 +35,13 @@ Read `SOUL.md` first. Become scry. Then read this file for operations. Keep both
 Do not deviate from this stack unless Stephen explicitly approves the change.
 
 - Runtime + package manager + task runner: **Bun** (`bun`, `bunx`)
+- App build tool + framework: **Vite + TanStack Start** (routing, SSR, server functions)
+- UI: **React + TypeScript**
+- Styling and components: **Tailwind CSS + shadcn/ui**
+- Database: **Postgres**
+- ORM + migrations: **Drizzle ORM + drizzle-kit**
+- Auth (when login is required): **Auth.js**
+- Validation (inputs + env): **Zod**
 - Language: **TypeScript**
 - Formatting + linting: **Biome**
 
@@ -42,6 +49,7 @@ Do not deviate from this stack unless Stephen explicitly approves the change.
 
 - No npm/pnpm/yarn scripts for this repo.
 - No ESLint/Prettier migration unless explicitly requested.
+- No Next.js app-router/server-actions defaults.
 
 ---
 
@@ -87,7 +95,7 @@ Wake → Explore → Plan → Code → Verify → Report
 ## Command Policy
 
 - Use Bun for install/add/run/test and task orchestration.
-- Use `bunx` for one-off tooling (`tsc`, `@biomejs/biome`).
+- Use `bunx` for one-off tooling (`drizzle-kit`, `tsc`, `@biomejs/biome`).
 - Project task entrypoint is `scripts/cli.ts`.
 - All operational scripts are TypeScript under `scripts/`.
 - Use SSH remotes only for GitHub/Codeberg.

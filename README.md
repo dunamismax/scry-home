@@ -2,11 +2,22 @@
 
 Identity and operations repo for **scry** and Stephen (`dunamismax`).
 
-## What Lives Here
+## Stack Baseline
 
 - Bun
-- TypeScript scripts
+- Vite + TanStack Start (routing, SSR, server functions)
+- React + TypeScript
+- Tailwind + shadcn/ui
+- Postgres + Drizzle + drizzle-kit
+- Auth.js (when login is needed)
+- Zod (inputs + env)
 - Biome
+
+## What Lives Here
+
+- Identity + operations contracts: `SOUL.md`, `AGENTS.md`
+- Bun TypeScript operations CLI: `scripts/`
+- No committed app scaffold by default in this repo
 
 Core files:
 - `SOUL.md`
