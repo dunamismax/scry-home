@@ -25,7 +25,7 @@ function ensureManagedProjectDeps(): void {
 }
 
 function setupInfra(): void {
-  logStep("Configuring SeaweedFS + Postgres + Caddy defaults");
+  logStep("Configuring PostgreSQL + Garage defaults");
   runOrThrow(["bun", "run", "setup:storage"]);
 }
 

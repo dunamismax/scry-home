@@ -1,7 +1,0 @@
-# Local Caddy baseline.
-# Add reverse_proxy targets per project as services are attached.
-
-:80 {
-  encode zstd gzip
-  respond "scry infra is online" 200
-}

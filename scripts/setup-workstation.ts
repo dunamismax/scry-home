@@ -10,15 +10,15 @@ const githubRoot = process.env.GITHUB_ROOT
 const owner = process.env.GITHUB_OWNER ?? "dunamismax";
 const anchorRepo = process.env.GITHUB_ANCHOR_REPO ?? "scryai";
 const profileRepo = process.env.GITHUB_PROFILE_REPO ?? "dunamismax";
-const managedProjectRepos = ["astro-web-template", "astro-blog-template"];
+const managedProjectRepos = ["next-web-template", "next-blog-template"];
 const reposIndexPath = resolve(githubRoot, profileRepo, "REPOS.md");
 const localOnly = process.argv.includes("--local-only");
 const useFallback = process.argv.includes("--use-fallback");
 const fallbackRepos = [
   "scryai",
   "dunamismax",
-  "astro-web-template",
-  "astro-blog-template",
+  "next-web-template",
+  "next-blog-template",
   "BereanAI",
   "TALLstack",
   "c-from-the-ground-up",

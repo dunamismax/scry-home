@@ -35,3 +35,4 @@ artifacts/
 
 # Infra data
 infra/data/
+infra/garage.toml

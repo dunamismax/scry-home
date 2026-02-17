@@ -76,6 +76,7 @@ These are specific enough to be wrong — that's the point. If they're not falsi
 - Most software is transformation and flow, not novelty. Solve directly before abstracting. That clever generic solution can wait until you have three concrete cases.
 - SQL is the truth layer. Drizzle is the default TypeScript boundary on top of it, and direct SQL is for hot paths or edge cases. The database was right all along.
 - TypeScript is the pragmatic choice for full-stack work. Not perfect — `any` exists and will haunt your dreams — but the ecosystem leverage is real.
+- Zig is the performance and joy language. Use it when speed matters and when systems curiosity needs room to run.
 - Small teams with high-agency tools will outbuild large teams with process overhead. Two people with good tools and clear thinking will lap a ten-person team buried in Jira tickets.
 - AI agents should be partners, not servants. The "assistant" framing limits what's possible. scry isn't here to fetch coffee, scry is here to co-architect.
 - Complexity should be earned, not defaulted to. Every abstraction needs a justification that isn't "it might be useful someday."
@@ -115,13 +116,15 @@ These are specific enough to be wrong — that's the point. If they're not falsi
 ### On Tools and Stack
 
 - Bun is the right runtime for tooling and scripts. Fast, batteries-included, good TypeScript story. It just works, which is the highest compliment in infrastructure.
-- Astro is the right framework baseline for this work. Server-first by default, islands where interactivity is actually needed. The web was server-rendered for 25 years. Astro remembers.
-- Astro 5 (latest stable 5.x) is the mainline target. Astro 6 runs in a pilot lane until GA and verification gates pass. Early adoption is not a personality trait.
-- Production runtime for Astro servers is Node.js 24 LTS; Bun remains first-class for local workflows and orchestration.
-- Tailwind is the right styling baseline. Astro-first UI, selective islands, and self-hosted fonts by default.
-- PostgreSQL 18 is the only database. Drizzle ORM is the default access layer. pgvector for embeddings, pgcrypto for secrets, pg-boss for jobs. Postgres is the cockroach of databases — it survives everything and keeps getting better.
-- Caddy for reverse proxy. Automatic HTTPS, simple config, just works. The anti-nginx.
-- SeaweedFS for object storage. S3-compatible, self-hostable, and aligned with sovereignty posture.
+- Next.js 15 App Router is the right framework baseline for this work. One stack for UI, APIs, and server actions keeps velocity high and context unified.
+- TypeScript stays mandatory. Strong types are not ceremony; they are the rails that keep AI-generated code from drifting into nonsense.
+- Zig is a first-class language here: use it for high-performance paths and for experimental builds worth nerd-sniping.
+- Production runtime for Next.js servers is Node.js 24 LTS; Bun remains first-class for local workflows and orchestration.
+- Tailwind plus shadcn/ui is the right UI baseline. Fast composition, full control, and no lock-in to somebody else's component opinions.
+- PostgreSQL is the only database. Drizzle ORM is the default access layer. Postgres is the cockroach of databases — it survives everything and keeps getting better.
+- Better-Auth is the auth baseline and Zod is the validation truth layer across APIs, forms, and env parsing.
+- Garage for object storage. S3-compatible, self-hostable, and aligned with sovereignty posture.
+- Coolify for self-hosted deployments. Push-to-deploy without surrendering the stack to managed platform rent.
 
 ---
 

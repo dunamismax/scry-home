@@ -20,7 +20,8 @@ for (const tool of checks) {
 logStep("Infra files");
 const infraFiles = [
   "infra/docker-compose.yml",
-  "infra/Caddyfile",
+  "infra/garage.toml.example",
+  "infra/garage.toml",
   "infra/.env.example",
   "infra/.env",
 ];

@@ -1,51 +1,32 @@
 services:
   db:
-    image: pgvector/pgvector:pg18
+    image: postgres:17-alpine
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
-    command:
-      - postgres
-      - -c
-      - shared_preload_libraries=pg_stat_statements
     ports:
       - "${POSTGRES_PORT}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
   object-storage:
-    image: chrislusf/seaweedfs:latest
+    image: dxflrs/garage:latest
     restart: unless-stopped
     command:
       - server
-      - -dir=/data
-      - -ip=object-storage
-      - -s3
-      - -s3.port=8333
+      - -c
+      - /etc/garage.toml
     ports:
-      - "${STORAGE_S3_PORT}:8333"
-      - "${STORAGE_MASTER_PORT}:9333"
-      - "${STORAGE_FILER_PORT}:8888"
+      - "${GARAGE_S3_PORT}:3900"
+      - "${GARAGE_RPC_PORT}:3901"
+      - "${GARAGE_WEB_PORT}:3902"
+      - "${GARAGE_ADMIN_PORT}:3903"
     volumes:
-      - ./data/seaweedfs:/data
-
-  caddy:
-    image: caddy:2-alpine
-    restart: unless-stopped
-    depends_on:
-      - object-storage
-      - db
-    ports:
-      - "${CADDY_HTTP_PORT}:80"
-      - "${CADDY_HTTPS_PORT}:443"
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy_data:/data
-      - caddy_config:/config
+      - ./garage.toml:/etc/garage.toml:ro
+      - ./data/garage/meta:/var/lib/garage/meta
+      - ./data/garage/data:/var/lib/garage/data
 
 volumes:
   postgres_data:
-  caddy_data:
-  caddy_config:

@@ -15,14 +15,18 @@ const githubRoot = process.env.GITHUB_ROOT
 export const managedProjects: ManagedProject[] = [
   {
     installCommand: ["bun", "install"],
-    name: "astro-web-template",
-    path: resolve(githubRoot, "astro-web-template"),
-    verifyCommands: [["bun", "run", "build"]],
+    name: "next-web-template",
+    path: resolve(githubRoot, "next-web-template"),
+    verifyCommands: [
+      ["bun", "run", "lint"],
+      ["bun", "run", "typecheck"],
+      ["bun", "run", "build"],
+    ],
   },
   {
     installCommand: ["bun", "install"],
-    name: "astro-blog-template",
-    path: resolve(githubRoot, "astro-blog-template"),
+    name: "next-blog-template",
+    path: resolve(githubRoot, "next-blog-template"),
     verifyCommands: [
       ["bun", "run", "lint"],
       ["bun", "run", "typecheck"],

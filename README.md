@@ -8,7 +8,7 @@ This repo is intentionally **not** an app monorepo. Product apps live in dedicat
 
 - Identity + operations contracts: `SOUL.md`, `AGENTS.md`
 - Root orchestration scripts: `scripts/`
-- Shared local infrastructure: `infra/` (PostgreSQL 18 + SeaweedFS S3 + Caddy)
+- Shared local infrastructure: `infra/` (PostgreSQL + Garage S3-compatible object storage)
 - Durable operational docs: `docs/`
 - Encrypted SSH continuity artifacts: `vault/ssh/`
 
@@ -16,8 +16,8 @@ This repo is intentionally **not** an app monorepo. Product apps live in dedicat
 
 | Project | Local path | Primary purpose |
 |---|---|---|
-| `astro-web-template` | `~/github/astro-web-template` | Full-stack Astro website template baseline |
-| `astro-blog-template` | `~/github/astro-blog-template` | Astro-based blog template |
+| `next-web-template` | `~/github/next-web-template` | Full-stack Next.js 15 App Router template baseline |
+| `next-blog-template` | `~/github/next-blog-template` | Next.js 15 blog template baseline |
 
 The orchestrator tracks these projects via `scripts/projects-config.ts`.
 
@@ -25,10 +25,13 @@ The orchestrator tracks these projects via `scripts/projects-config.ts`.
 
 The application stack baseline for managed projects is:
 
-- Astro 5 server-first + Tailwind v4
-- PostgreSQL 18 + Drizzle ORM + Drizzle Kit migrations
-- Better Auth (Drizzle adapter) + pg-boss
-- SeaweedFS (S3 API) + Caddy
+- Next.js 15 (App Router)
+- Languages: TypeScript + Zig
+- PostgreSQL (Dockerized) + Drizzle ORM + Drizzle Kit migrations
+- Better-Auth + Zod
+- Tailwind CSS + shadcn/ui
+- Garage (S3-compatible object storage)
+- Coolify for self-hosted push-to-deploy operations
 
 ## Prerequisites
 
@@ -120,12 +123,12 @@ bun run ci
 `/home/sawyer/github/scryai` CI validates root orchestration/docs/scripts only.
 
 Product app CI runs in their own repositories:
-- `~/github/astro-web-template`
-- `~/github/astro-blog-template`
+- `~/github/next-web-template`
+- `~/github/next-blog-template`
 
 Performance and Lighthouse quality gates are owned by each product repo (not `scryai`):
-- `~/github/astro-web-template/docs/performance/README.md`
-- `~/github/astro-blog-template/docs/performance/README.md`
+- `~/github/next-web-template/docs/performance/README.md`
+- `~/github/next-blog-template/docs/performance/README.md`
 
 ## Repository Layout
 

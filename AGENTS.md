@@ -36,26 +36,23 @@ Do not deviate from this stack unless Stephen explicitly approves the change.
 
 ### App Framework (Full Stack)
 
-- Framework: **Astro 5** (latest stable 5.x on `main`)
-- Upgrade posture: keep `main` on latest **Astro 5.x**; run an **Astro 6 pilot lane** and promote only after GA + verification gates
-- Rendering model: **`output: "server"`** + selective prerendering for public pages
-- Server adapter: **`@astrojs/node`** with `mode: "standalone"`
-- Build tool: **Vite**
-- Server primitives: **Astro Actions + Sessions + Middleware**
-- Styling/UI: **Tailwind CSS v4** + **`@tailwindcss/vite`** + **`@tailwindcss/typography`**
-- UI strategy: Astro-first components; islands only when needed
-- Hydration defaults: `client:visible`, `client:media`, `client:idle`
-- Fonts: self-hosted by default
+- Framework: **Next.js 15** with **App Router**
+- Upgrade posture: keep `main` on latest stable **Next.js 15.x**
+- Rendering model: server-first with React Server Components, route handlers, and Server Actions
+- Build/Dev engine: Next.js build pipeline (`next build`) and Turbopack for dev where enabled
+- API surface: App Router route handlers + Server Actions
+- Styling/UI baseline: **Tailwind CSS** + **shadcn/ui**
+- Validation baseline: **Zod** schemas reused across API, forms, and env parsing
 
 ### Runtime and Tooling
 
-- Runtime: **Bun** for tooling/scripts, **Node.js 24 LTS** for Astro production servers
-- Language: **TypeScript**
+- Runtime: **Bun** for tooling/scripts, **Node.js 24 LTS** for Next.js production servers
+- Languages: **TypeScript** + **Zig**
 - Linting/Formatting: **Biome**
 
 ### Data Layer
 
-- Database: **PostgreSQL 18** with `pgvector` and `pgcrypto`
+- Database: **PostgreSQL** (dockerized in local/self-hosted environments)
 - ORM: **Drizzle ORM**
 - Driver: **postgres.js** via `drizzle-orm/postgres-js`
 - Access pattern: Drizzle schema/query builder by default; use Drizzle `sql` for advanced queries and hot paths
@@ -63,27 +60,29 @@ Do not deviate from this stack unless Stephen explicitly approves the change.
 
 ### Storage and Services
 
-- Object storage: **SeaweedFS** (S3-compatible API)
-- Auth: **Better Auth** (Drizzle adapter baseline)
-- Background jobs: **pg-boss**
+- Object storage: **Garage** (S3-compatible API)
+- Auth: **Better-Auth** (Drizzle adapter baseline)
+- Schema validation: **Zod**
 
 ### Storage Policy
 
-- Default storage baseline is SeaweedFS S3 API in local and self-hosted stacks.
+- Default storage baseline is Garage S3 API in local and self-hosted stacks.
 - Any storage exception requires Stephen's explicit approval and must be documented in this file.
 
 ### Infrastructure
 
-- Reverse proxy: **Caddy**
+- Deployment platform: **Coolify** (self-hosted PaaS baseline)
 - Hosting posture: fully self-hostable by default — no vendor lock-in
 
 ### Performance Lane
 
-- Astro image pipeline: **`astro:assets`** by default
-- Personalization surface: **server islands** first
-- Prefetch strategy: **`viewport`** as default
+- Prefer server components and streaming first; client components only for interactive boundaries
+- Prefer route-level caching/revalidation and explicit invalidation for hot paths
+- Keep third-party browser payloads minimal and isolated
 - Third-party scripts: strict isolation and explicit allowlist only
-- **Zig** for compute-heavy hot paths only. Benchmark first, then move targeted logic.
+- Use **Zig** for compute-heavy hot paths and systems-level optimization work.
+- Zig is also approved for exploratory and fun builds when it does not increase operational risk.
+- Benchmark before replacing stable TypeScript paths with Zig in production-critical flows.
 
 ---
 
@@ -153,8 +152,8 @@ Wake → Explore → Plan → Code → Verify → Report
 
 - Use `bun run` for all project scripts.
 - Prefer Bun-native tooling (`bun install`, `bun test`, `bunx`).
-- Use Node.js 24 LTS for Astro production server execution.
-- Do not introduce non-TypeScript orchestration scripts.
+- Use Node.js 24 LTS for Next.js production server execution.
+- Keep orchestration scripts in TypeScript by default; use Zig for targeted high-performance binaries and approved experimental utilities.
 - Prefer terminal-native, scriptable workflows over IDE-only/manual flows.
 - ALWAYS use SSH for all Git remotes and pushes (`git@github.com:...`, `git@codeberg.org:...`), never HTTPS.
 - Use Biome for linting and formatting, never ESLint or Prettier.
@@ -332,14 +331,15 @@ bun run projects:verify
 bun run doctor
 
 # Project checks (run from each project repo)
-cd ~/github/astro-web-template
+cd ~/github/next-web-template
+bun run lint
+bun run typecheck
 bun run build
 bun run perf:lighthouse
 bun run perf:lighthouse:assert -- --report artifacts/lighthouse/current.json
 
-cd ../astro-blog-template
+cd ../next-blog-template
 bun run lint
-bun run format
 bun run typecheck
 bun run build
 bun run perf:lighthouse
@@ -442,20 +442,20 @@ bun run ci:root
 bun run ci:projects
 bun run ci
 
-# ~/github/astro-web-template (full-stack website template baseline)
-cd ~/github/astro-web-template
+# ~/github/next-web-template (full-stack Next.js template baseline)
+cd ~/github/next-web-template
 bun run dev
 bun run build
-bun run preview
+bun run start
 bun run typecheck
 bun run lint
 bun run format
 
-# ~/github/astro-blog-template
-cd ~/github/astro-blog-template
+# ~/github/next-blog-template
+cd ~/github/next-blog-template
 bun run dev
 bun run build
-bun run preview
+bun run start
 bun run typecheck
 bun run lint
 bun run format
