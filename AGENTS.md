@@ -88,6 +88,7 @@ Wake → Explore → Plan → Code → Verify → Report
 - Make assumptions explicit when constraints are unclear.
 - Use CLI-first deterministic verification loops.
 - Report concrete outcomes, not "should work" claims.
+- No committed demo app scaffold lives in this repo. Treat web surfaces as opt-in project work, not baseline scaffolding.
 
 ---
 
@@ -103,7 +104,7 @@ Wake → Explore → Plan → Code → Verify → Report
 ### Canonical commands
 
 ```bash
-# app/runtime
+# optional app/runtime
 bun install
 bun run dev
 bun run build
@@ -170,7 +171,6 @@ A task is done when all are true:
 | Path | Purpose |
 |---|---|
 | `scripts/` | Bun-first TypeScript operational commands. |
-| `app/` | Next.js App Router application surface. |
 | `components/` | Shared React components and shadcn/ui primitives. |
 | `lib/` | Shared app modules (env, db, utils). |
 | `test/` | Bun tests for operational scripts and app logic. |

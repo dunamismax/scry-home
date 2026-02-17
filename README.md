@@ -1,6 +1,6 @@
 # scryai
 
-Canonical Bun-first TypeScript workspace for **scry** and Stephen (`dunamismax`): identity + operations contracts, workstation bootstrap automation, and a Next.js App Router control-plane baseline.
+Canonical Bun-first TypeScript workspace for **scry** and Stephen (`dunamismax`): identity + operations contracts and workstation bootstrap automation.
 
 ## Stack Baseline
 
@@ -17,7 +17,6 @@ Canonical Bun-first TypeScript workspace for **scry** and Stephen (`dunamismax`)
 
 - Identity + operations contracts: `SOUL.md`, `AGENTS.md`
 - Bun TypeScript operations CLI: `scripts/`
-- Next.js app surface: `app/`
 - Shared modules/components: `lib/`, `components/`
 - Durable docs: `docs/`
 - Local infra manifests: `infra/`
@@ -36,7 +35,6 @@ Canonical Bun-first TypeScript workspace for **scry** and Stephen (`dunamismax`)
 bun install
 bun run scry:bootstrap
 bun run scry:doctor
-bun run dev
 ```
 
 ## Local Infra
@@ -46,7 +44,7 @@ cp infra/.env.example infra/.env
 docker compose -f infra/docker-compose.yml up -d
 ```
 
-Set app envs in `.env`:
+Set runtime envs in `.env`:
 
 ```bash
 cp .env.example .env
