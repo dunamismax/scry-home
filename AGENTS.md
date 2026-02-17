@@ -427,11 +427,14 @@ bun run ci
 bun run perf:lighthouse
 bun run perf:lighthouse:assert -- --report artifacts/lighthouse/current.json
 
-# ~/github/astro-web-template (fresh `npm create astro@latest` scaffold baseline)
+# ~/github/astro-web-template (full-stack website template baseline)
 cd ~/github/astro-web-template
 bun run dev
 bun run build
 bun run preview
+bun run typecheck
+bun run lint
+bun run format
 
 # ~/github/astro-blog-template
 cd ~/github/astro-blog-template

@@ -16,7 +16,7 @@ This repo is intentionally **not** an app monorepo. Product apps live in dedicat
 
 | Project | Local path | Primary purpose |
 |---|---|---|
-| `astro-web-template` | `~/github/astro-web-template` | Fresh Astro scaffold baseline + full-stack template target |
+| `astro-web-template` | `~/github/astro-web-template` | Full-stack Astro website template baseline |
 | `astro-blog-template` | `~/github/astro-blog-template` | Astro-based blog template |
 
 The orchestrator tracks these projects via `scripts/projects-config.ts`.
