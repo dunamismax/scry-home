@@ -137,5 +137,5 @@ const StatCard = component$<StatCardProps>(({ label, value }) => {
 });
 
 export const head: DocumentHead = {
-  title: "Dashboard | bedrock-template",
+  title: "Dashboard | website-template",
 };

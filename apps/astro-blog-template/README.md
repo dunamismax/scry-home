@@ -40,4 +40,4 @@ bun run build
 
 ## License
 
-See `LICENSE` for attribution and licensing details.
+MIT. See `LICENSE`.

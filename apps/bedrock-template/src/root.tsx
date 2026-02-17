@@ -39,7 +39,7 @@ export default component$(() => {
         {!isDev && <link rel="manifest" href={`${import.meta.env.BASE_URL}manifest.json`} />}
         <RouterHead />
       </head>
-      <body lang="en" class="min-h-full antialiased">
+      <body class="min-h-full antialiased">
         <RouterOutlet />
       </body>
     </QwikCityProvider>

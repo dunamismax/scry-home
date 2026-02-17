@@ -27,6 +27,8 @@ export type AuthState = {
   session: AppSession;
 };
 
+const authStateCacheKey = "__auth-state-promise__";
+
 function asRole(value: unknown): Role {
   if (value === "admin" || value === "manager" || value === "member") {
     return value;
@@ -62,8 +64,19 @@ export async function getAuthState(request: Request): Promise<AuthState | null> 
   };
 }
 
+export function getEventAuthState(event: RequestEventCommon): Promise<AuthState | null> {
+  const cached = event.sharedMap.get(authStateCacheKey);
+  if (cached) {
+    return cached as Promise<AuthState | null>;
+  }
+
+  const pending = getAuthState(event.request);
+  event.sharedMap.set(authStateCacheKey, pending);
+  return pending;
+}
+
 export async function requireAuth(event: RequestEventCommon): Promise<AuthState> {
-  const authState = await getAuthState(event.request);
+  const authState = await getEventAuthState(event);
 
   if (!authState) {
     throw event.redirect(302, toSignInUrl(event.url));

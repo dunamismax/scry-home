@@ -3,11 +3,11 @@ import type { RequestHandler } from "@builder.io/qwik-city";
 import { routeLoader$ } from "@builder.io/qwik-city";
 
 import { SiteNav } from "~/components/site-nav";
-import { getAuthState } from "~/lib/auth-utils.server";
+import { getEventAuthState } from "~/lib/auth-utils.server";
 import { getSecurityHeaders } from "~/lib/http.server";
 
 const noCachePrefixes = ["/auth", "/dashboard", "/profile", "/settings", "/admin"];
-const authAwarePrefixes = noCachePrefixes;
+const authAwarePrefixes = ["/dashboard", "/profile", "/settings", "/admin"];
 
 export const onRequest: RequestHandler = async (event) => {
   const securityHeaders = getSecurityHeaders();
@@ -23,13 +23,13 @@ export const onRequest: RequestHandler = async (event) => {
   await event.next();
 };
 
-export const useViewer = routeLoader$(async ({ request }) => {
-  const pathname = new URL(request.url).pathname;
+export const useViewer = routeLoader$(async (event) => {
+  const pathname = new URL(event.request.url).pathname;
   if (!authAwarePrefixes.some((prefix) => pathname.startsWith(prefix))) {
     return { user: null };
   }
 
-  const authState = await getAuthState(request);
+  const authState = await getEventAuthState(event);
   return {
     user: authState?.user ?? null,
   };

@@ -52,7 +52,7 @@ export const SiteNav = component$<SiteNavProps>(({ user }) => {
             >
               BT
             </span>
-            <span>bedrock-template</span>
+            <span>website-template</span>
           </Link>
 
           <nav class="hidden items-center gap-1 md:flex">

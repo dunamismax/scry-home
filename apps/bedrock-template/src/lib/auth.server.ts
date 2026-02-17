@@ -5,7 +5,7 @@ import { db } from "~/lib/db.server";
 import { env } from "~/lib/env.server";
 
 export const auth = betterAuth({
-  appName: "bedrock-template",
+  appName: "website-template",
   baseURL: env.BETTER_AUTH_URL,
   basePath: "/api/auth",
   secret: env.BETTER_AUTH_SECRET,

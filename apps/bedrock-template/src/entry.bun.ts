@@ -13,7 +13,7 @@ const { router, notFound, staticFile } = createQwikCity({
 
 const port = Number(Bun.env.PORT ?? 3000);
 
-console.log(`bedrock-template listening on http://localhost:${port}`);
+console.log(`website-template listening on http://localhost:${port}`);
 
 Bun.serve({
   async fetch(request: Request) {

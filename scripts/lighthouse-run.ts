@@ -1,4 +1,4 @@
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 
@@ -38,7 +38,26 @@ type CliOptions = {
   runs: number;
   skipBuild: boolean;
   url: string;
+  urlExplicit: boolean;
 };
+
+const browserBinaryCandidates = [
+  "google-chrome-stable",
+  "google-chrome",
+  "chromium",
+  "chromium-browser",
+  "brave-browser",
+  "microsoft-edge-stable",
+  "microsoft-edge",
+] as const;
+
+const browserPathCandidates = [
+  "/usr/bin/google-chrome-stable",
+  "/usr/bin/google-chrome",
+  "/usr/bin/chromium",
+  "/usr/bin/chromium-browser",
+  "/snap/bin/chromium",
+] as const;
 
 function parseArgs(argv: string[]): CliOptions {
   const values = new Map<string, string>();
@@ -70,6 +89,7 @@ function parseArgs(argv: string[]): CliOptions {
   const output = resolve(values.get("output") ?? "artifacts/lighthouse/current.json");
   const port = Number(values.get("port") ?? "4173");
   const runs = Number(values.get("runs") ?? "3");
+  const urlExplicit = values.has("url");
   const url = values.get("url") ?? `http://127.0.0.1:${port}/`;
   const skipBuild = flags.has("skip-build");
 
@@ -88,6 +108,7 @@ function parseArgs(argv: string[]): CliOptions {
     runs,
     skipBuild,
     url,
+    urlExplicit,
   };
 }
 
@@ -154,7 +175,7 @@ function runLighthouseOnce(
   profile: ProfileName,
   run: number,
   tempDir: string,
-  chromePath: string | undefined,
+  chromePath: string,
 ): RunMetrics {
   const lhrPath = resolve(tempDir, `${profile}-run-${run}.json`);
   const chromeFlags = "--headless=new --no-sandbox --disable-dev-shm-usage";
@@ -176,18 +197,64 @@ function runLighthouseOnce(
     cmd.push("--preset=desktop");
   }
 
-  if (chromePath && chromePath.length > 0) {
-    cmd.push(`--chrome-path=${chromePath}`);
-  }
+  cmd.push(`--chrome-path=${chromePath}`);
 
-  runOrThrow(cmd);
+  runOrThrow(cmd, { env: { CHROME_PATH: chromePath } });
   return parseLighthouseRun(lhrPath, run);
 }
 
-async function waitForServer(url: string, timeoutMs: number): Promise<void> {
+function resolveChromePath(value: string | undefined): string {
+  const explicit = value?.trim();
+  if (explicit) {
+    if (explicit.includes("/")) {
+      if (!existsSync(explicit)) {
+        throw new Error(`CHROME_PATH is set but missing: ${explicit}`);
+      }
+      return explicit;
+    }
+
+    const resolved = Bun.which(explicit);
+    if (!resolved) {
+      throw new Error(`CHROME_PATH points to "${explicit}" but it is not on PATH.`);
+    }
+    return resolved;
+  }
+
+  for (const candidate of browserBinaryCandidates) {
+    const resolved = Bun.which(candidate);
+    if (resolved) {
+      return resolved;
+    }
+  }
+
+  for (const candidate of browserPathCandidates) {
+    if (existsSync(candidate)) {
+      return candidate;
+    }
+  }
+
+  throw new Error(
+    [
+      "No Chrome/Chromium executable found for Lighthouse.",
+      "Install one browser binary (for Ubuntu/Debian, try: sudo apt-get install -y chromium).",
+      "Or set CHROME_PATH to your browser executable, for example:",
+      "  CHROME_PATH=/usr/bin/google-chrome-stable bun run perf:lighthouse",
+    ].join("\n"),
+  );
+}
+
+async function waitForServer(
+  url: string,
+  timeoutMs: number,
+  serverProc?: ReturnType<typeof Bun.spawn>,
+): Promise<void> {
   const startedAt = Date.now();
 
   while (Date.now() - startedAt < timeoutMs) {
+    if (serverProc && serverProc.exitCode !== null) {
+      throw new Error("Server process exited before it became ready.");
+    }
+
     try {
       const response = await fetch(url, { method: "GET" });
       if (response.ok || response.status === 404) {
@@ -211,9 +278,77 @@ function streamToText(stream: ReadableStream<Uint8Array> | null): Promise<string
   return new Response(stream).text();
 }
 
+function startServer(appDir: string, port: number) {
+  const serverProc = Bun.spawn({
+    cmd: ["bun", "run", "serve"],
+    cwd: appDir,
+    env: {
+      ...process.env,
+      PORT: String(port),
+    },
+    stdout: "pipe",
+    stderr: "pipe",
+  });
+
+  return {
+    port,
+    serverProc,
+    stderrPromise: streamToText(serverProc.stderr),
+    stdoutPromise: streamToText(serverProc.stdout),
+  };
+}
+
+async function startServerWithRetries(options: CliOptions): Promise<{
+  port: number;
+  stderrPromise: Promise<string>;
+  stdoutPromise: Promise<string>;
+  url: string;
+  serverProc: ReturnType<typeof Bun.spawn>;
+}> {
+  const maxAttempts = options.urlExplicit ? 1 : 20;
+
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+    const port = options.port + attempt;
+    const url = options.urlExplicit ? options.url : `http://127.0.0.1:${port}/`;
+
+    logStep(`Start server on port ${port}`);
+    const server = startServer(options.appDir, port);
+
+    try {
+      await waitForServer(url, 45_000, server.serverProc);
+      return {
+        ...server,
+        url,
+      };
+    } catch {
+      server.serverProc.kill();
+      await server.serverProc.exited;
+
+      const [stdout, stderr] = await Promise.all([server.stdoutPromise, server.stderrPromise]);
+      const output = `${stdout}\n${stderr}`;
+      const hasAddressInUse = output.includes("EADDRINUSE");
+
+      if (hasAddressInUse && !options.urlExplicit && attempt < maxAttempts - 1) {
+        console.warn(`port ${port} is in use, retrying on ${port + 1}`);
+        continue;
+      }
+
+      const details = output.trim();
+      throw new Error(
+        details.length > 0
+          ? `Failed to start server for Lighthouse:\n${details}`
+          : "Failed to start server for Lighthouse.",
+      );
+    }
+  }
+
+  throw new Error("Unable to start Lighthouse server after trying multiple ports.");
+}
+
 async function main(): Promise<void> {
   const options = parseArgs(process.argv.slice(2));
-  const chromePath = process.env.CHROME_PATH;
+  const chromePath = resolveChromePath(process.env.CHROME_PATH);
+  logStep(`Using browser binary: ${chromePath}`);
 
   if (!options.skipBuild) {
     logStep(`Build app (${options.appDir})`);
@@ -221,30 +356,12 @@ async function main(): Promise<void> {
   }
 
   const tempDir = mkdtempSync(resolve(tmpdir(), "scryai-lighthouse-"));
-  logStep(`Start server on port ${options.port}`);
-
-  const serverProc = Bun.spawn({
-    cmd: ["bun", "run", "serve"],
-    cwd: options.appDir,
-    env: {
-      ...process.env,
-      PORT: String(options.port),
-    },
-    stdout: "pipe",
-    stderr: "pipe",
-  });
-
-  const stdoutPromise = streamToText(serverProc.stdout);
-  const stderrPromise = streamToText(serverProc.stderr);
+  const server = await startServerWithRetries(options);
+  const reportUrl = server.url;
 
   try {
-    await waitForServer(options.url, 45_000);
-
     const profiles: ProfileName[] = ["mobile", "desktop"];
-    const profileReports = {
-      desktop: { median: undefined, runs: [] },
-      mobile: { median: undefined, runs: [] },
-    } as unknown as Record<ProfileName, ProfileReport>;
+    const profileReports = {} as Record<ProfileName, ProfileReport>;
 
     for (const profile of profiles) {
       logStep(`Lighthouse ${profile} (${options.runs} runs)`);
@@ -252,7 +369,7 @@ async function main(): Promise<void> {
 
       for (let run = 1; run <= options.runs; run += 1) {
         console.log(`run ${run}/${options.runs}`);
-        const result = runLighthouseOnce(options.url, profile, run, tempDir, chromePath);
+        const result = runLighthouseOnce(reportUrl, profile, run, tempDir, chromePath);
         runs.push(result);
       }
 
@@ -267,17 +384,17 @@ async function main(): Promise<void> {
       generatedAt: new Date().toISOString(),
       profiles: profileReports,
       runsPerProfile: options.runs,
-      url: options.url,
+      url: reportUrl,
     };
 
     ensureParentDir(options.output);
     writeFileSync(options.output, `${JSON.stringify(summary, null, 2)}\n`, "utf8");
     logStep(`Wrote report: ${options.output}`);
   } finally {
-    serverProc.kill();
-    await serverProc.exited;
+    server.serverProc.kill();
+    await server.serverProc.exited;
 
-    const [stdout, stderr] = await Promise.all([stdoutPromise, stderrPromise]);
+    const [stdout, stderr] = await Promise.all([server.stdoutPromise, server.stderrPromise]);
     if (stdout.trim().length > 0) {
       console.log(stdout.trim());
     }

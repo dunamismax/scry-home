@@ -1,4 +1,4 @@
-# bedrock-template
+# website-template
 
 Production-ready Qwik City starter for the scry stack:
 
@@ -20,8 +20,8 @@ Production-ready Qwik City starter for the scry stack:
 - Reusable high-contrast UI primitives (`surface`, `btn`, `input`, data-table styles)
 - Security defaults: CSP, strict headers, same-origin mutation checks
 - Route-level `cacheControl` headers (public cached landing, no-cache on dynamic/auth pages)
-- Auth form rate limiting with Zod schema validation
-- MinIO upload flow with asset metadata table
+- Better Auth database-backed rate limiting with Zod schema validation
+- MinIO upload flow with asset metadata table (no extra in-memory file copy)
 - pg-boss worker scaffold and queue publishing example
 - SQL-first data access with `postgres.js`
 - Self-hosted fonts — zero external CDN requests for font loading

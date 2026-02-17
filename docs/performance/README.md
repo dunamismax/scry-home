@@ -24,4 +24,21 @@ bun run perf:lighthouse:assert -- --report artifacts/lighthouse/current.json
 bun run perf:lighthouse:assert -- --report artifacts/lighthouse/head.json --baseline artifacts/lighthouse/base.json
 ```
 
+Lighthouse requires a local Chrome/Chromium executable.
+
+- Auto-detected binaries: `google-chrome-stable`, `google-chrome`, `chromium`, `chromium-browser`, `brave-browser`, `microsoft-edge-stable`
+- Override explicitly:
+
+```bash
+CHROME_PATH=/usr/bin/google-chrome-stable bun run perf:lighthouse
+```
+
+Ubuntu/Debian quick install:
+
+```bash
+sudo apt-get install -y chromium
+```
+
+If the default Lighthouse port (`4173`) is busy, the runner now auto-retries on the next ports.
+
 Threshold config: `docs/performance/lighthouse-thresholds.json`

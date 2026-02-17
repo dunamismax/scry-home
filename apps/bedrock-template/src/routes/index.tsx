@@ -3,7 +3,12 @@ import type { DocumentHead, RequestHandler } from "@builder.io/qwik-city";
 import { Link } from "@builder.io/qwik-city";
 
 export const onGet: RequestHandler = async ({ cacheControl }) => {
-  cacheControl({ public: true, maxAge: 300, staleWhileRevalidate: 1_800 });
+  cacheControl({
+    public: true,
+    maxAge: 900,
+    sMaxAge: 3_600,
+    staleWhileRevalidate: 86_400,
+  });
 };
 
 const pillars = [
@@ -49,7 +54,7 @@ export default component$(() => {
           Ship a premium web app baseline without sacrificing speed.
         </h1>
         <p class="muted mt-4 max-w-3xl text-base lg:text-lg">
-          `bedrock-template` is tuned for fast initial paint, smooth route transitions, and secure
+          `website-template` is tuned for fast initial paint, smooth route transitions, and secure
           production defaults. Start from a refined dark-first UI, then build product features on
           top.
         </p>
@@ -113,7 +118,7 @@ export default component$(() => {
 });
 
 export const head: DocumentHead = {
-  title: "bedrock-template | performance-first Qwik starter",
+  title: "website-template | performance-first Qwik starter",
   meta: [
     {
       name: "description",
@@ -122,7 +127,7 @@ export const head: DocumentHead = {
     },
     {
       property: "og:title",
-      content: "bedrock-template | performance-first Qwik starter",
+      content: "website-template | performance-first Qwik starter",
     },
     {
       property: "og:description",
@@ -139,7 +144,7 @@ export const head: DocumentHead = {
     },
     {
       name: "twitter:title",
-      content: "bedrock-template | performance-first Qwik starter",
+      content: "website-template | performance-first Qwik starter",
     },
     {
       name: "twitter:description",

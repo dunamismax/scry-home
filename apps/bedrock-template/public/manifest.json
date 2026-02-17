@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/web-manifest-combined.json",
-  "name": "bedrock-template",
+  "name": "website-template",
   "short_name": "Bedrock",
   "start_url": "/",
   "display": "standalone",

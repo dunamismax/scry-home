@@ -166,5 +166,5 @@ export default component$(() => {
 });
 
 export const head = {
-  title: "Admin users | bedrock-template",
+  title: "Admin users | website-template",
 };

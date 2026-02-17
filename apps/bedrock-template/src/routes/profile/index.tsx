@@ -5,8 +5,8 @@ import { z } from "zod";
 
 import { AppShell } from "~/components/app-shell";
 import { writeAuditEvent } from "~/lib/audit.server";
-import { auth } from "~/lib/auth.server";
 import { requireAuth } from "~/lib/auth-utils.server";
+import { auth } from "~/lib/auth.server";
 import { getSameOriginError } from "~/lib/http.server";
 
 const updateProfileSchema = z.object({
@@ -111,5 +111,5 @@ export default component$(() => {
 });
 
 export const head = {
-  title: "Profile | bedrock-template",
+  title: "Profile | website-template",
 };

@@ -45,7 +45,7 @@ export async function uploadAsset(params: {
     new PutObjectCommand({
       Bucket: env.MINIO_BUCKET,
       Key: key,
-      Body: Buffer.from(await file.arrayBuffer()),
+      Body: file,
       ContentType: file.type || "application/octet-stream",
       ContentLength: file.size,
     }),

@@ -1,12 +1,11 @@
 import { component$ } from "@builder.io/qwik";
-import { Form, Link, routeAction$, routeLoader$ } from "@builder.io/qwik-city";
+import { type DocumentHead, Form, Link, routeAction$, routeLoader$ } from "@builder.io/qwik-city";
 import { APIError } from "better-auth/api";
 import { z } from "zod";
 
-import { auth } from "~/lib/auth.server";
 import { extractSetCookieHeader, getAuthState, safeRedirectPath } from "~/lib/auth-utils.server";
+import { auth } from "~/lib/auth.server";
 import { getSameOriginError } from "~/lib/http.server";
-import { checkRateLimit, requestFingerprint } from "~/lib/rate-limit.server";
 
 const signInSchema = z.object({
   email: z.email().max(320),
@@ -44,12 +43,6 @@ export const useSignInAction = routeAction$(async (_, event) => {
   if (sameOriginError) {
     event.status(403);
     return { error: sameOriginError };
-  }
-
-  const fingerprint = requestFingerprint(event.request);
-  if (!checkRateLimit(`signin:${fingerprint}`, 10, 60_000)) {
-    event.status(429);
-    return { error: "Too many sign-in attempts. Try again in a minute." };
   }
 
   try {
@@ -138,3 +131,13 @@ export default component$(() => {
     </main>
   );
 });
+
+export const head: DocumentHead = {
+  title: "Sign in | website-template",
+  meta: [
+    {
+      name: "description",
+      content: "Sign in to access dashboard, profile, settings, and admin routes.",
+    },
+  ],
+};

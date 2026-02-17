@@ -1,12 +1,11 @@
 import { component$ } from "@builder.io/qwik";
-import { Form, Link, routeAction$, routeLoader$ } from "@builder.io/qwik-city";
+import { type DocumentHead, Form, Link, routeAction$, routeLoader$ } from "@builder.io/qwik-city";
 import { APIError } from "better-auth/api";
 import { z } from "zod";
 
-import { auth } from "~/lib/auth.server";
 import { extractSetCookieHeader, getAuthState } from "~/lib/auth-utils.server";
+import { auth } from "~/lib/auth.server";
 import { getSameOriginError } from "~/lib/http.server";
-import { checkRateLimit, requestFingerprint } from "~/lib/rate-limit.server";
 
 const signUpSchema = z.object({
   name: z.string().min(2).max(120),
@@ -48,12 +47,6 @@ export const useSignUpAction = routeAction$(async (_, event) => {
   if (sameOriginError) {
     event.status(403);
     return { error: sameOriginError };
-  }
-
-  const fingerprint = requestFingerprint(event.request);
-  if (!checkRateLimit(`signup:${fingerprint}`, 6, 60_000)) {
-    event.status(429);
-    return { error: "Too many sign-up attempts. Try again shortly." };
   }
 
   try {
@@ -156,3 +149,13 @@ export default component$(() => {
     </main>
   );
 });
+
+export const head: DocumentHead = {
+  title: "Create account | website-template",
+  meta: [
+    {
+      name: "description",
+      content: "Create your account to start using the website-template application baseline.",
+    },
+  ],
+};

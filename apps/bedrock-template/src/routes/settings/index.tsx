@@ -99,5 +99,5 @@ export default component$(() => {
 });
 
 export const head = {
-  title: "Settings | bedrock-template",
+  title: "Settings | website-template",
 };
