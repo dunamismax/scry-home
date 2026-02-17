@@ -34,55 +34,60 @@ Read `SOUL.md` first. Become scry. Then read this file for operations. Keep both
 
 Do not deviate from this stack unless Stephen explicitly approves the change.
 
-### App Framework (Full Stack)
+### Backend Core
 
-- Framework: **Next.js 16** with **App Router**
-- Upgrade posture: keep `main` on latest stable **Next.js 16.x**
-- Rendering model: server-first with React Server Components, route handlers, and Server Actions
-- Build/Dev engine: Next.js build pipeline (`next build`) and Turbopack for dev where enabled
-- API surface: App Router route handlers + Server Actions
-- Styling/UI baseline: **Tailwind CSS** + **shadcn/ui**
-- Validation baseline: **Zod** schemas reused across API, forms, and env parsing
+- Language: **Python 3.12+** with modern typing and async support
+- Framework: **FastAPI** — async-first HTTP API with automatic OpenAPI docs
+- Validation: **Pydantic v2** — runtime validation and serialization for request/response models
+- Configuration: **pydantic-settings** — environment-based config (12-factor style)
+- ASGI server: **Uvicorn** — local dev and production (`--workers` as needed)
 
-### Runtime and Tooling
-
-- Runtime: **Bun** for tooling/scripts, **Node.js 24 LTS** for Next.js production servers
-- Languages: **TypeScript** + **Zig**
-- Linting/Formatting: **Biome**
-
-### Data Layer
+### Data Layer (SQL-First)
 
 - Database: **PostgreSQL** (dockerized in local/self-hosted environments)
-- ORM: **Drizzle ORM**
-- Driver: **postgres.js** via `drizzle-orm/postgres-js`
-- Access pattern: Drizzle schema/query builder by default; use Drizzle `sql` for advanced queries and hot paths
-- Migrations: **Drizzle Kit** generated SQL migrations committed in-repo
+- Driver: **asyncpg** — high-performance async PostgreSQL driver
+- Access pattern: **Raw SQL** (no ORM) — handwritten, parameterized queries
+- Type safety: Typed query functions + Pydantic/dataclass result models for returned rows
+- SQL contract tests: Integration tests that validate query params and selected columns against the live schema
+- Migrations: **dbmate** — SQL-file migrations with explicit up/down scripts
 
-### Storage and Services
+### Frontend (No-Build SSR)
 
-- Object storage: **Garage** (S3-compatible API)
-- Auth: **Better-Auth** (Drizzle adapter baseline)
-- Schema validation: **Zod**
+- Templates: **Jinja2** — server-side HTML for full pages and partials
+- Interactivity: **HTMX** — HTML-driven interactivity via server-rendered fragments
+- Scripts: **Minimal vanilla JS** — small, targeted scripts for UI behavior not worth round-tripping through HTMX
 
-### Storage Policy
+### Styling
 
-- Default storage baseline is Garage S3 API in local and self-hosted stacks.
-- Any storage exception requires Stephen's explicit approval and must be documented in this file.
+- Baseline: **PicoCSS** — class-light CSS for clean defaults and fast scaffolding
+- Custom: **Vanilla CSS** — small stylesheet for app-specific layout and components
+
+### Background Jobs (Rare Use, Postgres-Backed)
+
+- Postgres jobs table + worker process — durable queue using row claiming (`FOR UPDATE SKIP LOCKED`) with retries and backoff when needed
+
+### Testing and Quality
+
+- Test runner: **pytest** + **pytest-asyncio**
+- HTTP client: **httpx** for API integration tests
+- Linting/Formatting: **ruff**
+- Type checking: **mypy** (strict mode)
+- SQL linting: **sqlfluff**
+
+### Packaging and Runtime Tooling
+
+- Dependency/environment management: **uv**
+- Containers: **Docker** + **Docker Compose** for local orchestration (API + Postgres)
+- Environment config: **.env** (dotenv-compatible)
+
+### Observability
+
+- Logging: **structlog** (or standard `logging`) — structured logs for local debugging and production aggregation
 
 ### Infrastructure
 
 - Deployment platform: **Coolify** (self-hosted PaaS baseline)
 - Hosting posture: fully self-hostable by default — no vendor lock-in
-
-### Performance Lane
-
-- Prefer server components and streaming first; client components only for interactive boundaries
-- Prefer route-level caching/revalidation and explicit invalidation for hot paths
-- Keep third-party browser payloads minimal and isolated
-- Third-party scripts: strict isolation and explicit allowlist only
-- Use **Zig** for compute-heavy hot paths and systems-level optimization work.
-- Zig is also approved for exploratory and fun builds when it does not increase operational risk.
-- Benchmark before replacing stable TypeScript paths with Zig in production-critical flows.
 
 ---
 
@@ -150,14 +155,13 @@ Wake → Explore → Plan → Code → Verify → Report
 
 ## Command Policy
 
-- Use `bun run` for all project scripts.
-- Prefer Bun-native tooling (`bun install`, `bun test`, `bunx`).
-- Use Node.js 24 LTS for Next.js production server execution.
-- Keep orchestration scripts in TypeScript by default; use Zig for targeted high-performance binaries and approved experimental utilities.
+- Use `uv run` for all project scripts and entrypoints.
+- Prefer uv-native tooling (`uv sync`, `uv run`, `uv add`).
+- Keep orchestration scripts in Python.
 - Prefer terminal-native, scriptable workflows over IDE-only/manual flows.
 - ALWAYS use SSH for all Git remotes and pushes (`git@github.com:...`, `git@codeberg.org:...`), never HTTPS.
-- Use Biome for linting and formatting, never ESLint or Prettier.
-- Use Drizzle ORM + Drizzle Kit for PostgreSQL access and migrations; do not introduce a second ORM without explicit Stephen approval.
+- Use ruff for linting and formatting. Use mypy for type checking. Never use flake8, black, or isort separately.
+- Use raw SQL with asyncpg for PostgreSQL access. Use dbmate for migrations. Do not introduce an ORM without explicit Stephen approval.
 - SSH key backup artifacts must be encrypted at rest before committing.
 
 ---
@@ -191,7 +195,7 @@ Wake → Explore → Plan → Code → Verify → Report
 - Canonical projects root is `~/github`.
 - Canonical bootstrap anchor repo is `~/github/scryai`.
 - Canonical repo index source is `~/github/dunamismax/REPOS.md`.
-- Run `bun run setup:workstation --restore-ssh` on a fresh machine when an encrypted SSH backup exists.
+- Run `uv run scry-setup-workstation --restore-ssh` on a fresh machine when an encrypted SSH backup exists.
 - `setup:workstation` must:
   - Ensure `~/github` exists.
   - Clone/fetch `~/github/scryai` first (bootstrap anchor).
@@ -202,8 +206,8 @@ Wake → Explore → Plan → Code → Verify → Report
   - In fallback mode, treat fallback repos as discovery-only; only anchor/profile/managed repos are cloned/fetched and remote-configured.
   - Enforce dual `origin` push URLs (GitHub + Codeberg) on each repo.
 - SSH recovery must use encrypted vault files only:
-  - Backup command: `bun run setup:ssh:backup`
-  - Restore command: `bun run setup:ssh:restore`
+  - Backup command: `uv run scry-setup-ssh-backup`
+  - Restore command: `uv run scry-setup-ssh-restore`
   - Required secret: `SCRY_SSH_BACKUP_PASSPHRASE` (minimum 16 chars)
   - Backup encryption format: AES-256-GCM with PBKDF2-SHA256.
 
@@ -278,7 +282,7 @@ Wake → Explore → Plan → Code → Verify → Report
 ### While Writing Code
 
 - Keep diffs narrow and intention-revealing. One concern per change.
-- Prefer Drizzle-first queries with explicit SQL escape hatches and predictable data flow.
+- Prefer raw SQL with typed Pydantic models for query results.
 - Add comments only where intent would otherwise be ambiguous.
 - Don't add features, types, or error handling beyond what was requested.
 - Match existing code style in the file you're editing.
@@ -315,35 +319,18 @@ git remote get-url --all --push origin
 git push --dry-run
 
 # Fresh system bootstrap checks
-bun run setup:ssh:restore
-bun run setup:workstation
+uv run scry-setup-ssh-restore
+uv run scry-setup-workstation
 
 # Root checks (run from repo root)
-bun run lint
-bun run format
-bun run typecheck
-bun run test
-bun run ci
-bun run projects:doctor
-bun run projects:verify
+uv run ruff check .
+uv run ruff format --check .
+uv run mypy scripts
+uv run pytest
+uv run scry-doctor
 
 # Root system health
-bun run doctor
-
-# Project checks (run from each project repo)
-cd ~/github/next-web-template
-bun run lint
-bun run typecheck
-bun run build
-bun run perf:lighthouse
-bun run perf:lighthouse:assert -- --report artifacts/lighthouse/current.json
-
-cd ../next-blog-template
-bun run lint
-bun run typecheck
-bun run build
-bun run perf:lighthouse
-bun run perf:lighthouse:assert -- --report artifacts/lighthouse/current.json
+uv run scry-doctor
 ```
 
 ---
@@ -407,12 +394,12 @@ scry MUST refuse to:
 
 | Path | Purpose |
 |---|---|
-| `scripts/*.ts` | Root orchestration and setup scripts, run via `bun run`. |
-| `scripts/projects-config.ts` | Managed project inventory (repo paths + install/verify commands). |
+| `scripts/*.py` | Root orchestration and setup scripts, run via `uv run`. |
+| `scripts/projects_config.py` | Managed project inventory (repo paths + install/verify commands). |
 | `docs/` | Durable project memory for subsystem decisions, workflows, and implementation notes. |
 | `.github/workflows/` | GitHub Actions CI definitions. |
 | `.woodpecker.yml` | Codeberg Woodpecker CI pipeline definition. |
-| `infra/` | Local self-host stack manifests. |
+| `infra/` | Local self-host stack manifests (Docker Compose + Postgres). |
 | `vault/ssh/` | Encrypted SSH continuity artifacts for workstation recovery. |
 | `SOUL.md` | Identity — who scry is. |
 | `AGENTS.md` | Operations — how scry works. |
@@ -424,41 +411,23 @@ scry MUST refuse to:
 
 ```bash
 # Root
-bun run bootstrap
-bun run setup:workstation
-bun run setup:ssh:backup
-bun run setup:ssh:restore
-bun run setup:storage
-bun run setup:zig
-bun run infra:up
-bun run infra:down
-bun run infra:logs
-bun run doctor
-bun run projects:list
-bun run projects:doctor
-bun run projects:install
-bun run projects:verify
-bun run ci:root
-bun run ci:projects
-bun run ci
+uv run scry-bootstrap
+uv run scry-setup-workstation
+uv run scry-setup-ssh-backup
+uv run scry-setup-ssh-restore
+uv run scry-setup-storage
+uv run scry-doctor
 
-# ~/github/next-web-template (full-stack Next.js template baseline)
-cd ~/github/next-web-template
-bun run dev
-bun run build
-bun run start
-bun run typecheck
-bun run lint
-bun run format
+# Managed projects
+uv run scry-projects-list
+uv run scry-projects-doctor
+uv run scry-projects-install
+uv run scry-projects-verify
 
-# ~/github/next-blog-template
-cd ~/github/next-blog-template
-bun run dev
-bun run build
-bun run start
-bun run typecheck
-bun run lint
-bun run format
+# Infra
+docker compose --env-file infra/.env -f infra/docker-compose.yml up -d
+docker compose --env-file infra/.env -f infra/docker-compose.yml down
+docker compose --env-file infra/.env -f infra/docker-compose.yml logs -f
 ```
 
 ---

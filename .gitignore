@@ -23,16 +23,28 @@ Thumbs.db
 # Logs
 *.log
 
-# Bun / Node
-node_modules/
-**/node_modules/
-
-# Build output
+# Python
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
 dist/
 build/
+.eggs/
+.venv/
+venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# uv
+uv.lock
+
+# Build output
 .output/
 artifacts/
 
 # Infra data
 infra/data/
-infra/garage.toml

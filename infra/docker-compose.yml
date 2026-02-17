@@ -11,22 +11,5 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  object-storage:
-    image: dxflrs/garage:latest
-    restart: unless-stopped
-    command:
-      - server
-      - -c
-      - /etc/garage.toml
-    ports:
-      - "${GARAGE_S3_PORT}:3900"
-      - "${GARAGE_RPC_PORT}:3901"
-      - "${GARAGE_WEB_PORT}:3902"
-      - "${GARAGE_ADMIN_PORT}:3903"
-    volumes:
-      - ./garage.toml:/etc/garage.toml:ro
-      - ./data/garage/meta:/var/lib/garage/meta
-      - ./data/garage/data:/var/lib/garage/data
-
 volumes:
   postgres_data:

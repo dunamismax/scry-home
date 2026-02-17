@@ -8,56 +8,44 @@ This repo is intentionally **not** an app monorepo. Product apps live in dedicat
 
 - Identity + operations contracts: `SOUL.md`, `AGENTS.md`
 - Root orchestration scripts: `scripts/`
-- Shared local infrastructure: `infra/` (PostgreSQL + Garage S3-compatible object storage)
+- Shared local infrastructure: `infra/` (PostgreSQL via Docker Compose)
 - Durable operational docs: `docs/`
 - Encrypted SSH continuity artifacts: `vault/ssh/`
 
-## Managed Project Repositories
-
-| Project | Local path | Primary purpose |
-|---|---|---|
-| `next-web-template` | `~/github/next-web-template` | Full-stack Next.js 15 App Router template baseline |
-| `next-blog-template` | `~/github/next-blog-template` | Next.js 15 blog template baseline |
-
-The orchestrator tracks these projects via `scripts/projects-config.ts`.
-
-## Managed Stack Baseline
+## Stack Baseline
 
 The application stack baseline for managed projects is:
 
-- Next.js 15 (App Router)
-- Languages: TypeScript + Zig
-- PostgreSQL (Dockerized) + Drizzle ORM + Drizzle Kit migrations
-- Better-Auth + Zod
-- Tailwind CSS + shadcn/ui
-- Garage (S3-compatible object storage)
+- Python 3.12+ with FastAPI
+- PostgreSQL (Dockerized) + asyncpg + raw SQL (no ORM)
+- dbmate for SQL migrations
+- Pydantic v2 for validation and serialization
+- Jinja2 + HTMX for frontend (no-build SSR)
+- PicoCSS + vanilla CSS for styling
+- pytest + httpx for testing
+- ruff for linting/formatting, mypy for type checking
+- uv for dependency and environment management
+- Docker + Docker Compose for local orchestration
 - Coolify for self-hosted push-to-deploy operations
 
 ## Prerequisites
 
-- `bun`
+- `python` (3.12+)
+- `uv`
 - `docker` + `docker compose`
 - `git`
 - `ssh`
 - `curl`
 - `tar`
-- `zig` (bootstrap can install/configure this path)
 
 ## Quick Start
 
 Run from `~/github/scryai`:
 
 ```bash
-bun install
-bun run setup:workstation
-bun run bootstrap
-bun run projects:doctor
-```
-
-Optional full validation across managed projects:
-
-```bash
-bun run projects:verify
+uv sync
+uv run scry-bootstrap
+uv run scry-doctor
 ```
 
 ## New Machine Bootstrap
@@ -67,14 +55,14 @@ mkdir -p ~/github
 cd ~/github
 git clone git@github.com:dunamismax/scryai.git
 cd scryai
-bun install
+uv sync
 
 # optional if encrypted SSH backup exists
 export SCRY_SSH_BACKUP_PASSPHRASE='use-a-long-unique-passphrase'
-bun run setup:ssh:restore
+uv run scry-setup-ssh-restore
 
-bun run setup:workstation
-bun run bootstrap
+uv run scry-setup-workstation
+uv run scry-bootstrap
 ```
 
 `setup:workstation` guarantees:
@@ -89,53 +77,43 @@ bun run bootstrap
 
 ```bash
 # setup / health
-bun run bootstrap
-bun run setup:workstation
-bun run setup:ssh:backup
-bun run setup:ssh:restore
-bun run setup:storage
-bun run setup:zig
-bun run doctor
+uv run scry-bootstrap
+uv run scry-setup-workstation
+uv run scry-setup-ssh-backup
+uv run scry-setup-ssh-restore
+uv run scry-setup-storage
+uv run scry-doctor
 
 # managed projects
-bun run projects:list
-bun run projects:doctor
-bun run projects:install
-bun run projects:verify
+uv run scry-projects-list
+uv run scry-projects-doctor
+uv run scry-projects-install
+uv run scry-projects-verify
 
 # infra
-bun run infra:up
-bun run infra:down
-bun run infra:logs
+docker compose --env-file infra/.env -f infra/docker-compose.yml up -d
+docker compose --env-file infra/.env -f infra/docker-compose.yml down
+docker compose --env-file infra/.env -f infra/docker-compose.yml logs -f
 
 # root quality gates
-bun run lint
-bun run format
-bun run typecheck
-bun run test
-bun run ci:root
-bun run ci:projects
-bun run ci
+uv run ruff check .
+uv run ruff format --check .
+uv run mypy scripts
+uv run pytest
 ```
 
 ## CI/CD Scope (This Repo)
 
 `/home/sawyer/github/scryai` CI validates root orchestration/docs/scripts only.
 
-Product app CI runs in their own repositories:
-- `~/github/next-web-template`
-- `~/github/next-blog-template`
-
-Performance and Lighthouse quality gates are owned by each product repo (not `scryai`):
-- `~/github/next-web-template/docs/performance/README.md`
-- `~/github/next-blog-template/docs/performance/README.md`
+Product app CI runs in their own repositories.
 
 ## Repository Layout
 
 | Path | Purpose |
 |---|---|
 | `scripts/` | Orchestration, setup, and verification scripts. |
-| `scripts/projects-config.ts` | Managed project inventory and command policy. |
+| `scripts/projects_config.py` | Managed project inventory and command policy. |
 | `infra/` | Self-hostable local infrastructure manifests. |
 | `docs/` | Durable operations docs. |
 | `vault/ssh/` | Encrypted SSH continuity artifacts. |

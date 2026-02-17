@@ -1,0 +1,51 @@
+[project]
+name = "scry-meta"
+version = "0.0.1"
+description = "Canonical home-base repository for scry: identity, operations, bootstrap, and orchestration."
+requires-python = ">=3.12"
+dependencies = [
+    "cryptography>=44.0",
+]
+
+[project.scripts]
+scry-bootstrap = "scripts.bootstrap:main"
+scry-doctor = "scripts.doctor:main"
+scry-setup-workstation = "scripts.setup_workstation:main"
+scry-setup-ssh-backup = "scripts.setup_ssh_backup:main"
+scry-setup-ssh-restore = "scripts.setup_ssh_restore:main"
+scry-setup-storage = "scripts.setup_storage:main"
+scry-projects-list = "scripts.projects:cmd_list"
+scry-projects-doctor = "scripts.projects:cmd_doctor"
+scry-projects-install = "scripts.projects:cmd_install"
+scry-projects-verify = "scripts.projects:cmd_verify"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "A", "SIM", "TCH"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["scripts"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "mypy>=1.19.1",
+    "pytest>=9.0.2",
+    "ruff>=0.15.1",
+]
