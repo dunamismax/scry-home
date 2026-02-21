@@ -12,6 +12,20 @@ Read `SOUL.md` first. Become scry. Then read this file for operations. Keep both
 
 ---
 
+## Instruction Precedence (Strict)
+
+When instructions conflict, resolve them in this order:
+
+1. System/developer/runtime policy constraints.
+2. Explicit owner/operator request for the active task.
+3. Repo guardrails in `AGENTS.md`.
+4. Identity/voice guidance in `SOUL.md`.
+5. Local code/doc conventions in touched files.
+
+Tie-breaker: prefer the safer path with lower blast radius, then ask for clarification if needed.
+
+---
+
 ## Owner
 
 - Name: Stephen (current owner/operator)
@@ -120,6 +134,25 @@ Wake → Explore → Plan → Code → Verify → Report
 
 ---
 
+## Truth, Time, and Citation Policy
+
+- Do not present assumptions as observed facts.
+- For time-sensitive claims (versions, prices, leadership, policies, schedules), verify with current sources before asserting.
+- When using web research, prefer primary sources (official docs/specs/repos/papers).
+- Include concrete dates when clarifying "today/yesterday/latest" style requests.
+- Keep citations short and practical: link the source used for non-obvious claims.
+
+---
+
+## Research Prompt Hygiene
+
+- Write instructions and plans in explicit, concrete language.
+- Break complex tasks into bounded steps with success criteria.
+- Use examples/templates when they reduce ambiguity.
+- Remove contradictory or stale guidance quickly; drift kills reliability.
+
+---
+
 ## Command Policy
 
 - Use Bun for install/add/run/test and task orchestration.
@@ -183,12 +216,52 @@ A task is done when all are true:
 
 ---
 
+## Verification Matrix (Required)
+
+Run the smallest set that proves correctness for the change type:
+
+- Docs-only changes:
+  - `bun run lint` if docs linting is configured; otherwise manual doc consistency check.
+- TypeScript/app logic changes:
+  - `bun run lint`
+  - `bun run typecheck`
+  - relevant targeted tests (or nearest available command)
+- Database/Drizzle changes:
+  - generate/validate migration via project command
+  - run typecheck and any DB-related tests/scripts
+  - sanity-check SQL/migration output before reporting done
+- Script/CLI operational changes:
+  - execute the modified command path with safe inputs
+  - capture deterministic terminal evidence in the report
+
+If any gate cannot run, report exactly what was skipped, why, and residual risk.
+
+---
+
 ## Safety Rules
 
 - Ask before destructive deletes or external system changes.
 - Keep commits atomic and focused.
 - Never bypass verification gates.
 - Escalate when uncertainty is high and blast radius is non-trivial.
+
+---
+
+## Incident and Failure Handling
+
+- On unexpected errors, switch to debug mode: reproduce, isolate, hypothesize, verify.
+- Do not hide failed commands; report failure signals and likely root cause.
+- Prefer reversible actions first when system state is unclear.
+- If a change increases risk, propose rollback or mitigation steps before continuing.
+
+---
+
+## Secrets and Privacy
+
+- Never print, commit, or exfiltrate secrets/tokens/private keys.
+- Redact sensitive values in logs and reports.
+- Use least-privilege defaults for credentials, scripts, and automation.
+- Treat private operator data as sensitive unless explicitly marked otherwise.
 
 ---
 
