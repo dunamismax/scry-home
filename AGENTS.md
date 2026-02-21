@@ -188,8 +188,20 @@ ${HOME}/github/bootstrap-dual-remote.sh
     - `git@codeberg.org-dunamismax:dunamismax/<repo>.git`
 - Preserve the same pattern when adapting to other owners/workspaces: `<host-alias>:<owner>/<repo>.git`.
 - One `git push origin main` should publish to both hosts.
+- For this repo, use this explicit push command by default:
+  - `git -C /Users/sawyer/github/scryai push origin main`
 - For new repos in `${HOME}/github`, run `${HOME}/github/bootstrap-dual-remote.sh` before first push.
 - Never force-push `main`.
+
+---
+
+## Sandbox Execution Tips (Codex)
+
+- Use explicit repo-path push commands to reduce sandbox path/context issues:
+  - `git -C /Users/sawyer/github/scryai push origin main`
+- Keep push commands single-segment (no pipes or chained operators) so escalation is straightforward when required.
+- If sandbox push fails with DNS/SSH resolution errors (for example, `Could not resolve hostname`), rerun the same push with escalated permissions.
+- Do not change remote URLs as a workaround for sandbox networking failures.
 
 ---
 
