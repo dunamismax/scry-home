@@ -14,10 +14,18 @@ Read `SOUL.md` first. Become scry. Then read this file for operations. Keep both
 
 ## Owner
 
-- Name: Stephen
+- Name: Stephen (current owner/operator)
 - Alias: `dunamismax`
-- Home: `/Users/sawyer`
-- Projects root: `/Users/sawyer/github`
+- Home: `$HOME` (currently `/Users/sawyer`)
+- Projects root: `${HOME}/github` (currently `/Users/sawyer/github`)
+
+---
+
+## Portability Contract
+
+- This file is anchored to the current local environment but should remain reusable.
+- Treat concrete paths and aliases as current defaults, not universal constants.
+- If this repo is moved/forked, update owner/path details while preserving workflow, verification, and safety rules.
 
 ---
 
@@ -82,7 +90,7 @@ Wake → Explore → Plan → Code → Verify → Report
 
 ## Workspace Scope
 
-- Primary workspace root is `/Users/sawyer/github`, containing multiple independent repos.
+- Primary workspace root is `${HOME}/github` (currently `/Users/sawyer/github`), containing multiple independent repos.
 - Treat each child repo as its own Git boundary, with its own status, branch, and commit history.
 - For cross-repo tasks, map touched repos first, then execute changes repo-by-repo with explicit verification.
 - Keep commits atomic per repo. Do not bundle unrelated repo changes into one commit narrative.
@@ -91,8 +99,8 @@ Wake → Explore → Plan → Code → Verify → Report
 
 ### Next-Agent Handoff Prompt (Standard)
 
-- After completing work and reporting results, always ask Stephen whether to generate a handoff prompt for the next AI agent.
-- If Stephen says yes, generate a context-aware next-agent prompt that:
+- After completing work and reporting results, always ask the repo owner/operator (Stephen in this repo) whether to generate a handoff prompt for the next AI agent.
+- If the owner says yes, generate a context-aware next-agent prompt that:
   - uses current repo/app state and recent changes,
   - prioritizes highest-value next steps,
   - includes concrete implementation goals, constraints, verification commands, and expected response format.
@@ -119,8 +127,8 @@ Wake → Explore → Plan → Code → Verify → Report
 - Project task entrypoint is `scripts/cli.ts`.
 - All operational scripts are TypeScript under `scripts/`.
 - Use SSH remotes only for GitHub/Codeberg.
-- Workspace-level remote bootstrap script lives at `/Users/sawyer/github/bootstrap-dual-remote.sh`.
-- For React Router framework apps, default to SPA mode via `react-router.config.ts` with `ssr: false` unless Stephen explicitly asks for SSR.
+- Workspace-level remote bootstrap script defaults to `${HOME}/github/bootstrap-dual-remote.sh` (current path: `/Users/sawyer/github/bootstrap-dual-remote.sh`).
+- For React Router framework apps, default to SPA mode via `react-router.config.ts` with `ssr: false` unless the owner explicitly asks for SSR.
 
 ### Canonical commands
 
@@ -141,22 +149,24 @@ bun run scry:projects:doctor
 bun run scry:projects:install
 bun run scry:projects:verify
 
-# workspace remotes (all repos under /Users/sawyer/github)
-/Users/sawyer/github/bootstrap-dual-remote.sh
+# workspace remotes (all repos under ${HOME}/github)
+${HOME}/github/bootstrap-dual-remote.sh
 ```
 
 ---
 
 ## Git Remote Sync Policy
 
-- Mirror source control across GitHub and Codeberg.
+- Mirror source control across GitHub and Codeberg (or two equivalent primary/backup hosts).
 - Use `origin` as the single working remote.
-- `origin` fetch URL: `git@github.com-dunamismax:dunamismax/<repo>.git`
-- `origin` push URLs:
-  - `git@github.com-dunamismax:dunamismax/<repo>.git`
-  - `git@codeberg.org-dunamismax:dunamismax/<repo>.git`
+- Current workspace defaults:
+  - `origin` fetch URL: `git@github.com-dunamismax:dunamismax/<repo>.git`
+  - `origin` push URLs:
+    - `git@github.com-dunamismax:dunamismax/<repo>.git`
+    - `git@codeberg.org-dunamismax:dunamismax/<repo>.git`
+- Preserve the same pattern when adapting to other owners/workspaces: `<host-alias>:<owner>/<repo>.git`.
 - One `git push origin main` should publish to both hosts.
-- For new repos in `/Users/sawyer/github`, run `/Users/sawyer/github/bootstrap-dual-remote.sh` before first push.
+- For new repos in `${HOME}/github`, run `${HOME}/github/bootstrap-dual-remote.sh` before first push.
 - Never force-push `main`.
 
 ---
@@ -205,6 +215,6 @@ A task is done when all are true:
 
 - Primary and only local development OS is **macOS**.
 - Assume `zsh`, BSD userland, and macOS filesystem paths by default.
-- Do not provide or prioritize Windows/PowerShell/WSL instructions.
-- If cross-platform guidance is requested, keep macOS as source of truth and treat Windows as out of scope unless Stephen explicitly asks for it.
+- Do not provide or prioritize non-macOS shell or tooling instructions by default.
+- If cross-platform guidance is requested, keep macOS as source of truth and add alternatives only when the repo owner explicitly asks for them.
 - Linux deployment targets may exist per repo requirements; this does not change local workstation assumptions.
