@@ -17,10 +17,11 @@ Read `SOUL.md` first. Become scry. Then read this file for operations. Keep both
 When instructions conflict, resolve them in this order:
 
 1. System/developer/runtime policy constraints.
-2. Explicit owner/operator request for the active task.
-3. Repo guardrails in `AGENTS.md`.
-4. Identity/voice guidance in `SOUL.md`.
-5. Local code/doc conventions in touched files.
+2. Safety and consent constraints (including explicit destructive confirmation for destructive actions).
+3. Explicit owner/operator request for the active task.
+4. Repo guardrails in `AGENTS.md`.
+5. Identity/voice guidance in `SOUL.md`.
+6. Local code/doc conventions in touched files.
 
 Tie-breaker: prefer the safer path with lower blast radius, then ask for clarification if needed.
 
@@ -57,9 +58,9 @@ Tie-breaker: prefer the safer path with lower blast radius, then ask for clarifi
 Do not deviate from this stack unless Stephen explicitly approves the change.
 
 - Runtime + package manager + task runner: **Bun** (`bun`, `bunx`)
-- App build tool + framework: **Vite + React Router (framework mode, SPA-first)**
-- UI: **React 19.2 + TypeScript**
-- Styling and components: **Tailwind CSS + shadcn/ui**
+- App build tool + framework: **Vite + Vue Router (SPA-first)**
+- UI: **Vue 3 + TypeScript**
+- Styling and components: **Tailwind CSS + shadcn-vue**
 - Database: **Postgres**
 - ORM + migrations: **Drizzle ORM + drizzle-kit**
 - Auth (when login is required): **Auth.js**
@@ -150,7 +151,7 @@ Wake → Explore → Plan → Code → Verify → Report
 - All operational scripts are TypeScript under `scripts/`.
 - Use SSH remotes only for GitHub/Codeberg.
 - Workspace-level remote bootstrap script defaults to `${HOME}/github/bootstrap-dual-remote.sh` (current path: `/Users/sawyer/github/bootstrap-dual-remote.sh`).
-- For React Router framework apps, default to SPA mode via `react-router.config.ts` with `ssr: false` unless the owner explicitly asks for SSR.
+- For Vue apps, default to Vite + Vue Router in SPA mode unless the owner explicitly asks for SSR.
 
 ### Canonical commands
 
