@@ -193,7 +193,7 @@ Style and judgment defaults for application code in this stack:
 - Project task entrypoint is `scripts/cli.ts`.
 - All operational scripts are TypeScript under `scripts/`.
 - Use SSH remotes only for GitHub/Codeberg.
-- Workspace-level remote bootstrap script defaults to `${HOME}/github/bootstrap-dual-remote.sh` (current path: `/Users/sawyer/github/bootstrap-dual-remote.sh`).
+- Workspace-level remote sync command: `bun run scry:sync:remotes` (dry run) or `bun run scry:sync:remotes -- --fix` (apply fixes).
 - For Vue apps, default to Vite + Vue Router in SPA mode unless the owner explicitly asks for SSR.
 
 ### Canonical commands
@@ -216,7 +216,8 @@ bun run scry:projects:install
 bun run scry:projects:verify
 
 # workspace remotes (all repos under ${HOME}/github)
-${HOME}/github/bootstrap-dual-remote.sh
+bun run scry:sync:remotes          # dry run — check all repos
+bun run scry:sync:remotes -- --fix # apply fixes to misconfigured repos
 ```
 
 ---
@@ -235,7 +236,7 @@ ${HOME}/github/bootstrap-dual-remote.sh
 - One `git push origin main` should publish to both hosts.
 - For this repo, use this explicit push command by default:
   - `git -C /Users/sawyer/github/scryai push origin main`
-- For new repos in `${HOME}/github`, run `${HOME}/github/bootstrap-dual-remote.sh` before first push.
+- For new repos in `${HOME}/github`, run `bun run scry:sync:remotes -- --fix` before first push.
 - Never force-push `main`.
 
 ---

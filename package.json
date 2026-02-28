@@ -16,6 +16,7 @@
     "scry:projects:doctor": "bun run scripts/cli.ts projects:doctor",
     "scry:projects:install": "bun run scripts/cli.ts projects:install",
     "scry:projects:verify": "bun run scripts/cli.ts projects:verify",
+    "scry:sync:remotes": "bun run scripts/cli.ts sync:remotes",
     "scry:sync:work-desktop": "bun run scripts/cli.ts sync:work-desktop"
   },
   "dependencies": {},

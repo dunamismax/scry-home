@@ -8,6 +8,7 @@ import {
 } from "./tasks/projects";
 import { setupSshBackup, setupSshRestore } from "./tasks/setup-ssh";
 import { setupWorkstation } from "./tasks/setup-workstation";
+import { syncRemotes } from "./tasks/sync-remotes";
 import { syncWorkDesktop } from "./tasks/sync-work-desktop";
 
 const command = Bun.argv[2];
@@ -22,6 +23,7 @@ const commands: Record<string, () => void> = {
   "projects:doctor": doctorProjects,
   "projects:install": installProjects,
   "projects:verify": verifyProjects,
+  "sync:remotes": syncRemotes,
   "sync:work-desktop": syncWorkDesktop,
 };
 
