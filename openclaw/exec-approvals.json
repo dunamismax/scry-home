@@ -1,12 +1,14 @@
 {
-  "agents": {},
-  "defaults": {
-    "ask": "on-miss",
-    "security": "allowlist"
+  "agents" : {
+
   },
-  "socket": {
-    "path": "\/Users\/sawyer\/.openclaw\/exec-approvals.sock",
-    "token": "g0t1HRBnajsSQ-XZbWB-MTjiMIBfTjn3"
+  "defaults" : {
+    "ask" : "on-miss",
+    "security" : "allowlist"
   },
-  "version": 1
+  "socket" : {
+    "path" : "\/Users\/sawyer\/.openclaw\/exec-approvals.sock",
+    "token" : "g0t1HRBnajsSQ-XZbWB-MTjiMIBfTjn3"
+  },
+  "version" : 1
 }

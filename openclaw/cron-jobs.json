@@ -1,4 +1,32 @@
 {
   "version": 1,
-  "jobs": []
+  "jobs": [
+    {
+      "id": "4c705a49-3c43-4fdc-9ed9-f988c5caeee1",
+      "agentId": "main",
+      "sessionKey": "agent:main:main",
+      "name": "sync-openclaw-workspace",
+      "enabled": true,
+      "createdAtMs": 1772473326916,
+      "updatedAtMs": 1772473326916,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 3 * * *",
+        "tz": "America/New_York"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run the OpenClaw workspace sync to the scryai-typescript repo. Execute: cd /Users/sawyer/github/scryai-typescript && bun run scry:sync:openclaw -- --commit. Report the result briefly.",
+        "timeoutSeconds": 120
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1772524800000
+      }
+    }
+  ]
 }

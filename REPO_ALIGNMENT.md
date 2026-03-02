@@ -115,10 +115,11 @@ All five web apps pass `bun run lint` and `bun run typecheck`. Poddashboard had 
 - [x] Lint + typecheck clean
 - [x] Pushed to GitHub + Codeberg
 
-### Phase 6: Populate MANAGED_PROJECTS
+### Phase 6: Populate MANAGED_PROJECTS ✅
 
-- [ ] Add all active TypeScript repos to `projects.config.ts`
-- [ ] Verify `bun run scry:projects:doctor` reports on all repos
+- [x] Add all active repos (8 TypeScript + 2 Python) to `projects.config.ts`
+- [x] Verify `bun run scry:projects:doctor` reports all 10 repos present, on main, with dual remotes
+- [x] Lint + typecheck clean
 
 ---
 
