@@ -1,40 +1,29 @@
 # TOOLS.md - Local Notes
 
-Skills define _how_ tools work. This file is for _your_ specifics — the stuff that's unique to your setup.
+## Projects
 
-## What Goes Here
+- All active repos: `~/github/<name>` (see MEMORY.md for full list)
+- OpenClaw workspace (canonical): `~/.openclaw/workspace`
+- Scry config repo: `~/github/scryai-typescript`
+- Sync script: `~/github/scryai-typescript/scripts/tasks/sync-openclaw.ts`
 
-Things like:
+## SSH Remotes
 
-- Camera names and locations
-- SSH hosts and aliases
-- Preferred voices for TTS
-- Speaker/room names
-- Device nicknames
-- Anything environment-specific
+All repos use dual SSH remotes with host aliases:
+- GitHub: `github.com-dunamismax`
+- Codeberg: `codeberg.org-dunamismax`
+- Push: `git push --force origin main` (hits both)
 
-## Examples
+## Signal
 
-```markdown
-### Cameras
+- Scry's number: `+16103018105`
+- Stephen's number: `+19412897570`
+- CLI: `/opt/homebrew/bin/signal-cli`
 
-- living-room → Main area, 180° wide angle
-- front-door → Entrance, motion-triggered
+## Paired Nodes
 
-### SSH
+- Stephen's MacBook Air (remote macOS node — use `nodes.run` for macOS-only tasks)
 
-- home-server → 192.168.1.100, user: admin
+## TTS
 
-### TTS
-
-- Preferred voice: "Nova" (warm, slightly British)
-- Default speaker: Kitchen HomePod
-```
-
-## Why Separate?
-
-Skills are shared. Your setup is yours. Keeping them apart means you can update skills without losing your notes, and share skills without leaking your infrastructure.
-
----
-
-Add whatever helps you do your job. This is your cheat sheet.
+- Default voice: whatever's configured (no specific preference noted yet)
