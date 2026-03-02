@@ -44,11 +44,11 @@ All five share: Biome 2.4, Vite 7.3, TypeScript 5.9, Zod 4.3 (except repo-monito
 |---|---|
 | **scryai-typescript** | Fully aligned. Biome, TypeScript, Bun, CLAUDE.md, dual remotes, OpenClaw sync. |
 
-### Mobile App — Needs Alignment (Phase 4)
+### Mobile App — Aligned
 
-| Repo | React | Expo SDK | State | Linting | Issues |
+| Repo | React | Expo SDK | State | Linting | Status |
 |---|---|---|---|---|---|
-| **CallRift** | 18.3 | 52 | zustand | expo lint (ESLint) | React 18 (needs 19+), no Biome, no TanStack Query, babel.config.js present |
+| **CallRift** | 19.2 | 55 | zustand | Biome 2.4 | lint clean (warnings only), typecheck clean |
 
 ### Python Repos — Intentionally Remaining Python
 
@@ -103,13 +103,13 @@ Deleted local copies of scryai-swift, scryai-gorust, elixir, espanol. All preser
 
 All five web apps pass `bun run lint` and `bun run typecheck`. Poddashboard had Drizzle migration snapshot formatting fixed. Repo-monitor has a11y warnings (non-blocking).
 
-### Phase 4: Align CallRift (Mobile)
+### Phase 4: Align CallRift (Mobile) ✅
 
-- [ ] Upgrade React to 19+ (check Expo SDK compatibility first)
-- [ ] Replace expo lint (ESLint) with Biome
-- [ ] Evaluate zustand — keep for client UI state, replace with TanStack Query for async/server state
-- [ ] Verify `bun run lint` + `bun run typecheck` clean
-- [ ] Update README tech stack table
+- [x] Upgrade React to 19.2 (Expo SDK 52 → 55, React Native 0.76 → 0.83)
+- [x] Replace expo lint (ESLint) with Biome
+- [x] Evaluate zustand — all stores are pure client-side UI state, kept zustand (no TanStack Query needed)
+- [x] Verify `bun run lint` + `bun run typecheck` clean
+- [x] Update README tech stack table
 
 ### Phase 5: Rewrite scry-trader in TypeScript
 
