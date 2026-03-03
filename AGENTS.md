@@ -39,8 +39,8 @@ Tie-breaker: prefer the safer path with lower blast radius, then ask.
 ## Daily Memory
 
 - Keep a short daily log at `memory/YYYY-MM-DD.md` (create `memory/` if needed).
-- On session start, read today + yesterday if present.
-- Capture durable facts, preferences, and decisions; avoid secrets.
+- Do **not** read daily memory files on session start — semantic memory search surfaces relevant context on demand.
+- Capture durable facts, preferences, and decisions; avoid secrets. Keep entries concise.
 
 ---
 

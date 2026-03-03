@@ -20,25 +20,7 @@
 
 ## Stack Contract
 
-**Default stack** (TypeScript web/CLI projects):
-
-| Layer | Default |
-|---|---|
-| Runtime / package manager | Bun |
-| App framework | Vite + React Router 7 (framework mode, SPA-first `ssr: false`) |
-| UI | React + TypeScript |
-| Mobile | React Native + Expo |
-| Styling / components | Tailwind CSS 4 + shadcn/ui |
-| Database | Postgres |
-| ORM / migrations | Drizzle ORM + drizzle-kit |
-| Server state | TanStack Query |
-| Auth | Better Auth (no Auth.js) |
-| Validation | Zod |
-| Formatting / linting | Biome (no ESLint/Prettier) |
-
-Disallowed (for TS projects): npm/pnpm/yarn, ESLint/Prettier, Next.js, Auth.js.
-
-**Right tool for the job:** Default is TypeScript + Bun, but use Python, Rust, Go, etc. when they're genuinely better. We're full-stack engineers, not single-language zealots.
+See `AGENTS.md` for the full stack table. Default is TypeScript + Bun; Python/Rust/Go when genuinely better.
 
 ## Active Repos (TypeScript)
 
@@ -76,6 +58,16 @@ All under `~/github`, dual SSH remotes. TypeScript + Bun unless noted:
 - `openclaw/` dir in grimoire auto-synced via `sync-openclaw` script
 - Daily cron at 3am ET syncs workspace → repo
 
+### Signal Channel Config (tuned 2026-03-02)
+
+- Block streaming: **off** (single clean message per response)
+- Reasoning visibility: **off** (per-session `/reasoning off`)
+- Verbose: **off** (no tool call summaries leaked)
+- Human delay: **off** (no artificial latency)
+- Typing indicators: **thinking** (shows typing while processing)
+- Thinking level: **high** (full extended thinking, hidden from chat)
+- Heartbeat reasoning: **false**
+
 ## Reference Docs
 
 - **CONTRIBUTING_TO_OPENCLAW.md** — field guide for contributing to OpenClaw. Repo setup, build system, PR template usage, Signal plugin architecture, test patterns, reviewer expectations. Lives in workspace (canonical) and grimoire.
@@ -83,7 +75,7 @@ All under `~/github`, dual SSH remotes. TypeScript + Bun unless noted:
 ## Open-Source Contributions
 
 - **PR #32217** (2026-03-02): fix — Signal reaction messageId fallback + queued message channelId passthrough. Issue #17651.
-- **PR #32396** (2026-03-02): docs — Signal block streaming and progressive delivery guide.
+- **PR #32396** (2026-03-02): docs — Signal block streaming guide. **CLOSED** — block streaming not recommended for Signal DM use.
 - **PR #32397** (2026-03-02): test — Numeric messageId coverage for Signal reaction handler.
 - **PR #32398** (2026-03-02): docs — Recommended DM configuration for personal assistant use.
 - All authored as `dunamismax`. No Signal subsystem maintainer exists yet — opportunity to establish ownership.
@@ -95,3 +87,6 @@ All under `~/github`, dual SSH remotes. TypeScript + Bun unless noted:
 - 2026-03-02: Stripped all `Co-Authored-By: Claude` from 12 repos. No agent attribution, ever.
 - 2026-03-02: Completed Phase 1 of repo alignment — all 19 repos have CLAUDE.md + dual SSH remotes.
 - 2026-03-02: Adopted "right tool for the job" philosophy — scry-trader stays Python, stack contract is a default not a religion.
+- 2026-03-02: CallRift Phase 2 shipped — real SIP engine (sip.js), API client (TanStack Query), server Bun migration, Docker Compose.
+- 2026-03-02: Tuned OpenClaw Signal config — disabled block streaming, reasoning, verbose, human delay; enabled typing indicators.
+- 2026-03-02: Closed PR #32396 (block streaming guide) — bad advice for Signal DM use case.
