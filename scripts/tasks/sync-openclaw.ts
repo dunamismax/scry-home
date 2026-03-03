@@ -9,6 +9,8 @@
  * Sync map:
  *   ~/.openclaw/workspace/SOUL.md      → <repo>/SOUL.md
  *   ~/.openclaw/workspace/AGENTS.md    → <repo>/AGENTS.md
+ *   ~/.openclaw/workspace/SOUL.md      → <repo>/openclaw/SOUL.md
+ *   ~/.openclaw/workspace/AGENTS.md    → <repo>/openclaw/AGENTS.md
  *   ~/.openclaw/workspace/TOOLS.md     → <repo>/openclaw/TOOLS.md
  *   ~/.openclaw/workspace/HEARTBEAT.md → <repo>/openclaw/HEARTBEAT.md
  *   ~/.openclaw/workspace/memory/      → <repo>/openclaw/memory/
@@ -50,6 +52,8 @@ const ROOT_FILES = ["SOUL.md", "AGENTS.md"] as const;
 
 /** Files synced to openclaw/ directory. */
 const OPENCLAW_FILES = [
+  "SOUL.md",
+  "AGENTS.md",
   "MEMORY.md",
   "TOOLS.md",
   "HEARTBEAT.md",
