@@ -130,3 +130,4 @@ Two canonical files live in the OpenClaw workspace. Everything else is a copy:
 - 2026-03-03: Peekaboo CLI uninstalled by request; local Peekaboo automation is disabled unless reinstalled.
 - 2026-03-03: Added persistent multi-agent bench: Samantha (coding) plus Sentinel, Shipwright, Caretaker, Archivist, Scout, Operator, Reviewer, and Builder Mobile; new specialists use Opus 4.6 primary with Codex fallback unless explicitly overridden.
 - 2026-03-03: Added explicit specialist-bench stewardship rules to Scry’s AGENTS/SOUL and validated delegation wiring with Sentinel/Reviewer smoke runs (Opus attempts failed transiently, Codex fallback smoke runs succeeded).
+- 2026-03-03: Added daily cron maintenance: `healthcheck:agent-bench-daily` (agent/workspace/model integrity) and `healthcheck:docs-sync-daily` (SOUL/AGENTS canonical sync + drift auto-commit), both verified with manual runs.

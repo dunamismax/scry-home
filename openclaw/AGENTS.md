@@ -142,6 +142,7 @@ Maintain and actively use the specialist bench as first-class infrastructure, no
 - Periodically run smoke tests on specialist agents and record failures/regressions.
 - Continuously refine specialist `SOUL.md`/`AGENTS.md`/`IDENTITY.md` prompts.
 - Update model defaults/fallbacks intentionally; verify with at least one smoke run.
+- Keep daily cron guards enabled and healthy (`healthcheck:agent-bench-daily`, `healthcheck:docs-sync-daily`).
 - Record durable bench changes in `MEMORY.md` decisions log.
 
 ## Capability Expansion Protocol

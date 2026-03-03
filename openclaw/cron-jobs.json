@@ -162,6 +162,76 @@
       "state": {
         "nextRunAtMs": 1773061200000
       }
+    },
+    {
+      "id": "a4185183-739f-4cd5-98f1-09c832284692",
+      "agentId": "main",
+      "sessionKey": "agent:main:main",
+      "name": "healthcheck:agent-bench-daily",
+      "enabled": true,
+      "createdAtMs": 1772542721502,
+      "updatedAtMs": 1772542825327,
+      "schedule": {
+        "kind": "cron",
+        "expr": "20 3 * * *",
+        "tz": "America/New_York"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "model": "openai-codex/gpt-5.3-codex",
+        "timeoutSeconds": 300,
+        "message": "Run the daily specialist-agent bench health check.\n\nExecute exactly:\nset -euo pipefail\nOUT=\"$(python3 - <<'PY'\nimport json, subprocess, pathlib, sys\nexpected = ['main','samantha','sentinel','shipwright','caretaker','archivist','scout','operator','reviewer','builder-mobile']\nopus_specialists = ['sentinel','shipwright','caretaker','archivist','scout','operator','reviewer','builder-mobile']\nissues=[]\n\nraw = subprocess.check_output(['openclaw','config','get','agents.list'], text=True)\nagents = json.loads(raw)\nby_id = {a.get('id'): a for a in agents}\n\nfor aid in expected:\n    if aid not in by_id:\n        issues.append(f'missing-agent:{aid}')\n\nfor aid in expected:\n    if aid not in by_id:\n        continue\n    a=by_id[aid]\n    ws = pathlib.Path(a.get('workspace') or '/Users/sawyer/.openclaw/workspace')\n    for f in ['SOUL.md','AGENTS.md','IDENTITY.md','CLAUDE.md']:\n        if not (ws/f).exists():\n            issues.append(f'missing-file:{aid}:{f}')\n\ns = by_id.get('samantha')\nif s:\n    m = s.get('model', {})\n    if m.get('primary') != 'openai-codex/gpt-5.3-codex':\n        issues.append('model-mismatch:samantha:primary')\n    fb = m.get('fallbacks') or []\n    if 'anthropic/claude-opus-4-6' not in fb:\n        issues.append('model-mismatch:samantha:fallback')\n\nfor aid in opus_specialists:\n    a = by_id.get(aid)\n    if not a:\n        continue\n    m = a.get('model', {})\n    if m.get('primary') != 'anthropic/claude-opus-4-6':\n        issues.append(f'model-mismatch:{aid}:primary')\n    fb = m.get('fallbacks') or []\n    if 'openai-codex/gpt-5.3-codex' not in fb:\n        issues.append(f'model-mismatch:{aid}:fallback')\n\nif issues:\n    print('FAIL')\n    for i in issues:\n        print(i)\n    sys.exit(2)\n\nprint('OK: agent bench config + workspace files validated')\nPY\n)\" || RC=$?\nRC=${RC:-0}\n\nif [ \"$RC\" -ne 0 ]; then\n  MSG=\"$(printf '%s' \"$OUT\" | tail -n 30 | tr '\\n' '; ' | sed 's/\"//g')\"\n  openclaw system event --text \"Reminder: daily agent bench health check found issues. ${MSG}\" --mode now\n  exit 1\nfi\n\nopenclaw agents list --bindings >/tmp/agent-bench-list.txt\nexit 0"
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1772612400000,
+        "lastRunAtMs": 1772542804152,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 21175,
+        "lastDelivered": false,
+        "lastDeliveryStatus": "not-delivered",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "36291aba-bdf4-42e8-a240-8e1ddae129c4",
+      "agentId": "main",
+      "sessionKey": "agent:main:main",
+      "name": "healthcheck:docs-sync-daily",
+      "enabled": true,
+      "createdAtMs": 1772542733941,
+      "updatedAtMs": 1772542791744,
+      "schedule": {
+        "kind": "cron",
+        "expr": "30 3 * * *",
+        "tz": "America/New_York"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "model": "openai-codex/gpt-5.3-codex",
+        "timeoutSeconds": 420,
+        "message": "Run the daily documentation/config consistency health check for Scry + specialist agents.\n\nExecute exactly:\nset -euo pipefail\ncd /Users/sawyer/github/grimoire\n\n# 1) Ensure canonical sync from workspace into grimoire copies.\nbun run scry:sync:openclaw >/tmp/docs-sync-check.log 2>&1 || {\n  openclaw system event --text \"Reminder: daily docs health check failed while running sync-openclaw. Check grimoire sync automation.\" --mode now\n  exit 1\n}\n\n# 2) If sync produced drift in tracked canonical files, auto-commit + push.\nif ! git diff --quiet -- SOUL.md AGENTS.md openclaw/SOUL.md openclaw/AGENTS.md openclaw/MEMORY.md openclaw/TOOLS.md; then\n  bun run scry:sync:openclaw -- --commit >/tmp/docs-sync-commit.log 2>&1 || {\n    openclaw system event --text \"Reminder: daily docs health check detected drift but auto-commit sync failed. Review grimoire sync output.\" --mode now\n    exit 1\n  }\nfi\n\n# 3) Validate canonical file equality and CLAUDE presence.\nOUT=\"$(python3 - <<'PY'\nfrom pathlib import Path\nissues=[]\nws=Path('/Users/sawyer/.openclaw/workspace')\ngr=Path('/Users/sawyer/github/grimoire')\nchecks=[\n    (ws/'SOUL.md', gr/'SOUL.md', 'SOUL root'),\n    (ws/'AGENTS.md', gr/'AGENTS.md', 'AGENTS root'),\n    (ws/'SOUL.md', gr/'openclaw'/'SOUL.md', 'SOUL openclaw copy'),\n    (ws/'AGENTS.md', gr/'openclaw'/'AGENTS.md', 'AGENTS openclaw copy'),\n]\nfor a,b,label in checks:\n    if not a.exists() or not b.exists():\n        issues.append(f'missing:{label}')\n        continue\n    if a.read_text() != b.read_text():\n        issues.append(f'mismatch:{label}')\n\nfor p,label in [\n    (gr/'CLAUDE.md','grimoire CLAUDE.md'),\n    (Path('/Users/sawyer/openclaw/CLAUDE.md'),'openclaw CLAUDE.md'),\n]:\n    if not p.exists():\n        issues.append(f'missing:{label}')\n\nif issues:\n    print('FAIL')\n    for i in issues:\n        print(i)\n    raise SystemExit(2)\nprint('OK: docs/config canonical sync validated')\nPY\n)\" || RC=$?\nRC=${RC:-0}\n\nif [ \"$RC\" -ne 0 ]; then\n  MSG=\"$(printf '%s' \"$OUT\" | tail -n 30 | tr '\\n' '; ' | sed 's/\"//g')\"\n  openclaw system event --text \"Reminder: daily docs health check found consistency issues. ${MSG}\" --mode now\n  exit 1\nfi\n\nexit 0"
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1772613000000,
+        "lastRunAtMs": 1772542775492,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 16252,
+        "lastDelivered": false,
+        "lastDeliveryStatus": "not-delivered",
+        "consecutiveErrors": 0
+      }
     }
   ]
 }
