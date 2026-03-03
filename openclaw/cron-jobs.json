@@ -8,7 +8,7 @@
       "name": "sync-openclaw-workspace",
       "enabled": true,
       "createdAtMs": 1772473326916,
-      "updatedAtMs": 1772473326916,
+      "updatedAtMs": 1772503884634,
       "schedule": {
         "kind": "cron",
         "expr": "0 3 * * *",

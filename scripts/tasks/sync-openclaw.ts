@@ -53,6 +53,7 @@ const ROOT_FILES = ["SOUL.md", "AGENTS.md"] as const;
 /** Files synced to openclaw/ directory. */
 const OPENCLAW_FILES = [
   "IDENTITY.md",
+  "MEMORY.md",
   "USER.md",
   "TOOLS.md",
   "HEARTBEAT.md",
