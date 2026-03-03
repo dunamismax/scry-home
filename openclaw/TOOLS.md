@@ -7,9 +7,18 @@
 - Scry config repo: `~/github/grimoire`
 - Sync script: `~/github/grimoire/scripts/tasks/sync-openclaw.ts`
 
+## OpenClaw Install
+
+- **Git-based install**: `~/openclaw` (main branch, v2026.3.3+)
+- **Runtime symlink**: `~/.openclaw/lib/node_modules/openclaw` → `~/openclaw`
+- **Binary**: `~/.local/bin/openclaw` → `~/openclaw/openclaw.mjs`
+- **Update method**: `cd ~/openclaw && git pull` then restart gateway
+- **Service**: LaunchAgent (`ai.openclaw.gateway.plist`), port 18789
+
 ## Reference Docs
 
 - **CONTRIBUTING_TO_OPENCLAW.md** (workspace + grimoire) — read before any work on the OpenClaw repo. Covers repo setup, build system, PR template, Signal plugin architecture, test patterns, reviewer expectations.
+- **CAPABILITY-GUIDE.md** (workspace) — full integration audit and setup guide for maximum capability.
 
 ## SSH Remotes
 
@@ -27,6 +36,26 @@ All repos use dual SSH remotes with host aliases:
 ## Paired Nodes
 
 - Stephen's MacBook Air (remote macOS node — use `nodes.run` for macOS-only tasks)
+
+## Enabled Integrations (2026-03-03)
+
+- **Browser**: Brave, profiles `openclaw` (port 18800) and `chrome` (port 18792)
+- **ACP**: acpx backend, default agent codex, allowed: pi/claude/codex/opencode/gemini
+- **Sub-agents**: depth 2, 8 concurrent, 5 children/agent, 2h archive
+- **Web search**: Brave provider, API key configured, functional
+- **Web fetch**: 50K chars, 30s timeout
+- **Notion**: "Scry" integration → "Stephen's Notion" workspace (share pages to grant access)
+- **Peekaboo**: macOS UI automation (Accessibility ✅, Screen Recording needs terminal restart)
+- **Whisper**: Local speech-to-text (no API key, runs on Apple Silicon)
+
+## Declined Integrations
+
+- Email / Himalaya — declined by Stephen (2026-03-03)
+
+## Installed CLIs
+
+- `gh`, `docker`, `ffmpeg`, `yt-dlp`, `codex`, `claude`, `jq`, `tmux`, `peekaboo`, `summarize`, `whisper`, `clawhub` — all available
+- **Not installed**: acpx, mcporter, playwright
 
 ## TTS
 
