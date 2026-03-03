@@ -15,7 +15,7 @@ This document covers backup layers for Stephen's local OpenClaw deployment and h
 - Source: `~/.openclaw/workspace`
 - Mirrored to: `~/github/grimoire/openclaw/*`
 - Redundancy: pushed to both GitHub + Codeberg
-- Schedule: daily sync job (`sync-openclaw-workspace`)
+- Schedule: daily sync job (`sync-openclaw-workspace`, OpenClaw cron @ 03:00 ET)
 
 ## 3) Encrypted critical config backup (secrets included)
 - Command: `bun run scry:setup:config_backup`
@@ -52,6 +52,14 @@ cd ~/github/grimoire
 # set/update manually
 security add-generic-password -U -a "$USER" -s "scry.openclaw.config-backup.passphrase" -w '<new-passphrase>'
 ```
+
+---
+
+## Monitoring & Reminders
+
+Configured OpenClaw cron jobs:
+- `healthcheck:backup-freshness` — daily 06:10 ET metadata age check (alerts only on failure/staleness).
+- `healthcheck:restore-drill-reminder` — monthly reminder on day 1 at 10:00 ET.
 
 ---
 
