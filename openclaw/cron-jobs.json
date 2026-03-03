@@ -93,6 +93,75 @@
       "state": {
         "nextRunAtMs": 1775052000000
       }
+    },
+    {
+      "id": "0282e251-19ca-4842-a9a8-900b9b474f1a",
+      "agentId": "main",
+      "sessionKey": "agent:main:main",
+      "name": "briefing:daily-repo-priority-summary",
+      "enabled": true,
+      "createdAtMs": 1772533964511,
+      "updatedAtMs": 1772534025383,
+      "schedule": {
+        "kind": "cron",
+        "expr": "35 8 * * *",
+        "tz": "America/New_York"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "model": "openai-codex/gpt-5.3-codex",
+        "timeoutSeconds": 420,
+        "message": "Generate a concise daily engineering summary for Stephen.\n\nContext:\n- Repos root: /Users/sawyer/github\n- Primary tracked repos: grimoire, pr-firefighter, CallRift, elchess, augur, podwatch, rip, Sawyer-Visual-Media\n\nTasks:\n1) Check each repo for branch state and uncommitted changes.\n2) Read each repo BUILD.md status line + next priorities when present.\n3) Produce a priority-ranked \"today\" list (top 5) with why.\n4) Include blockers/risk flags.\n5) Include a calendar note: if M365/Notion calendar integration is not configured, explicitly state \"calendar integration not configured yet\".\n\nOutput style:\n- 6–12 bullets max, high signal, no fluff.\n- Action-first and decision-oriented."
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "signal",
+        "to": "+19412897570",
+        "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1772544900000,
+        "lastRunAtMs": 1772533975121,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 50262,
+        "lastDelivered": true,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "3a8c655e-1c1b-4438-9796-c8d1e648efcb",
+      "agentId": "main",
+      "sessionKey": "agent:main:main",
+      "name": "briefing:weekly-project-review",
+      "enabled": true,
+      "createdAtMs": 1772533970252,
+      "updatedAtMs": 1772533970252,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 9 * * 1",
+        "tz": "America/New_York"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "model": "openai-codex/gpt-5.3-codex",
+        "timeoutSeconds": 600,
+        "message": "Run a weekly project review summary for Stephen.\n\nScope:\n- Repos: grimoire, pr-firefighter, CallRift, elchess, augur, podwatch, rip, Sawyer-Visual-Media\n\nTasks:\n1) Summarize progress vs BUILD.md in each repo.\n2) Identify stale trackers or missing verification evidence.\n3) Recommend next-week execution plan (top 3 initiatives + sequencing).\n4) Flag any integration opportunities with high ROI and low risk.\n\nOutput style:\n- Short executive summary first.\n- Then ranked action plan (top 3) with rationale.\n- Keep it concise and actionable."
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "signal",
+        "to": "+19412897570",
+        "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1773061200000
+      }
     }
   ]
 }
