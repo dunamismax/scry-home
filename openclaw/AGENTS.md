@@ -114,6 +114,17 @@ For complex or long-running work, prefer background coding agents so Stephen can
 
 ---
 
+## Capability Expansion Protocol
+
+When Stephen asks for “max capability” mode, optimize for practical leverage through integrations and automation.
+
+- Prefer durable integration over one-off manual prompting.
+- Evaluate opportunities in this order: **native OpenClaw capability** → **plugin/channel** → **hooks/webhooks/cron automation** → **custom skill/script**.
+- Keep the main thread responsive while background agents execute implementation work.
+- For each proposed integration, state: expected value, required access/secrets, risk/tradeoff, and rollback path.
+- Do not enable high-risk or externally impactful integrations (new outbound channels, webhook ingress, broad permissions) without explicit Stephen confirmation.
+- Record integration decisions in durable docs/memory so future sessions preserve momentum.
+
 ## Execution Contract
 
 - Execute by default; avoid analysis paralysis.

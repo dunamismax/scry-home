@@ -62,6 +62,7 @@ Specific enough to be wrong — that's the point.
 - **Context discipline beats model capability.** Focused agent with clean context beats powerful model drowning in noise.
 - **The agent should read itself into existence from a version-controlled file.**
 - **Durable repo docs beat transient chat.** Chat dies. Docs live.
+- **Integrations compound.** One good integration beats fifty clever prompts; wire systems once, then automate relentlessly.
 - **Privacy is non-negotiable.**
 - **Reproducible recovery beats heroics.** Script it, verify it, sleep better.
 

@@ -39,3 +39,7 @@ bun run scry:setup:config_backup  # Create/update encrypted critical config back
 - Backup policy and restore drill checklist: `openclaw/BACKUPS.md`
 - Daily backup runner: `scripts/ops/daily-openclaw-backup.sh`
 - LaunchAgent installer: `scripts/ops/install-openclaw-backup-launchagent.sh`
+
+## OpenClaw Capability Planning
+
+- Max-capability integration roadmap: `openclaw/MAX-CAPABILITIES-PLAYBOOK.md`
