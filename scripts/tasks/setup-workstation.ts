@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { basename, join, resolve } from "node:path";
 import {
@@ -10,23 +10,13 @@ import {
 } from "../common";
 import { MANAGED_PROJECTS } from "../projects.config";
 
-const FALLBACK_REPOS = [
-  "grimoire",
-  "dunamismax",
-  "BereanAI",
-  "TALLstack",
-  "c-from-the-ground-up",
-  "codex-web",
-  "configs",
-  "hello-world-from-hell",
-  "images",
-  "imaging-services-website",
-  "imagingservices",
-  "mtg-card-bot",
-  "mylife-rpg",
-  "poddashboard",
-  "xray-chrome",
-];
+/** Scan a directory for git repos, returning their directory names. */
+function discoverRepos(root: string): string[] {
+  if (!existsSync(root)) return [];
+  return readdirSync(root, { withFileTypes: true })
+    .filter((d) => d.isDirectory() && isGitRepo(join(root, d.name)))
+    .map((d) => d.name);
+}
 
 function unique(items: string[]): string[] {
   return [
@@ -206,7 +196,7 @@ export function setupWorkstation(): void {
     }
 
     synced = unique([anchorRepo, profileRepo, ...managedProjectRepos]);
-    discovered = unique([...synced, ...FALLBACK_REPOS]);
+    discovered = unique([...synced, ...discoverRepos(githubRoot)]);
     source = "fallback";
 
     logStep("Repository set");

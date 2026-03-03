@@ -35,7 +35,7 @@ import {
 } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
-import { ensureDir, logStep } from "../common";
+import { ensureDir, logStep, runOrThrow } from "../common";
 
 const OPENCLAW_WORKSPACE =
   process.env.OPENCLAW_WORKSPACE ??
@@ -210,49 +210,21 @@ export function syncOpenclaw(): void {
   logStep("Committing and pushing");
   const date = new Date().toISOString().split("T")[0];
 
-  const gitAdd = Bun.spawnSync({
-    cmd: ["git", "-C", REPO_ROOT, "add", "-A"],
-    stdout: "pipe",
-    stderr: "pipe",
-  });
-  if (gitAdd.exitCode !== 0) {
-    throw new Error("git add failed");
-  }
+  runOrThrow(["git", "add", "-A"], { cwd: REPO_ROOT });
 
-  const gitCommit = Bun.spawnSync({
-    cmd: [
-      "git",
-      "-C",
-      REPO_ROOT,
-      "commit",
-      "-m",
-      `sync openclaw workspace ${date}`,
-    ],
-    stdout: "pipe",
-    stderr: "pipe",
-  });
-  if (gitCommit.exitCode !== 0) {
-    const stderr = Buffer.from(gitCommit.stderr).toString("utf8").trim();
-    if (stderr.includes("nothing to commit")) {
+  try {
+    runOrThrow(["git", "commit", "-m", `sync openclaw workspace ${date}`], {
+      cwd: REPO_ROOT,
+    });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    if (msg.includes("nothing to commit")) {
       console.log("  nothing to commit (git tree clean)");
       return;
     }
-    throw new Error(`git commit failed: ${stderr}`);
+    throw err;
   }
 
-  const gitPush = Bun.spawnSync({
-    cmd: ["git", "-C", REPO_ROOT, "push", "origin", "main"],
-    stdout: "pipe",
-    stderr: "pipe",
-  });
-
-  const pushStderr = Buffer.from(gitPush.stderr).toString("utf8").trim();
-  if (gitPush.exitCode !== 0) {
-    throw new Error(`git push failed: ${pushStderr}`);
-  }
-
-  if (pushStderr.length > 0) {
-    console.log(`  ${pushStderr}`);
-  }
+  runOrThrow(["git", "push", "origin", "main"], { cwd: REPO_ROOT });
   console.log("  committed and pushed");
 }

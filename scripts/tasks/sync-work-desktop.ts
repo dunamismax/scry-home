@@ -23,15 +23,20 @@ import {
   statSync,
   utimesSync,
 } from "node:fs";
+import { homedir } from "node:os";
 import { dirname, join, relative } from "node:path";
 import { logStep } from "../common";
 
 // ── Paths ──────────────────────────────────────────────────────────────────
 
-const GDRIVE_WD = "/Users/sawyer/Google Drive/My Drive/Work Desktop" as const;
-const ONEDRIVE_WD =
-  "/Users/sawyer/OneDrive - Imaging Services Inc/Work Desktop" as const;
-const GIT_WD = "/Users/sawyer/github/work/Work Desktop" as const;
+const HOME = process.env.HOME ?? homedir();
+const GDRIVE_WD = join(HOME, "Google Drive", "My Drive", "Work Desktop");
+const ONEDRIVE_WD = join(
+  HOME,
+  "OneDrive - Imaging Services Inc",
+  "Work Desktop",
+);
+const GIT_WD = join(HOME, "github", "work", "Work Desktop");
 
 // ── Skip list ──────────────────────────────────────────────────────────────
 

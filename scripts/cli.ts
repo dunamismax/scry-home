@@ -16,34 +16,58 @@ import { verifyConfigBackup } from "./tasks/verify-config-backup";
 
 const command = Bun.argv[2];
 
-const commands: Record<string, () => void> = {
-  bootstrap,
-  doctor,
-  "setup:workstation": setupWorkstation,
-  "setup:config_backup": setupConfigBackup,
-  "verify:config_backup": verifyConfigBackup,
-  "setup:ssh_backup": setupSshBackup,
-  "setup:ssh_restore": setupSshRestore,
-  "projects:list": listProjects,
-  "projects:doctor": doctorProjects,
-  "projects:install": installProjects,
-  "projects:verify": verifyProjects,
-  "sync:openclaw": syncOpenclaw,
-  "sync:remotes": syncRemotes,
-  "sync:work-desktop": syncWorkDesktop,
+type Command = {
+  fn: () => void | Promise<void>;
+  flags?: string;
+};
+
+const commands: Record<string, Command> = {
+  bootstrap: { fn: bootstrap },
+  doctor: { fn: doctor },
+  "setup:workstation": { fn: setupWorkstation },
+  "setup:config_backup": { fn: setupConfigBackup },
+  "verify:config_backup": { fn: verifyConfigBackup },
+  "setup:ssh_backup": { fn: setupSshBackup },
+  "setup:ssh_restore": { fn: setupSshRestore },
+  "projects:list": { fn: listProjects },
+  "projects:doctor": { fn: doctorProjects },
+  "projects:install": { fn: installProjects },
+  "projects:verify": { fn: verifyProjects },
+  "sync:openclaw": {
+    fn: syncOpenclaw,
+    flags: "--commit  sync + git commit + push",
+  },
+  "sync:remotes": {
+    fn: syncRemotes,
+    flags: "--fix     apply remote changes (default: dry run)",
+  },
+  "sync:work-desktop": {
+    fn: syncWorkDesktop,
+    flags: "--dry-run preview only, no writes",
+  },
 };
 
 if (!command || !commands[command]) {
   console.error(`Unknown or missing command: ${command ?? "(none)"}`);
   console.error("Available commands:");
-  for (const key of Object.keys(commands)) {
-    console.error(`- ${key}`);
+  for (const [key, cmd] of Object.entries(commands)) {
+    const suffix = cmd.flags ? `  [${cmd.flags.split(" ")[0]}]` : "";
+    console.error(`  ${key}${suffix}`);
   }
   process.exit(1);
 }
 
+if (Bun.argv.includes("--help")) {
+  const cmd = commands[command];
+  console.log(`Usage: bun run scripts/cli.ts ${command}`);
+  if (cmd.flags) {
+    console.log(`\nFlags:\n  ${cmd.flags}`);
+  }
+  process.exit(0);
+}
+
 try {
-  commands[command]();
+  await commands[command].fn();
 } catch (error) {
   const message = error instanceof Error ? error.message : String(error);
   console.error(`error: ${message}`);
