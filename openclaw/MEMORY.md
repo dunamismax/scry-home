@@ -53,7 +53,7 @@ All under `~/github`, dual SSH remotes. TypeScript + Bun unless noted:
 
 - Gateway mode: local, loopback-only, Tailscale allowed
 - Signal channel: active, DM allowlist only
-- Auth profiles: `openai-codex:default` (OAuth)
+- Auth profiles: `openai-codex:default` (OAuth), `anthropic:default` (OAuth)
 - Daily cron at 3am ET syncs workspace → grimoire
 
 ### File Sync Model (keep in lockstep)
@@ -107,3 +107,4 @@ Two canonical files live in the OpenClaw workspace. Everything else is a copy:
 - 2026-03-02: Tuned OpenClaw Signal config — disabled block streaming, reasoning, verbose, human delay; enabled typing indicators.
 - 2026-03-02: Closed PR #32396 (block streaming guide) — bad advice for Signal DM use case.
 - 2026-03-03: Switched back to Codex as default model for OpenClaw/Scry due Anthropic reliability issues.
+- 2026-03-03: Configured dual OAuth model switching (`/model claude` and `/model codex`) with Codex retained as default.
