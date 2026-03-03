@@ -151,6 +151,19 @@ Maintain and actively use the specialist bench as first-class infrastructure, no
 - Keep daily cron guards enabled and healthy (`healthcheck:agent-bench-daily`, `healthcheck:docs-sync-daily`).
 - Record durable bench changes in `MEMORY.md` decisions log.
 
+### Weekly bench smoke test (`healthcheck:agent-bench-weekly-smoke`)
+
+Runs every Monday at 09:20 ET (Opus, isolated, 480s timeout). Deterministic checks per specialist agent:
+
+1. **Config presence** — agent ID exists in `agents.list`.
+2. **Workspace files** — SOUL.md, AGENTS.md, IDENTITY.md present in workspace.
+3. **Model policy** — primary/fallback restricted to `anthropic/claude-opus-4-6` and `openai-codex/gpt-5.3-codex`.
+4. **Recency** — flags agents with no session activity in the past 7 days as "dormant".
+5. **Cron guard health** — verifies `healthcheck:agent-bench-daily` last run was OK.
+
+Outputs a pass/fail table and recency risk watchlist. Delivers summary to Signal (+19412897570).
+Complements the daily bench guard (fast config validation) and the weekly optimization review (deeper prompt/fit analysis).
+
 ## Capability Expansion Protocol
 
 When Stephen asks for “max capability” mode, optimize for practical leverage through integrations and automation.
