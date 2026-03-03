@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "scryai",
+      "name": "grimoire",
       "devDependencies": {
         "@biomejs/biome": "^2.4.5",
         "@types/node": "^24.3.0",

@@ -14,7 +14,7 @@ Per `SOUL.md` and `AGENTS.md`, every active code repo must have:
 - **Language:** TypeScript (strict mode)
 - **Runtime:** Bun (bun.lock, no package-lock.json or yarn.lock)
 - **Linting/Formatting:** Biome (no ESLint, no Prettier)
-- **Identity docs:** CLAUDE.md pointing to scryai-typescript for SOUL.md + AGENTS.md
+- **Identity docs:** CLAUDE.md pointing to grimoire for SOUL.md + AGENTS.md
 - **No AI attribution:** Zero references to Claude/Anthropic/AI in commits, docs, or metadata
 - **Dual remotes:** GitHub + Codeberg via SSH host aliases
 - **README:** Accurate, current, reflects what the repo actually does
@@ -43,7 +43,7 @@ All five share: Biome 2.4, Vite 7.3, TypeScript 5.9, Zod 4.3 (except repo-monito
 
 | Repo | Status |
 |---|---|
-| **scryai-typescript** | Fully aligned. Biome, TypeScript, Bun, CLAUDE.md, dual remotes, OpenClaw sync. |
+| **grimoire** | Fully aligned. Biome, TypeScript, Bun, CLAUDE.md, dual remotes, OpenClaw sync. |
 
 ### Mobile App — Aligned
 
@@ -78,7 +78,7 @@ All five share: Biome 2.4, Vite 7.3, TypeScript 5.9, Zod 4.3 (except repo-monito
 
 | Repo | Reason |
 |---|---|
-| **scryai-swift** | Duplicate of scryai-typescript in Swift |
+| **scryai-swift** | Duplicate of grimoire in Swift |
 | **scryai-gorust** | Empty stub (just SOUL.md + CLAUDE.md) |
 | **elixir** | Empty stub |
 | **espanol** | Tiny Python experiment with different identity |
