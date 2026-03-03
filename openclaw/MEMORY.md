@@ -54,9 +54,21 @@ All under `~/github`, dual SSH remotes. TypeScript + Bun unless noted:
 - Gateway mode: local, loopback-only, Tailscale allowed
 - Signal channel: active, DM allowlist only
 - Auth profiles: `openai-codex:default` (OAuth), `anthropic:manual` (token)
-- Workspace canonical for SOUL.md and AGENTS.md — repos sync from it
-- `openclaw/` dir in grimoire auto-synced via `sync-openclaw` script
-- Daily cron at 3am ET syncs workspace → repo
+- Daily cron at 3am ET syncs workspace → grimoire
+
+### File Sync Model (keep in lockstep)
+
+Two canonical files live in the OpenClaw workspace. Everything else is a copy:
+
+| Canonical (workspace) | Grimoire copies | Other repos |
+|---|---|---|
+| `SOUL.md` | `SOUL.md` (root) + `openclaw/SOUL.md` | — |
+| `AGENTS.md` | `AGENTS.md` (root) + `openclaw/AGENTS.md` | `CLAUDE.md` (points to grimoire) |
+
+- **AGENTS.md = CLAUDE.md content.** Same file, different name. CLAUDE.md in other repos just points to grimoire.
+- **Workspace is always canonical.** Edit there, sync outward. Never edit grimoire copies directly.
+- **`sync-openclaw` script** copies workspace → grimoire root + `openclaw/` dir. Run with `--commit` to auto-push.
+- When SOUL.md or AGENTS.md change, sync immediately — don't let copies drift.
 
 ### Signal Channel Config (tuned 2026-03-02)
 
