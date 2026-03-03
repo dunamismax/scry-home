@@ -1,5 +1,9 @@
 # scryai
 
+<p align="center">
+  <img src="./assets/images/scry-clawdbot-profile.jpg" alt="Scry / ClaudBot profile icon" width="220" />
+</p>
+
 Operations hub and identity source of truth for **Scry** — Stephen Sawyer's AI engineering partner. TypeScript + Bun, Anthropic Claude exclusively, orchestrated through [OpenClaw](https://openclaw.ai).
 
 ## What This Is
