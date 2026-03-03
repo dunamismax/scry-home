@@ -26,7 +26,7 @@ See `AGENTS.md` for the full stack table. Default is TypeScript + Bun; Python/Ru
 
 All under `~/github`, dual SSH remotes. TypeScript + Bun unless noted:
 
-1. **grimoire** (was scryai-typescript) — Scry's identity/config repo, CLI tools, sync scripts
+1. **grimoire** — Scry's identity/config repo, CLI tools, sync scripts
 2. **questlog** (was mylife-rpg) — RPG-style life tracker
 3. **podwatch** (was poddashboard) — Podcast dashboard
 4. **homepage** (was reactiveweb) — Personal website
