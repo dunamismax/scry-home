@@ -12,7 +12,7 @@
 - Home: `/Users/sawyer`
 - Projects root: `~/github`
 - Timezone: America/New_York
-- Primary model: `anthropic/claude-opus-4-6` (switched from `openai-codex/gpt-5.3-codex` on 2026-03-02)
+- Primary model: `openai-codex/gpt-5.3-codex` (switched back from `anthropic/claude-opus-4-6` on 2026-03-03)
 - Git identity: commits as `dunamismax`. No AI attribution ever — no "Claude", "Scry", "Co-Authored-By", or agent fingerprints
 - Dual remotes: GitHub (`github.com-dunamismax`) + Codeberg (`codeberg.org-dunamismax`), force-push to main
 - Communication channel: Signal (primary)
@@ -37,7 +37,7 @@ All under `~/github`, dual SSH remotes. TypeScript + Bun unless noted:
 
 ## Python Repos (Intentionally Python)
 
-- **augur** (was scry-trader) — Trading system (IBKR + Claude analysis). Python is best-in-class for this ecosystem.
+- **augur** (was scry-trader) — Trading system (IBKR + LLM analysis). Python is best-in-class for this ecosystem.
 - **oracle** (was mtg-card-bot) — Discord MTG card lookup bot. Python's discord.py is the right tool.
 
 ## Other Projects
@@ -53,7 +53,7 @@ All under `~/github`, dual SSH remotes. TypeScript + Bun unless noted:
 
 - Gateway mode: local, loopback-only, Tailscale allowed
 - Signal channel: active, DM allowlist only
-- Auth profiles: `openai-codex:default` (OAuth), `anthropic:manual` (token)
+- Auth profiles: `openai-codex:default` (OAuth)
 - Daily cron at 3am ET syncs workspace → grimoire
 
 ### File Sync Model (keep in lockstep)
@@ -94,7 +94,7 @@ Two canonical files live in the OpenClaw workspace. Everything else is a copy:
 
 ## Workflow Preferences
 
-- **Multi-agent orchestration:** Stephen loves it. When work is parallelizable, fan out Claude Code agents — one per repo/task, focused prompts, push-based completion via `openclaw system event`. Scry orchestrates, agents execute. Don't serialize what can be parallelized.
+- **Multi-agent orchestration:** Stephen loves it. When work is parallelizable, fan out Codex/ACP coding agents — one per repo/task, focused prompts, push-based completion via `openclaw system event`. Scry orchestrates, agents execute. Don't serialize what can be parallelized.
 
 ## Decisions Log
 
@@ -106,3 +106,4 @@ Two canonical files live in the OpenClaw workspace. Everything else is a copy:
 - 2026-03-02: CallRift Phase 2 shipped — real SIP engine (sip.js), API client (TanStack Query), server Bun migration, Docker Compose.
 - 2026-03-02: Tuned OpenClaw Signal config — disabled block streaming, reasoning, verbose, human delay; enabled typing indicators.
 - 2026-03-02: Closed PR #32396 (block streaming guide) — bad advice for Signal DM use case.
+- 2026-03-03: Switched back to Codex as default model for OpenClaw/Scry due Anthropic reliability issues.
