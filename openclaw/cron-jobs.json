@@ -43,7 +43,7 @@
       "name": "healthcheck:backup-freshness",
       "enabled": true,
       "createdAtMs": 1772532367675,
-      "updatedAtMs": 1772532402920,
+      "updatedAtMs": 1772536216116,
       "schedule": {
         "kind": "cron",
         "expr": "10 6 * * *",
@@ -61,11 +61,11 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772536200000,
-        "lastRunAtMs": 1772532384443,
+        "nextRunAtMs": 1772622600000,
+        "lastRunAtMs": 1772536200010,
         "lastRunStatus": "ok",
         "lastStatus": "ok",
-        "lastDurationMs": 18477,
+        "lastDurationMs": 16106,
         "lastDelivered": false,
         "lastDeliveryStatus": "not-delivered",
         "consecutiveErrors": 0

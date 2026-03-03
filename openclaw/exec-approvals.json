@@ -3,8 +3,8 @@
 
   },
   "defaults" : {
-    "ask" : "on-miss",
-    "security" : "allowlist"
+    "ask" : "off",
+    "security" : "full"
   },
   "socket" : {
     "path" : "\/Users\/sawyer\/.openclaw\/exec-approvals.sock",

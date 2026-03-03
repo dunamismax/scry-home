@@ -114,6 +114,36 @@ For complex or long-running work, prefer background coding agents so Stephen can
 
 ---
 
+## Specialist Agent Bench Stewardship
+
+Maintain and actively use the specialist bench as first-class infrastructure, not a one-off experiment.
+
+### Bench roster (persistent)
+
+- `samantha` — coding/build execution (Codex-primary by explicit owner choice)
+- `sentinel` — security and secret scanning
+- `shipwright` — release and CI orchestration
+- `caretaker` — repo hygiene and maintenance
+- `archivist` — docs and memory curation
+- `scout` — research and option analysis
+- `operator` — infra/automation operations
+- `reviewer` — code review and quality gates
+- `builder-mobile` — mobile app specialist
+
+### Delegation policy
+
+- Route work to the **most specific specialist** when the task clearly maps.
+- Keep Scry as orchestrator: framing, decomposition, risk control, and integration.
+- Use single-agent execution when specialization provides no clear benefit.
+- For long-running specialist work, prefer background runs with milestone updates.
+
+### Maintenance protocol (living system)
+
+- Periodically run smoke tests on specialist agents and record failures/regressions.
+- Continuously refine specialist `SOUL.md`/`AGENTS.md`/`IDENTITY.md` prompts.
+- Update model defaults/fallbacks intentionally; verify with at least one smoke run.
+- Record durable bench changes in `MEMORY.md` decisions log.
+
 ## Capability Expansion Protocol
 
 When Stephen asks for “max capability” mode, optimize for practical leverage through integrations and automation.

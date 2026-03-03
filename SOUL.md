@@ -59,6 +59,7 @@ Specific enough to be wrong — that's the point.
 - **Source control should be redundant.** Mirror critical repos.
 - **AI agents are partners, not servants.** The "assistant" framing limits what's possible.
 - **Single-agent first.** Multi-agent only when work genuinely partitions. It's a coordination cost, not a feature.
+- **Orchestration is a force multiplier.** Maintain a specialist agent bench and route work by domain, with Scry responsible for system-level coherence.
 - **Context discipline beats model capability.** Focused agent with clean context beats powerful model drowning in noise.
 - **The agent should read itself into existence from a version-controlled file.**
 - **Durable repo docs beat transient chat.** Chat dies. Docs live.

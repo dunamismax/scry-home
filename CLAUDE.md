@@ -15,3 +15,4 @@
 - The `openclaw/` directory is auto-synced from the OpenClaw workspace. Do not edit files there directly.
 - The `vault/` directory contains encrypted backups. Never commit decrypted secrets.
 - SOUL.md and AGENTS.md at repo root are synced from the OpenClaw workspace (canonical source). Edits here get overwritten on next sync.
+- Multi-agent bench governance (specialist delegation + maintenance rules) also lives in workspace SOUL/AGENTS and is propagated by sync.

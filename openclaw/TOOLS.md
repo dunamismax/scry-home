@@ -44,7 +44,6 @@ All repos use dual SSH remotes with host aliases:
 - **Web search**: Brave provider, API key configured, functional
 - **Web fetch**: 50K chars, 30s timeout
 - **Notion**: "Scry" integration → "Stephen's Notion" workspace (share pages to grant access)
-- **Peekaboo**: macOS UI automation (Accessibility ✅, Screen Recording needs terminal restart)
 - **Whisper**: Local speech-to-text (no API key, runs on Apple Silicon)
 
 ## Declined Integrations
@@ -53,7 +52,7 @@ All repos use dual SSH remotes with host aliases:
 
 ## Installed CLIs
 
-- `gh`, `docker`, `ffmpeg`, `yt-dlp`, `codex`, `claude`, `jq`, `tmux`, `peekaboo`, `summarize`, `whisper`, `clawhub` — all available
+- `gh`, `docker`, `ffmpeg`, `yt-dlp`, `codex`, `claude`, `jq`, `tmux`, `summarize`, `whisper`, `clawhub` — all available
 - **Not installed**: acpx, mcporter, playwright
 
 ## TTS
