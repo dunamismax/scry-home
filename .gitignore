@@ -28,6 +28,13 @@ coverage/
 artifacts/
 tmp/
 
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.ruff_cache/
+.mypy_cache/
+
 # OS
 .DS_Store
 Thumbs.db
