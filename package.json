@@ -20,6 +20,7 @@
     "scry:projects:install": "bun run scripts/cli.ts projects:install",
     "scry:projects:verify": "bun run scripts/cli.ts projects:verify",
     "scry:sync:openclaw": "bun run scripts/cli.ts sync:openclaw",
+    "scry:specialists:harden": "bun run scripts/cli.ts specialists:harden",
     "scry:sync:remotes": "bun run scripts/cli.ts sync:remotes",
     "scry:sync:work-desktop": "bun run scripts/cli.ts sync:work-desktop"
   },

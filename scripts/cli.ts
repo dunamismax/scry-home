@@ -9,6 +9,7 @@ import {
 import { setupConfigBackup } from "./tasks/setup-config-backup";
 import { setupSshBackup, setupSshRestore } from "./tasks/setup-ssh";
 import { setupWorkstation } from "./tasks/setup-workstation";
+import { hardenSpecialists } from "./tasks/harden-specialists";
 import { syncOpenclaw } from "./tasks/sync-openclaw";
 import { syncRemotes } from "./tasks/sync-remotes";
 import { syncWorkDesktop } from "./tasks/sync-work-desktop";
@@ -36,6 +37,10 @@ const commands: Record<string, Command> = {
   "sync:openclaw": {
     fn: syncOpenclaw,
     flags: "--commit  sync + git commit + push",
+  },
+  "specialists:harden": {
+    fn: hardenSpecialists,
+    flags: "--discover | --agents=a,b | --include-maintainer  choose target specialist workspaces",
   },
   "sync:remotes": {
     fn: syncRemotes,

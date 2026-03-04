@@ -159,10 +159,12 @@ Maintain and actively use the specialist bench as first-class infrastructure, no
 - `operator` — infra/automation operations
 - `reviewer` — code review and quality gates
 - `builder-mobile` — mobile app specialist
+- `openclaw-maintainer` — OpenClaw core repo maintainer and contributor specialist
 
 ### Delegation policy
 
 - Route work to the **most specific specialist** when the task clearly maps.
+- Route OpenClaw repo work (`~/openclaw`) to `openclaw-maintainer` by default unless Stephen explicitly asks otherwise.
 - Keep Scry as orchestrator: framing, decomposition, risk control, and integration.
 - Use single-agent execution when specialization provides no clear benefit.
 - For long-running specialist work, prefer background runs with milestone updates.
@@ -173,6 +175,10 @@ Maintain and actively use the specialist bench as first-class infrastructure, no
 - Continuously refine specialist `SOUL.md`/`AGENTS.md`/`IDENTITY.md` prompts.
 - Update model defaults/fallbacks intentionally; verify with at least one smoke run.
 - Keep daily cron guards enabled and healthy (`healthcheck:agent-bench-daily`, `healthcheck:docs-sync-daily`).
+- Run the shared specialist hardening generator from grimoire after creating/updating specialist agents:
+  - `cd ~/github/grimoire && bun run scry:specialists:harden`
+  - optional discovery mode: `bun run scry:specialists:harden -- --discover`
+- Keep commit attribution enforcement active via hooks (`core.hooksPath`) and weekly specialist smoke jobs.
 - Record durable bench changes in `MEMORY.md` decisions log.
 
 ### Weekly bench smoke test (`healthcheck:agent-bench-weekly-smoke`)

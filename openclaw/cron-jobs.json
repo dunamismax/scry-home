@@ -170,7 +170,7 @@
       "name": "healthcheck:agent-bench-daily",
       "enabled": true,
       "createdAtMs": 1772542721502,
-      "updatedAtMs": 1772612442587,
+      "updatedAtMs": 1772634325800,
       "schedule": {
         "kind": "cron",
         "expr": "20 3 * * *",
@@ -182,7 +182,7 @@
         "kind": "agentTurn",
         "model": "openai-codex/gpt-5.3-codex",
         "timeoutSeconds": 300,
-        "message": "Run the daily specialist-agent bench health check.\n\nExecute exactly:\nset -euo pipefail\nOUT=\"$(python3 - <<'PY'\nimport json, subprocess, pathlib, sys\nexpected = ['main','samantha','sentinel','shipwright','caretaker','archivist','scout','operator','reviewer','builder-mobile']\nopus_specialists = ['sentinel','shipwright','caretaker','archivist','scout','operator','reviewer','builder-mobile']\nissues=[]\n\nraw = subprocess.check_output(['openclaw','config','get','agents.list'], text=True)\nagents = json.loads(raw)\nby_id = {a.get('id'): a for a in agents}\n\nfor aid in expected:\n    if aid not in by_id:\n        issues.append(f'missing-agent:{aid}')\n\nfor aid in expected:\n    if aid not in by_id:\n        continue\n    a=by_id[aid]\n    ws = pathlib.Path(a.get('workspace') or '/Users/sawyer/.openclaw/workspace')\n    for f in ['SOUL.md','AGENTS.md','IDENTITY.md','CLAUDE.md']:\n        if not (ws/f).exists():\n            issues.append(f'missing-file:{aid}:{f}')\n\ns = by_id.get('samantha')\nif s:\n    m = s.get('model', {})\n    if m.get('primary') != 'openai-codex/gpt-5.3-codex':\n        issues.append('model-mismatch:samantha:primary')\n    fb = m.get('fallbacks') or []\n    if 'anthropic/claude-opus-4-6' not in fb:\n        issues.append('model-mismatch:samantha:fallback')\n\nfor aid in opus_specialists:\n    a = by_id.get(aid)\n    if not a:\n        continue\n    m = a.get('model', {})\n    if m.get('primary') != 'anthropic/claude-opus-4-6':\n        issues.append(f'model-mismatch:{aid}:primary')\n    fb = m.get('fallbacks') or []\n    if 'openai-codex/gpt-5.3-codex' not in fb:\n        issues.append(f'model-mismatch:{aid}:fallback')\n\nif issues:\n    print('FAIL')\n    for i in issues:\n        print(i)\n    sys.exit(2)\n\nprint('OK: agent bench config + workspace files validated')\nPY\n)\" || RC=$?\nRC=${RC:-0}\n\nif [ \"$RC\" -ne 0 ]; then\n  MSG=\"$(printf '%s' \"$OUT\" | tail -n 30 | tr '\\n' '; ' | sed 's/\"//g')\"\n  openclaw system event --text \"Reminder: daily agent bench health check found issues. ${MSG}\" --mode now\n  exit 1\nfi\n\nopenclaw agents list --bindings >/tmp/agent-bench-list.txt\nexit 0"
+        "message": "Run the daily specialist-agent bench health check.\n\nExecute exactly:\nset -euo pipefail\nOUT=\"$(python3 - <<'PY'\nimport json, subprocess, pathlib, sys\nexpected = ['main','samantha','sentinel','shipwright','caretaker','archivist','scout','operator','reviewer','builder-mobile','openclaw-maintainer']\nspecialists = [a for a in expected if a != 'main']\nissues=[]\n\nraw = subprocess.check_output(['openclaw','config','get','agents.list'], text=True)\nagents = json.loads(raw)\nby_id = {a.get('id'): a for a in agents}\n\nfor aid in expected:\n    if aid not in by_id:\n        issues.append(f'missing-agent:{aid}')\n\nfor aid in expected:\n    if aid not in by_id:\n        continue\n    a=by_id[aid]\n    ws = pathlib.Path(a.get('workspace') or '/Users/sawyer/.openclaw/workspace')\n    for f in ['SOUL.md','AGENTS.md','IDENTITY.md','CLAUDE.md']:\n        if not (ws/f).exists():\n            issues.append(f'missing-file:{aid}:{f}')\n\nfor aid in specialists:\n    a = by_id.get(aid)\n    if not a:\n        continue\n    m = a.get('model', {})\n    if m.get('primary') != 'anthropic/claude-opus-4-6':\n        issues.append(f'model-mismatch:{aid}:primary')\n    fb = m.get('fallbacks') or []\n    if 'openai-codex/gpt-5.3-codex' not in fb:\n        issues.append(f'model-mismatch:{aid}:fallback')\n\nif issues:\n    print('FAIL')\n    for i in issues:\n        print(i)\n    sys.exit(2)\n\nprint('OK: agent bench config + workspace files validated')\nPY\n)\" || RC=$?\nRC=${RC:-0}\n\nif [ \"$RC\" -ne 0 ]; then\n  MSG=\"$(printf '%s' \"$OUT\" | tail -n 30 | tr '\\n' '; ' | sed 's/\"//g')\"\n  openclaw system event --text \"Reminder: daily agent bench health check found issues. ${MSG}\" --mode now\n  exit 1\nfi\n\nopenclaw agents list --bindings >/tmp/agent-bench-list.txt\nexit 0"
       },
       "delivery": {
         "mode": "none"
@@ -311,7 +311,7 @@
       "name": "daily-lock-in",
       "enabled": true,
       "createdAtMs": 1772585596763,
-      "updatedAtMs": 1772585596763,
+      "updatedAtMs": 1772632920174,
       "schedule": {
         "kind": "cron",
         "expr": "0 9 * * *",
@@ -324,7 +324,438 @@
         "text": "Reminder: Lock the fuck in. Build something. Break something. Learn to code. No excuses, no ceremony — just ship."
       },
       "state": {
-        "nextRunAtMs": 1772632800000
+        "nextRunAtMs": 1772719200000,
+        "lastRunAtMs": 1772632800022,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 120152,
+        "lastDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "2102b3e4-487e-40ad-98eb-24644dbffd9c",
+      "agentId": "main",
+      "sessionKey": "agent:main:main",
+      "name": "healthcheck:sessions-autocleanup",
+      "enabled": true,
+      "createdAtMs": 1772636458182,
+      "updatedAtMs": 1772637317540,
+      "schedule": {
+        "kind": "cron",
+        "expr": "15 * * * *",
+        "tz": "America/New_York"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "model": "openai-codex/gpt-5.3-codex",
+        "timeoutSeconds": 180,
+        "message": "Run the hourly session-store cleanup to keep the dashboard session list minimal and remove stale legacy agent stores.\n\nExecute exactly:\nset -euo pipefail\nopenclaw sessions cleanup --all-agents --enforce --fix-missing --json >/tmp/session-cleanup-cli.json || true\n\npython3 - <<'PY'\nimport json, os, glob\nbase='/Users/sawyer/.openclaw/agents'\n\n# Keep only the active DM thread in main store\nmain_store=f'{base}/main/sessions/sessions.json'\nif os.path.exists(main_store):\n    with open(main_store,'r',encoding='utf-8') as f:\n        data=json.load(f)\n    keep={'agent:main:main'}\n    data={k:v for k,v in data.items() if k in keep}\n    with open(main_store,'w',encoding='utf-8') as f:\n        json.dump(data,f,indent=2,ensure_ascii=False)\n        f.write('\\n')\n\n# Clear stale legacy stores that are not in active agents.list\nfor legacy in ['claude','codex']:\n    p=f'{base}/{legacy}/sessions/sessions.json'\n    if os.path.exists(p):\n        with open(p,'w',encoding='utf-8') as f:\n            json.dump({},f,indent=2)\n            f.write('\\n')\n\n# Remove unreferenced transcript files in these stores\nfor agent in ['main','claude','codex']:\n    sdir=f'{base}/{agent}/sessions'\n    sp=f'{sdir}/sessions.json'\n    if not os.path.exists(sp):\n        continue\n    with open(sp,'r',encoding='utf-8') as f:\n        data=json.load(f)\n    keep_files=set()\n    for v in data.values():\n        if isinstance(v,dict):\n            sf=v.get('sessionFile')\n            sid=v.get('sessionId')\n            if sf:\n                keep_files.add(os.path.basename(sf))\n            if sid:\n                keep_files.add(f'{sid}.jsonl')\n    for fp in glob.glob(f'{sdir}/*.jsonl*'):\n        bn=os.path.basename(fp)\n        root=bn.split('.jsonl')[0]+'.jsonl'\n        if root not in keep_files:\n            try:\n                os.remove(fp)\n            except FileNotFoundError:\n                pass\n\nprint('OK: session autocleanup complete')\nPY"
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1772640900000,
+        "lastRunAtMs": 1772637300014,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 17526,
+        "lastDelivered": false,
+        "lastDeliveryStatus": "not-delivered",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "5d04312c-9e54-452c-89c4-09b67c36b06a",
+      "agentId": "main",
+      "sessionKey": "agent:main:main",
+      "name": "healthcheck:openclaw-maintainer-weekly-smoke",
+      "enabled": true,
+      "createdAtMs": 1772637194166,
+      "updatedAtMs": 1772637209580,
+      "schedule": {
+        "kind": "cron",
+        "expr": "32 9 * * 1",
+        "tz": "America/New_York"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "model": "anthropic/claude-opus-4-6",
+        "thinking": "low",
+        "timeoutSeconds": 240,
+        "message": "Run the OpenClaw Maintainer weekly scored smoke test and report results.\n\nExecute exactly:\nset -euo pipefail\nOUT=\"$(/Users/sawyer/.openclaw/workspace-openclaw-maintainer/scripts/openclaw-maintainer-weekly-smoke.sh 2>&1)\" || RC=$?\nRC=${RC:-0}\nprintf '%s\\n' \"$OUT\"\nif [ \"$RC\" -ne 0 ]; then\n  openclaw system event --text \"Reminder: weekly OpenClaw maintainer smoke failed. Review hook wiring, triage protocol, verification gates, and attribution compliance.\" --mode now\n  exit 1\nfi\nexit 0"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "signal",
+        "to": "+19412897570",
+        "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1773063120000,
+        "lastRunAtMs": 1772637197241,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 12339,
+        "lastDelivered": true,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "c2685fb3-761e-4ab1-9d3d-bd698b1c42db",
+      "agentId": "main",
+      "sessionKey": "agent:main:main",
+      "name": "healthcheck:samantha-weekly-smoke",
+      "enabled": true,
+      "createdAtMs": 1772637487486,
+      "updatedAtMs": 1772637505133,
+      "schedule": {
+        "kind": "cron",
+        "expr": "2 10 * * 1",
+        "tz": "America/New_York"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "model": "anthropic/claude-opus-4-6",
+        "thinking": "low",
+        "timeoutSeconds": 240,
+        "message": "Run Samantha weekly specialist smoke test.\n\nExecute exactly:\nset -euo pipefail\nOUT=\"$(/Users/sawyer/.openclaw/workspace-samantha/scripts/specialist-weekly-smoke.sh 2>&1)\" || RC=$?\nRC=${RC:-0}\nprintf '%s\\n' \"$OUT\"\nif [ \"$RC\" -ne 0 ]; then\n  openclaw system event --text \"Reminder: Samantha weekly smoke failed. Review protocol, verification discipline, and attribution guardrails.\" --mode now\n  exit 1\nfi\nexit 0"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "signal",
+        "to": "+19412897570",
+        "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1773064920000,
+        "lastRunAtMs": 1772637495857,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 9276,
+        "lastDelivered": true,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "12da315a-de18-4e75-ad3b-1245ee03f118",
+      "agentId": "main",
+      "sessionKey": "agent:main:main",
+      "name": "healthcheck:sentinel-weekly-smoke",
+      "enabled": true,
+      "createdAtMs": 1772637487515,
+      "updatedAtMs": 1772637517040,
+      "schedule": {
+        "kind": "cron",
+        "expr": "4 10 * * 1",
+        "tz": "America/New_York"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "model": "anthropic/claude-opus-4-6",
+        "thinking": "low",
+        "timeoutSeconds": 240,
+        "message": "Run Sentinel weekly specialist smoke test.\n\nExecute exactly:\nset -euo pipefail\nOUT=\"$(/Users/sawyer/.openclaw/workspace-sentinel/scripts/specialist-weekly-smoke.sh 2>&1)\" || RC=$?\nRC=${RC:-0}\nprintf '%s\\n' \"$OUT\"\nif [ \"$RC\" -ne 0 ]; then\n  openclaw system event --text \"Reminder: Sentinel weekly smoke failed. Review protocol, verification discipline, and attribution guardrails.\" --mode now\n  exit 1\nfi\nexit 0"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "signal",
+        "to": "+19412897570",
+        "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1773065040000,
+        "lastRunAtMs": 1772637505154,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 11886,
+        "lastDelivered": true,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "3948cf38-b7be-43fd-8613-0de1118e9988",
+      "agentId": "main",
+      "sessionKey": "agent:main:main",
+      "name": "healthcheck:shipwright-weekly-smoke",
+      "enabled": true,
+      "createdAtMs": 1772637487534,
+      "updatedAtMs": 1772637525250,
+      "schedule": {
+        "kind": "cron",
+        "expr": "6 10 * * 1",
+        "tz": "America/New_York"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "model": "anthropic/claude-opus-4-6",
+        "thinking": "low",
+        "timeoutSeconds": 240,
+        "message": "Run Shipwright weekly specialist smoke test.\n\nExecute exactly:\nset -euo pipefail\nOUT=\"$(/Users/sawyer/.openclaw/workspace-shipwright/scripts/specialist-weekly-smoke.sh 2>&1)\" || RC=$?\nRC=${RC:-0}\nprintf '%s\\n' \"$OUT\"\nif [ \"$RC\" -ne 0 ]; then\n  openclaw system event --text \"Reminder: Shipwright weekly smoke failed. Review protocol, verification discipline, and attribution guardrails.\" --mode now\n  exit 1\nfi\nexit 0"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "signal",
+        "to": "+19412897570",
+        "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1773065160000,
+        "lastRunAtMs": 1772637517064,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 8186,
+        "lastDelivered": true,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "c8501453-3297-4b70-9700-294e33b998c9",
+      "agentId": "main",
+      "sessionKey": "agent:main:main",
+      "name": "healthcheck:caretaker-weekly-smoke",
+      "enabled": true,
+      "createdAtMs": 1772637487544,
+      "updatedAtMs": 1772637533285,
+      "schedule": {
+        "kind": "cron",
+        "expr": "8 10 * * 1",
+        "tz": "America/New_York"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "model": "anthropic/claude-opus-4-6",
+        "thinking": "low",
+        "timeoutSeconds": 240,
+        "message": "Run Caretaker weekly specialist smoke test.\n\nExecute exactly:\nset -euo pipefail\nOUT=\"$(/Users/sawyer/.openclaw/workspace-caretaker/scripts/specialist-weekly-smoke.sh 2>&1)\" || RC=$?\nRC=${RC:-0}\nprintf '%s\\n' \"$OUT\"\nif [ \"$RC\" -ne 0 ]; then\n  openclaw system event --text \"Reminder: Caretaker weekly smoke failed. Review protocol, verification discipline, and attribution guardrails.\" --mode now\n  exit 1\nfi\nexit 0"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "signal",
+        "to": "+19412897570",
+        "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1773065280000,
+        "lastRunAtMs": 1772637525263,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 8022,
+        "lastDelivered": true,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "f68acaa7-f43c-4b18-9dd9-1c29b1f009ac",
+      "agentId": "main",
+      "sessionKey": "agent:main:main",
+      "name": "healthcheck:archivist-weekly-smoke",
+      "enabled": true,
+      "createdAtMs": 1772637487551,
+      "updatedAtMs": 1772637540113,
+      "schedule": {
+        "kind": "cron",
+        "expr": "10 10 * * 1",
+        "tz": "America/New_York"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "model": "anthropic/claude-opus-4-6",
+        "thinking": "low",
+        "timeoutSeconds": 240,
+        "message": "Run Archivist weekly specialist smoke test.\n\nExecute exactly:\nset -euo pipefail\nOUT=\"$(/Users/sawyer/.openclaw/workspace-archivist/scripts/specialist-weekly-smoke.sh 2>&1)\" || RC=$?\nRC=${RC:-0}\nprintf '%s\\n' \"$OUT\"\nif [ \"$RC\" -ne 0 ]; then\n  openclaw system event --text \"Reminder: Archivist weekly smoke failed. Review protocol, verification discipline, and attribution guardrails.\" --mode now\n  exit 1\nfi\nexit 0"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "signal",
+        "to": "+19412897570",
+        "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1773065400000,
+        "lastRunAtMs": 1772637533304,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 6809,
+        "lastDelivered": true,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "d6de024e-2f63-4842-98b7-f70e7a26386e",
+      "agentId": "main",
+      "sessionKey": "agent:main:main",
+      "name": "healthcheck:scout-weekly-smoke",
+      "enabled": true,
+      "createdAtMs": 1772637487560,
+      "updatedAtMs": 1772637549533,
+      "schedule": {
+        "kind": "cron",
+        "expr": "12 10 * * 1",
+        "tz": "America/New_York"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "model": "anthropic/claude-opus-4-6",
+        "thinking": "low",
+        "timeoutSeconds": 240,
+        "message": "Run Scout weekly specialist smoke test.\n\nExecute exactly:\nset -euo pipefail\nOUT=\"$(/Users/sawyer/.openclaw/workspace-scout/scripts/specialist-weekly-smoke.sh 2>&1)\" || RC=$?\nRC=${RC:-0}\nprintf '%s\\n' \"$OUT\"\nif [ \"$RC\" -ne 0 ]; then\n  openclaw system event --text \"Reminder: Scout weekly smoke failed. Review protocol, verification discipline, and attribution guardrails.\" --mode now\n  exit 1\nfi\nexit 0"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "signal",
+        "to": "+19412897570",
+        "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1773065520000,
+        "lastRunAtMs": 1772637540131,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 9402,
+        "lastDelivered": true,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "f28d26aa-b588-4df3-a5e0-308830883221",
+      "agentId": "main",
+      "sessionKey": "agent:main:main",
+      "name": "healthcheck:operator-weekly-smoke",
+      "enabled": true,
+      "createdAtMs": 1772637487567,
+      "updatedAtMs": 1772637558353,
+      "schedule": {
+        "kind": "cron",
+        "expr": "14 10 * * 1",
+        "tz": "America/New_York"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "model": "anthropic/claude-opus-4-6",
+        "thinking": "low",
+        "timeoutSeconds": 240,
+        "message": "Run Operator weekly specialist smoke test.\n\nExecute exactly:\nset -euo pipefail\nOUT=\"$(/Users/sawyer/.openclaw/workspace-operator/scripts/specialist-weekly-smoke.sh 2>&1)\" || RC=$?\nRC=${RC:-0}\nprintf '%s\\n' \"$OUT\"\nif [ \"$RC\" -ne 0 ]; then\n  openclaw system event --text \"Reminder: Operator weekly smoke failed. Review protocol, verification discipline, and attribution guardrails.\" --mode now\n  exit 1\nfi\nexit 0"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "signal",
+        "to": "+19412897570",
+        "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1773065640000,
+        "lastRunAtMs": 1772637549559,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 8794,
+        "lastDelivered": true,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "adf8e8dc-414f-4b23-94d5-399621f88d8b",
+      "agentId": "main",
+      "sessionKey": "agent:main:main",
+      "name": "healthcheck:reviewer-weekly-smoke",
+      "enabled": true,
+      "createdAtMs": 1772637487573,
+      "updatedAtMs": 1772637564913,
+      "schedule": {
+        "kind": "cron",
+        "expr": "16 10 * * 1",
+        "tz": "America/New_York"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "model": "anthropic/claude-opus-4-6",
+        "thinking": "low",
+        "timeoutSeconds": 240,
+        "message": "Run Reviewer weekly specialist smoke test.\n\nExecute exactly:\nset -euo pipefail\nOUT=\"$(/Users/sawyer/.openclaw/workspace-reviewer/scripts/specialist-weekly-smoke.sh 2>&1)\" || RC=$?\nRC=${RC:-0}\nprintf '%s\\n' \"$OUT\"\nif [ \"$RC\" -ne 0 ]; then\n  openclaw system event --text \"Reminder: Reviewer weekly smoke failed. Review protocol, verification discipline, and attribution guardrails.\" --mode now\n  exit 1\nfi\nexit 0"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "signal",
+        "to": "+19412897570",
+        "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1773065760000,
+        "lastRunAtMs": 1772637558373,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 6540,
+        "lastDelivered": true,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "5e048395-0def-4d5a-a999-e16c5c2b1f00",
+      "agentId": "main",
+      "sessionKey": "agent:main:main",
+      "name": "healthcheck:builder-mobile-weekly-smoke",
+      "enabled": true,
+      "createdAtMs": 1772637487579,
+      "updatedAtMs": 1772637573278,
+      "schedule": {
+        "kind": "cron",
+        "expr": "18 10 * * 1",
+        "tz": "America/New_York"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "model": "anthropic/claude-opus-4-6",
+        "thinking": "low",
+        "timeoutSeconds": 240,
+        "message": "Run Builder Mobile weekly specialist smoke test.\n\nExecute exactly:\nset -euo pipefail\nOUT=\"$(/Users/sawyer/.openclaw/workspace-builder-mobile/scripts/specialist-weekly-smoke.sh 2>&1)\" || RC=$?\nRC=${RC:-0}\nprintf '%s\\n' \"$OUT\"\nif [ \"$RC\" -ne 0 ]; then\n  openclaw system event --text \"Reminder: Builder Mobile weekly smoke failed. Review protocol, verification discipline, and attribution guardrails.\" --mode now\n  exit 1\nfi\nexit 0"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "signal",
+        "to": "+19412897570",
+        "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1773065880000,
+        "lastRunAtMs": 1772637564931,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 8347,
+        "lastDelivered": true,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0
       }
     }
   ]
