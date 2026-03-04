@@ -303,6 +303,29 @@
       "state": {
         "nextRunAtMs": 1773062400000
       }
+    },
+    {
+      "id": "c4be3a27-f08e-4908-bb9d-2084048115db",
+      "agentId": "main",
+      "sessionKey": "agent:main:main",
+      "name": "daily-lock-in",
+      "enabled": true,
+      "createdAtMs": 1772585596763,
+      "updatedAtMs": 1772585596763,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 9 * * *",
+        "tz": "America/New_York"
+      },
+      "sessionTarget": "main",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "systemEvent",
+        "text": "Reminder: Lock the fuck in. Build something. Break something. Learn to code. No excuses, no ceremony — just ship."
+      },
+      "state": {
+        "nextRunAtMs": 1772632800000
+      }
     }
   ]
 }

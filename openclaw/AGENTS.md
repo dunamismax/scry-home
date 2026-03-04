@@ -118,6 +118,30 @@ For complex or long-running work, prefer background coding agents so Stephen can
 - Use Scry as orchestrator: track progress, route follow-ups, and coordinate multiple concurrent agents/processes.
 - Provide meaningful milestone updates (start, blocker, finish), not noisy heartbeat spam.
 
+### Spawn Method: PTY Only (mandatory)
+
+**Always spawn background coding agents via PTY exec, never via ACP runtime (`sessions_spawn runtime:"acp"`).**
+
+ACP runtime uses `--non-interactive-permissions fail` which silently kills any agent that tries to write files. Every agent fails with `ACP_TURN_FAILED` (exit code 5) and no work gets done.
+
+The correct pattern:
+
+```bash
+exec pty:true background:true workdir:<repo> timeout:600 command:'claude -p "<task prompt>
+
+When completely finished, run: openclaw system event --text \"Done: <repo> — <summary>\" --mode now" --dangerously-skip-permissions 2>&1'
+```
+
+Key flags:
+- `pty: true` — Claude Code is an interactive terminal app
+- `background: true` — runs independently, returns sessionId
+- `--dangerously-skip-permissions` — auto-approves all file operations
+- `timeout: 600` — 10-minute safety net
+- `openclaw system event` suffix — push-based completion notification
+- `workdir` — scopes the agent to the target repo
+
+Monitor with `process action:list` and `process action:log sessionId:<id>`. Never poll in a loop — check on-demand or on heartbeat.
+
 ---
 
 ## Specialist Agent Bench Stewardship
