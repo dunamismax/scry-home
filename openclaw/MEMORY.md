@@ -22,9 +22,9 @@
 
 See `AGENTS.md` for the full stack table. Default is TypeScript + Bun; Python/Rust/Go when genuinely better.
 
-## Active Repos (TypeScript)
+## Active Repos (TypeScript — Apps & Products)
 
-All under `~/github`, dual SSH remotes. TypeScript + Bun unless noted:
+All under `~/github`, dual SSH remotes. TypeScript + Bun:
 
 1. **grimoire** (was scryai-typescript) - Scry's identity/config repo, CLI tools, sync scripts
 2. **podwatch** (was poddashboard) - Podcast dashboard
@@ -33,8 +33,9 @@ All under `~/github`, dual SSH remotes. TypeScript + Bun unless noted:
 5. **elchess** - Self-hostable chess platform
 6. **pr-firefighter** - Autonomous CI fix pipeline
 
-## Python Repos (Intentionally Python)
+## Python Repos
 
+- **scripts** - Reusable Python scripts and utilities. Structure: `tools/` (permanent), `scratch/` (one-offs/experiments), `lib/` (shared utils). Linting via `ruff`. All scripting goes here.
 - **augur** (was scry-trader) - Trading system (IBKR + LLM analysis). Python is best-in-class for this ecosystem.
 
 ## Other Projects
@@ -138,6 +139,7 @@ Two canonical files live in the OpenClaw workspace. Everything else is a copy:
 - 2026-03-03: **Full code review completed across all 7 active repos** (augur, CallRift, elchess, grimoire, podwatch, rip, Sawyer-Visual-Media). Two passes: deep pass (P0/P1 security + architecture fixes) then final polish (42 UX/DX items). All committed and pushed to both remotes. Master tracker removed.
 - 2026-03-04: Added specialist agent `openclaw-maintainer` with dedicated workspace and delegation policy. Default routing now sends `~/openclaw` tasks to this specialist unless Stephen overrides.
 - 2026-03-04: Completed OpenClaw Maintainer Phase 2 hardening: installed repo-local commit metadata guardrails via external `commit-msg`/`pre-push` hooks (`core.hooksPath`), added attribution audit + scored weekly smoke script, and scheduled `healthcheck:openclaw-maintainer-weekly-smoke` (Mon 09:32 ET) with Signal delivery.
+- 2026-03-04: Adopted formal language policy — TypeScript for apps/products, Python for all scripting/automation/utilities. Created `scripts` repo (`~/github/scripts`) with `tools/`, `scratch/`, `lib/` structure, `ruff` for linting/formatting. Grimoire scripts will be rewritten in Python later.
 - 2026-03-04: Applied Phase 2 hardening across all specialist agents (Samantha, Sentinel, Shipwright, Caretaker, Archivist, Scout, Operator, Reviewer, Builder Mobile): standardized no-attribution hook packs + audit/smoke runbooks per workspace, added weekly cron smokes (Mon 10:02–10:18 ET), and force-ran all jobs successfully (all 10/10 PASS). Also set global git hooksPath to `/Users/sawyer/.openclaw/git-hooks` for cross-repo commit metadata enforcement.
-- 2026-03-04: Added shared specialist hardening generator in grimoire (`bun run scry:specialists:harden`) as the single source for hook/template rollout across specialist workspaces; default target excludes `openclaw-maintainer` (custom profile) unless explicitly included.
-- 2026-03-04: Added cron manifest reconciler (`bun run scry:cron:reconcile`) as single source of truth for all managed specialist smoke cron jobs + bench-wide smoke; prevents schedule/payload/delivery drift with dry-run default and `--apply` to converge.
+- 2026-03-04: Added shared specialist hardening generator in grimoire (`python3 -m scripts specialists:harden`) as the single source for hook/template rollout across specialist workspaces; default target excludes `openclaw-maintainer` (custom profile) unless explicitly included.
+- 2026-03-04: Added cron manifest reconciler (`python3 -m scripts cron:reconcile`) as single source of truth for all managed specialist smoke cron jobs + bench-wide smoke; prevents schedule/payload/delivery drift with dry-run default and `--apply` to converge.

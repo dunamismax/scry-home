@@ -21,17 +21,17 @@ Scry's identity, configuration, and operational tooling. The canonical source of
 git clone git@github.com-dunamismax:dunamismax/grimoire.git
 cd grimoire
 bun install
-bun run scry:doctor
+python3 -m scripts doctor
 ```
 
 ## Scripts
 
 ```bash
-bun run scry:doctor           # Verify prerequisites and project health
-bun run scry:projects:doctor  # Check all managed repos
-bun run scry:sync:remotes     # Configure dual push remotes
-bun run scry:sync:openclaw    # Sync workspace → repo
-bun run scry:setup:config_backup  # Create/update encrypted critical config backup
+python3 -m scripts doctor           # Verify prerequisites and project health
+python3 -m scripts projects:doctor  # Check all managed repos
+python3 -m scripts sync:remotes     # Configure dual push remotes
+python3 -m scripts sync:openclaw    # Sync workspace → repo
+python3 -m scripts setup:config_backup  # Create/update encrypted critical config backup
 ```
 
 ## OpenClaw Backups

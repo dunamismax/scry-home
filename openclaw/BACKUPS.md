@@ -18,7 +18,7 @@ This document covers backup layers for Stephen's local OpenClaw deployment and h
 - Schedule: daily sync job (`sync-openclaw-workspace`, OpenClaw cron @ 03:00 ET)
 
 ## 3) Encrypted critical config backup (secrets included)
-- Command: `bun run scry:setup:config_backup`
+- Command: `python3 -m scripts setup:config_backup`
 - Encrypted output: `~/github/grimoire/vault/config/critical-configs.tar.enc`
 - Metadata: `~/github/grimoire/vault/config/critical-configs.meta.json`
 - Encryption: AES-256-GCM with PBKDF2 key derivation
@@ -33,9 +33,9 @@ This document covers backup layers for Stephen's local OpenClaw deployment and h
 - Scheduler: LaunchAgent `com.scry.openclaw.backup`
 - Time: daily at 02:20 local time
 - Daily run executes:
-  1. `bun run scry:setup:config_backup`
-  2. `bun run scry:verify:config_backup`
-  3. `bun run scry:sync:openclaw -- --commit`
+  1. `python3 -m scripts setup:config_backup`
+  2. `python3 -m scripts verify:config_backup`
+  3. `python3 -m scripts sync:openclaw --commit`
 - Logs:
   - `~/Library/Logs/scry/openclaw-critical-backup.log`
   - `~/Library/Logs/scry/openclaw-backup.launchd.out.log`

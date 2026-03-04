@@ -30,9 +30,9 @@ fi
 cd "${REPO_ROOT}"
 
 export SCRY_CONFIG_BACKUP_PASSPHRASE="${PASSPHRASE}"
-bun run scry:setup:config_backup
-bun run scry:verify:config_backup
-bun run scry:sync:openclaw -- --commit
+python3 -m scripts setup:config_backup
+python3 -m scripts verify:config_backup
+python3 -m scripts sync:openclaw --commit
 
 META_FILE="${REPO_ROOT}/vault/config/critical-configs.meta.json"
 if [[ -f "${META_FILE}" ]]; then

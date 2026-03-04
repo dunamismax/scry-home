@@ -8,7 +8,7 @@
       "name": "sync-openclaw-workspace",
       "enabled": true,
       "createdAtMs": 1772473326916,
-      "updatedAtMs": 1772611216522,
+      "updatedAtMs": 1772656626258,
       "schedule": {
         "kind": "cron",
         "expr": "0 3 * * *",
@@ -18,7 +18,7 @@
       "wakeMode": "now",
       "payload": {
         "kind": "agentTurn",
-        "message": "Run the OpenClaw workspace sync to the grimoire repo. Execute: cd /Users/sawyer/github/grimoire && bun run scry:sync:openclaw -- --commit. Report the result briefly.",
+        "message": "Run the OpenClaw workspace sync to the grimoire repo. Execute: cd /Users/sawyer/github/grimoire && python3 -m scripts sync:openclaw --commit. Report the result briefly.",
         "timeoutSeconds": 1800,
         "model": "openai-codex/gpt-5.3-codex"
       },
@@ -43,7 +43,7 @@
       "name": "healthcheck:backup-freshness",
       "enabled": true,
       "createdAtMs": 1772532367675,
-      "updatedAtMs": 1772622616417,
+      "updatedAtMs": 1772639712795,
       "schedule": {
         "kind": "cron",
         "expr": "10 6 * * *",
@@ -101,7 +101,7 @@
       "name": "briefing:daily-repo-priority-summary",
       "enabled": true,
       "createdAtMs": 1772533964511,
-      "updatedAtMs": 1772632439063,
+      "updatedAtMs": 1772639713483,
       "schedule": {
         "kind": "cron",
         "expr": "35 8 * * *",
@@ -139,7 +139,7 @@
       "name": "briefing:weekly-project-review",
       "enabled": true,
       "createdAtMs": 1772533970252,
-      "updatedAtMs": 1772533970252,
+      "updatedAtMs": 1772639714191,
       "schedule": {
         "kind": "cron",
         "expr": "0 9 * * 1",
@@ -170,7 +170,7 @@
       "name": "healthcheck:agent-bench-daily",
       "enabled": true,
       "createdAtMs": 1772542721502,
-      "updatedAtMs": 1772634325800,
+      "updatedAtMs": 1772639711416,
       "schedule": {
         "kind": "cron",
         "expr": "20 3 * * *",
@@ -205,7 +205,7 @@
       "name": "healthcheck:docs-sync-daily",
       "enabled": true,
       "createdAtMs": 1772542733941,
-      "updatedAtMs": 1772613024583,
+      "updatedAtMs": 1772656636540,
       "schedule": {
         "kind": "cron",
         "expr": "30 3 * * *",
@@ -217,7 +217,7 @@
         "kind": "agentTurn",
         "model": "openai-codex/gpt-5.3-codex",
         "timeoutSeconds": 1800,
-        "message": "Run the daily documentation/config consistency health check for Scry + specialist agents.\n\nExecute exactly:\nset -euo pipefail\ncd /Users/sawyer/github/grimoire\n\n# 1) Ensure canonical sync from workspace into grimoire copies.\nbun run scry:sync:openclaw >/tmp/docs-sync-check.log 2>&1 || {\n  openclaw system event --text \"Reminder: daily docs health check failed while running sync-openclaw. Check grimoire sync automation.\" --mode now\n  exit 1\n}\n\n# 2) If sync produced drift in tracked canonical files, auto-commit + push.\nif ! git diff --quiet -- SOUL.md AGENTS.md openclaw/SOUL.md openclaw/AGENTS.md openclaw/MEMORY.md openclaw/TOOLS.md; then\n  bun run scry:sync:openclaw -- --commit >/tmp/docs-sync-commit.log 2>&1 || {\n    openclaw system event --text \"Reminder: daily docs health check detected drift but auto-commit sync failed. Review grimoire sync output.\" --mode now\n    exit 1\n  }\nfi\n\n# 3) Validate canonical file equality and CLAUDE presence.\nOUT=\"$(python3 - <<'PY'\nfrom pathlib import Path\nissues=[]\nws=Path('/Users/sawyer/.openclaw/workspace')\ngr=Path('/Users/sawyer/github/grimoire')\nchecks=[\n    (ws/'SOUL.md', gr/'SOUL.md', 'SOUL root'),\n    (ws/'AGENTS.md', gr/'AGENTS.md', 'AGENTS root'),\n    (ws/'SOUL.md', gr/'openclaw'/'SOUL.md', 'SOUL openclaw copy'),\n    (ws/'AGENTS.md', gr/'openclaw'/'AGENTS.md', 'AGENTS openclaw copy'),\n]\nfor a,b,label in checks:\n    if not a.exists() or not b.exists():\n        issues.append(f'missing:{label}')\n        continue\n    if a.read_text() != b.read_text():\n        issues.append(f'mismatch:{label}')\n\nfor p,label in [\n    (gr/'CLAUDE.md','grimoire CLAUDE.md'),\n    (Path('/Users/sawyer/openclaw/CLAUDE.md'),'openclaw CLAUDE.md'),\n]:\n    if not p.exists():\n        issues.append(f'missing:{label}')\n\nif issues:\n    print('FAIL')\n    for i in issues:\n        print(i)\n    raise SystemExit(2)\nprint('OK: docs/config canonical sync validated')\nPY\n)\" || RC=$?\nRC=${RC:-0}\n\nif [ \"$RC\" -ne 0 ]; then\n  MSG=\"$(printf '%s' \"$OUT\" | tail -n 30 | tr '\\n' '; ' | sed 's/\"//g')\"\n  openclaw system event --text \"Reminder: daily docs health check found consistency issues. ${MSG}\" --mode now\n  exit 1\nfi\n\nexit 0"
+        "message": "Run the daily documentation/config consistency health check for Scry + specialist agents.\n\nExecute exactly:\nset -euo pipefail\ncd /Users/sawyer/github/grimoire\n\n# 1) Ensure canonical sync from workspace into grimoire copies.\npython3 -m scripts sync:openclaw >/tmp/docs-sync-check.log 2>&1 || {\n  openclaw system event --text \"Reminder: daily docs health check failed while running sync-openclaw. Check grimoire sync automation.\" --mode now\n  exit 1\n}\n\n# 2) If sync produced drift in tracked canonical files, auto-commit + push.\nif ! git diff --quiet -- SOUL.md AGENTS.md openclaw/SOUL.md openclaw/AGENTS.md openclaw/MEMORY.md openclaw/TOOLS.md; then\n  python3 -m scripts sync:openclaw --commit >/tmp/docs-sync-commit.log 2>&1 || {\n    openclaw system event --text \"Reminder: daily docs health check detected drift but auto-commit sync failed. Review grimoire sync output.\" --mode now\n    exit 1\n  }\nfi\n\n# 3) Validate canonical file equality and CLAUDE presence.\nOUT=\"$(python3 - <<'PY'\nfrom pathlib import Path\nissues=[]\nws=Path('/Users/sawyer/.openclaw/workspace')\ngr=Path('/Users/sawyer/github/grimoire')\nchecks=[\n    (ws/'SOUL.md', gr/'SOUL.md', 'SOUL root'),\n    (ws/'AGENTS.md', gr/'AGENTS.md', 'AGENTS root'),\n    (ws/'SOUL.md', gr/'openclaw'/'SOUL.md', 'SOUL openclaw copy'),\n    (ws/'AGENTS.md', gr/'openclaw'/'AGENTS.md', 'AGENTS openclaw copy'),\n]\nfor a,b,label in checks:\n    if not a.exists() or not b.exists():\n        issues.append(f'missing:{label}')\n        continue\n    if a.read_text() != b.read_text():\n        issues.append(f'mismatch:{label}')\n\nfor p,label in [\n    (gr/'CLAUDE.md','grimoire CLAUDE.md'),\n    (Path('/Users/sawyer/openclaw/CLAUDE.md'),'openclaw CLAUDE.md'),\n]:\n    if not p.exists():\n        issues.append(f'missing:{label}')\n\nif issues:\n    print('FAIL')\n    for i in issues:\n        print(i)\n    raise SystemExit(2)\nprint('OK: docs/config canonical sync validated')\nPY\n)\" || RC=$?\nRC=${RC:-0}\n\nif [ \"$RC\" -ne 0 ]; then\n  MSG=\"$(printf '%s' \"$OUT\" | tail -n 30 | tr '\\n' '; ' | sed 's/\"//g')\"\n  openclaw system event --text \"Reminder: daily docs health check found consistency issues. ${MSG}\" --mode now\n  exit 1\nfi\n\nexit 0"
       },
       "delivery": {
         "mode": "none"
@@ -240,7 +240,7 @@
       "name": "optimization:weekly-agent-bench-review",
       "enabled": true,
       "createdAtMs": 1772542999126,
-      "updatedAtMs": 1772555567575,
+      "updatedAtMs": 1772639715581,
       "schedule": {
         "kind": "cron",
         "expr": "40 9 * * 1",
@@ -278,7 +278,7 @@
       "name": "healthcheck:agent-bench-weekly-smoke",
       "enabled": true,
       "createdAtMs": 1772556326134,
-      "updatedAtMs": 1772638405318,
+      "updatedAtMs": 1772639714894,
       "schedule": {
         "kind": "cron",
         "expr": "20 9 * * 1",
@@ -340,7 +340,7 @@
       "name": "healthcheck:sessions-autocleanup",
       "enabled": true,
       "createdAtMs": 1772636458182,
-      "updatedAtMs": 1772637317540,
+      "updatedAtMs": 1772655538764,
       "schedule": {
         "kind": "cron",
         "expr": "15 * * * *",
@@ -358,14 +358,14 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772640900000,
-        "lastRunAtMs": 1772637300014,
-        "lastRunStatus": "ok",
-        "lastStatus": "ok",
-        "lastDurationMs": 17526,
-        "lastDelivered": false,
-        "lastDeliveryStatus": "not-delivered",
-        "consecutiveErrors": 0
+        "nextRunAtMs": 1772658900000,
+        "lastRunAtMs": 1772655300056,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 238708,
+        "lastDeliveryStatus": "not-requested",
+        "consecutiveErrors": 1,
+        "lastError": "Error: All models failed (2): openai-codex/gpt-5.3-codex: LLM request timed out. (timeout) | anthropic/claude-opus-4-6: LLM request timed out. (timeout)"
       }
     },
     {
@@ -375,7 +375,7 @@
       "name": "healthcheck:openclaw-maintainer-weekly-smoke",
       "enabled": true,
       "createdAtMs": 1772637194166,
-      "updatedAtMs": 1772637209580,
+      "updatedAtMs": 1772639686228,
       "schedule": {
         "kind": "cron",
         "expr": "32 9 * * 1",
@@ -414,7 +414,7 @@
       "name": "healthcheck:samantha-weekly-smoke",
       "enabled": true,
       "createdAtMs": 1772637487486,
-      "updatedAtMs": 1772637505133,
+      "updatedAtMs": 1772639686945,
       "schedule": {
         "kind": "cron",
         "expr": "2 10 * * 1",
@@ -453,7 +453,7 @@
       "name": "healthcheck:sentinel-weekly-smoke",
       "enabled": true,
       "createdAtMs": 1772637487515,
-      "updatedAtMs": 1772637517040,
+      "updatedAtMs": 1772639687665,
       "schedule": {
         "kind": "cron",
         "expr": "4 10 * * 1",
@@ -492,7 +492,7 @@
       "name": "healthcheck:shipwright-weekly-smoke",
       "enabled": true,
       "createdAtMs": 1772637487534,
-      "updatedAtMs": 1772637525250,
+      "updatedAtMs": 1772639688363,
       "schedule": {
         "kind": "cron",
         "expr": "6 10 * * 1",
@@ -531,7 +531,7 @@
       "name": "healthcheck:caretaker-weekly-smoke",
       "enabled": true,
       "createdAtMs": 1772637487544,
-      "updatedAtMs": 1772637533285,
+      "updatedAtMs": 1772639689034,
       "schedule": {
         "kind": "cron",
         "expr": "8 10 * * 1",
@@ -570,7 +570,7 @@
       "name": "healthcheck:archivist-weekly-smoke",
       "enabled": true,
       "createdAtMs": 1772637487551,
-      "updatedAtMs": 1772637540113,
+      "updatedAtMs": 1772639689728,
       "schedule": {
         "kind": "cron",
         "expr": "10 10 * * 1",
@@ -609,7 +609,7 @@
       "name": "healthcheck:scout-weekly-smoke",
       "enabled": true,
       "createdAtMs": 1772637487560,
-      "updatedAtMs": 1772637549533,
+      "updatedAtMs": 1772639690427,
       "schedule": {
         "kind": "cron",
         "expr": "12 10 * * 1",
@@ -648,7 +648,7 @@
       "name": "healthcheck:operator-weekly-smoke",
       "enabled": true,
       "createdAtMs": 1772637487567,
-      "updatedAtMs": 1772637558353,
+      "updatedAtMs": 1772639691137,
       "schedule": {
         "kind": "cron",
         "expr": "14 10 * * 1",
@@ -687,7 +687,7 @@
       "name": "healthcheck:reviewer-weekly-smoke",
       "enabled": true,
       "createdAtMs": 1772637487573,
-      "updatedAtMs": 1772637564913,
+      "updatedAtMs": 1772639691853,
       "schedule": {
         "kind": "cron",
         "expr": "16 10 * * 1",
@@ -726,7 +726,7 @@
       "name": "healthcheck:builder-mobile-weekly-smoke",
       "enabled": true,
       "createdAtMs": 1772637487579,
-      "updatedAtMs": 1772637573278,
+      "updatedAtMs": 1772639692583,
       "schedule": {
         "kind": "cron",
         "expr": "18 10 * * 1",

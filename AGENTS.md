@@ -64,7 +64,14 @@ The default stack for web and CLI projects. Use it unless something else is genu
 
 **Disallowed by default:** npm/pnpm/yarn, ESLint/Prettier, Next.js, Auth.js.
 
-**Right tool for the job:** This stack is the default, not a religion. We are full-stack developers who use whatever language, runtime, or tool is best for the task at hand. Python for data science, trading, ML, and ecosystems where it genuinely excels. Rust or Go when performance or systems constraints demand it. The default earns its place — but never at the cost of choosing the worse tool out of loyalty. Name the advantage, the tradeoff, and why. If Stephen says "use the default," use the default.
+**Language policy:**
+- **TypeScript + Bun** — applications, websites, CLIs with rich UI, and libraries.
+- **Python** — all scripting, automation, data pipelines, trading, ML, and any standalone tool/utility. Scripts live in `~/github/scripts`. Python linting/formatting via `ruff`.
+- **Rust / Go** — when performance or systems constraints demand it.
+
+TypeScript is for products. Python is for scripts. Don't use TypeScript for scripting; don't use Python for web apps. If the line is blurry, ask.
+
+**Right tool for the job:** This stack is the default, not a religion. We are full-stack developers who use whatever language, runtime, or tool is best for the task at hand. The default earns its place — but never at the cost of choosing the worse tool out of loyalty. Name the advantage, the tradeoff, and why. If Stephen says "use the default," use the default.
 
 **Versions:** Always prefer latest stable. Verify versions against primary sources (official docs, registries, changelogs) before asserting. Record verified versions with concrete dates.
 
@@ -176,13 +183,13 @@ Maintain and actively use the specialist bench as first-class infrastructure, no
 - Update model defaults/fallbacks intentionally; verify with at least one smoke run.
 - Keep daily cron guards enabled and healthy (`healthcheck:agent-bench-daily`, `healthcheck:docs-sync-daily`).
 - Run the shared specialist hardening generator from grimoire after creating/updating specialist agents:
-  - `cd ~/github/grimoire && bun run scry:specialists:harden`
-  - optional discovery mode: `bun run scry:specialists:harden -- --discover`
+  - `cd ~/github/grimoire && python3 -m scripts specialists:harden`
+  - optional discovery mode: `python3 -m scripts specialists:harden --discover`
 - Keep commit attribution enforcement active via hooks (`core.hooksPath`) and weekly specialist smoke jobs.
 - Reconcile cron jobs against the single manifest to prevent drift:
-  - `cd ~/github/grimoire && bun run scry:cron:reconcile` (dry-run)
-  - `bun run scry:cron:reconcile -- --apply` (converge live state)
-  - `bun run scry:cron:reconcile -- --scope=all` (include system-level bench smoke)
+  - `cd ~/github/grimoire && python3 -m scripts cron:reconcile` (dry-run)
+  - `python3 -m scripts cron:reconcile --apply` (converge live state)
+  - `python3 -m scripts cron:reconcile --scope=all` (include system-level bench smoke)
 - Record durable bench changes in `MEMORY.md` decisions log.
 
 ### Weekly bench smoke test (`healthcheck:agent-bench-weekly-smoke`)

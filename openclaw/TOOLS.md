@@ -21,9 +21,9 @@
 
 ## Grimoire CLI Commands
 
-- `bun run scry:sync:openclaw` — sync workspace → grimoire (add `-- --commit` to auto-push)
-- `bun run scry:specialists:harden` — apply Phase 2 hooks/templates/smoke to specialist workspaces
-- `bun run scry:cron:reconcile` — reconcile managed cron jobs against manifest (add `-- --apply` to converge)
+- `python3 -m scripts sync:openclaw` — sync workspace → grimoire (add `--commit` to auto-push)
+- `python3 -m scripts specialists:harden` — apply Phase 2 hooks/templates/smoke to specialist workspaces
+- `python3 -m scripts cron:reconcile` — reconcile managed cron jobs against manifest (add `--apply` to converge)
 
 ## SSH Remotes
 

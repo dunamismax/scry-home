@@ -18,7 +18,7 @@ Grimoire is a well-structured personal ops/identity repo with TypeScript across 
 
 - **Strict TypeScript with Biome.** `strict: true` in tsconfig, Biome recommended rules enabled. Zero lint warnings, zero type errors. Clean baseline.
 - **Consistent error handling pattern.** `runOrThrow` in `common.ts` is a solid primitive — captures stdout/stderr, throws on non-zero exit with useful messages. All tasks use it.
-- **Clear file organization.** `scripts/cli.ts` is a simple dispatch table. Each task is a standalone module in `scripts/tasks/`. Easy to find things.
+- **Clear file organization.** `scripts/cli.py` is a simple dispatch table. Each task is a standalone module in `scripts/tasks/`. Easy to find things.
 - **Good operational discipline.** `logStep()` provides scannable output. Backup tasks include fingerprint-based skip-if-unchanged logic. Sync has dry-run mode.
 - **Solid crypto choices.** AES-256-GCM, PBKDF2 with 250k iterations, 16-byte salt, 12-byte IV. Auth tags are properly extracted and verified. Magic bytes for format versioning.
 - **Shared crypto and snapshot modules.** `scripts/crypto.ts` and `scripts/snapshot.ts` provide single-source-of-truth implementations used by all backup modules.
@@ -33,13 +33,13 @@ Grimoire is a well-structured personal ops/identity repo with TypeScript across 
 
 ## 2. Architecture
 
-### CLI Design (`scripts/cli.ts`)
+### CLI Design (`scripts/cli.py`)
 
 The dispatch table pattern is straightforward and works well for this scale. A few gaps:
 
-- **No `--help` flag.** Running `bun run scripts/cli.ts` with no args shows available commands (good), but there's no per-command help or description.
+- **No `--help` flag.** Running `python3 -m scripts` with no args shows available commands (good), but there's no per-command help or description.
 - **Commands typed as `() => void`.** Several commands could benefit from being async (e.g., if you ever want parallel project installs or async I/O). The type should be `() => void | Promise<void>` with an `await` in the try/catch. Not urgent but blocks future async work.
-- **No argument forwarding visibility.** Some tasks read `Bun.argv` directly (e.g., `sync-openclaw` checks for `--commit`, `sync-remotes` checks for `--fix`). This works but the CLI entrypoint doesn't document which commands accept flags. A user running `bun run scry:sync:openclaw` has to read source to know `--commit` exists.
+- **No argument forwarding visibility.** Some tasks read `sys.argv` directly (e.g., `sync_openclaw` checks for `--commit`, `sync_remotes` checks for `--fix`). This works but the CLI entrypoint doesn't document which commands accept flags. A user running `python3 -m scripts sync:openclaw` has to read source to know `--commit` exists.
 
 ### Module Boundaries
 
@@ -60,8 +60,8 @@ The separation between `common.ts` (shared utilities), `crypto.ts` (encryption),
 
 ### Improvement Opportunities
 
-- ~~**`commandExists` function** used shell interpolation~~ — Now uses `Bun.which()`, a direct `$PATH` lookup with no shell.
-- **Inconsistent `Bun.spawnSync` vs `runOrThrow`**: `setup-workstation.ts:144-155` uses raw `Bun.spawnSync` for `git config --unset-all` (to silently ignore failure), while `sync-remotes.ts:47-53` wraps the same operation in a try/catch around `runOrThrow`. Pick a pattern — a `runQuiet` or `runOptional` helper that returns success/failure without throwing would clean both up.
+- ~~**`commandExists` function** used shell interpolation~~ — Now uses `shutil.which()`, a direct `$PATH` lookup with no shell.
+- **Inconsistent subprocess handling vs `run_or_throw`**: `setup_workstation.py` uses raw `subprocess.run` for `git config --unset-all` (to silently ignore failure), while `sync_remotes.py` wraps the same operation similarly. Pick a pattern — a `run_quiet` or `run_optional` helper that returns success/failure without throwing would clean both up.
 - **No shared types for metadata JSON**: Both `setup-config-backup.ts` and `verify-config-backup.ts` parse the same metadata JSON but use inline `as` type assertions. A shared `ConfigBackupMetadata` type would prevent drift.
 
 ---
@@ -112,7 +112,7 @@ Extracted into `scripts/snapshot.ts`:
 
 ### Concerns (Resolved)
 
-- ~~**Command injection surface in `commandExists`**~~ — Replaced with `Bun.which()`. No shell evaluation.
+- ~~**Command injection surface in `commandExists`**~~ — Replaced with `shutil.which()`. No shell evaluation.
 - ~~**Metadata file contains absolute paths**~~ — `sourceHome` now stores `~`, `sourceDir` stores `~/.ssh`, `encryptedBackupFile` stores repo-relative path. No absolute paths with usernames in metadata.
 
 ### Remaining Notes
@@ -140,7 +140,7 @@ All 38 tests pass. `bunfig.toml` test preload now points to real `test/setup.ts`
 
 Generally good — `runOrThrow` provides consistent error messages with exit codes and command strings. A few gaps:
 
-- **`sync-openclaw.ts:218-226`**: Uses raw `Bun.spawnSync` for git operations instead of `runOrThrow`, with minimal error messages (`"git add failed"` with no stderr output). The git commit error handling properly captures stderr, but git add doesn't.
+- **`sync_openclaw.py`**: Git operations now use `run_or_throw` consistently. Error handling for git commit properly catches "nothing to commit" case.
 - **No structured error types.** Everything throws `new Error(message)`. For a CLI this is fine, but if you ever want programmatic error handling (retry logic, error categorization), typed errors would help.
 - ~~**`verify-config-backup.ts` misleading temp dir output**~~ — Removed the `preview root: ${tempDir}` line since the directory is deleted in `finally`.
 
@@ -150,7 +150,7 @@ Generally good — `runOrThrow` provides consistent error messages with exit cod
 
 ### P0 — Fix Now (security, correctness) — ALL RESOLVED
 
-1. ~~**Replace `commandExists` shell interpolation with `Bun.which()`**~~ — Done.
+1. ~~**Replace `commandExists` shell interpolation with `shutil.which()`**~~ — Done.
 2. ~~**Delete dead code**~~ — Done. `_CONFIG_AUTH_TAG_LENGTH` removed, `extractDir` no-op removed.
 3. ~~**Metadata absolute paths**~~ — Done. Now stores `~` and repo-relative paths.
 
