@@ -43,7 +43,7 @@
       "name": "healthcheck:backup-freshness",
       "enabled": true,
       "createdAtMs": 1772532367675,
-      "updatedAtMs": 1772536216116,
+      "updatedAtMs": 1772622616417,
       "schedule": {
         "kind": "cron",
         "expr": "10 6 * * *",
@@ -61,11 +61,11 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772622600000,
-        "lastRunAtMs": 1772536200010,
+        "nextRunAtMs": 1772709000000,
+        "lastRunAtMs": 1772622600013,
         "lastRunStatus": "ok",
         "lastStatus": "ok",
-        "lastDurationMs": 16106,
+        "lastDurationMs": 16404,
         "lastDelivered": false,
         "lastDeliveryStatus": "not-delivered",
         "consecutiveErrors": 0
@@ -101,7 +101,7 @@
       "name": "briefing:daily-repo-priority-summary",
       "enabled": true,
       "createdAtMs": 1772533964511,
-      "updatedAtMs": 1772544951243,
+      "updatedAtMs": 1772632439063,
       "schedule": {
         "kind": "cron",
         "expr": "35 8 * * *",
@@ -113,7 +113,7 @@
         "kind": "agentTurn",
         "model": "openai-codex/gpt-5.3-codex",
         "timeoutSeconds": 420,
-        "message": "Generate a concise daily engineering summary for Stephen.\n\nContext:\n- Repos root: /Users/sawyer/github\n- Primary tracked repos: grimoire, pr-firefighter, CallRift, elchess, augur, podwatch, rip, Sawyer-Visual-Media\n\nTasks:\n1) Check each repo for branch state and uncommitted changes.\n2) Read each repo BUILD.md status line + next priorities when present.\n3) Produce a priority-ranked \"today\" list (top 5) with why.\n4) Include blockers/risk flags.\n5) Include a calendar note: if M365/Notion calendar integration is not configured, explicitly state \"calendar integration not configured yet\".\n\nOutput style:\n- 6–12 bullets max, high signal, no fluff.\n- Action-first and decision-oriented."
+        "message": "Generate a concise daily engineering summary for Stephen.\n\nContext:\n- Repos root: /Users/sawyer/github\n- Primary tracked repos: grimoire, pr-firefighter, CallRift, elchess, augur, podwatch, rip, Sawyer-Visual-Media\n\nTasks:\n1) Check each repo for branch state and uncommitted changes.\n2) Read each repo BUILD.md status line + next priorities when present.\n3) Produce a priority-ranked \"today\" list (top 5) with why.\n4) Include blockers/risk flags.\n\nOutput style:\n- 6–12 bullets max, high signal, no fluff.\n- Action-first and decision-oriented."
       },
       "delivery": {
         "mode": "announce",
@@ -122,11 +122,11 @@
         "bestEffort": true
       },
       "state": {
-        "nextRunAtMs": 1772631300000,
-        "lastRunAtMs": 1772544900014,
+        "nextRunAtMs": 1772717700000,
+        "lastRunAtMs": 1772631300012,
         "lastRunStatus": "ok",
         "lastStatus": "ok",
-        "lastDurationMs": 51229,
+        "lastDurationMs": 87224,
         "lastDelivered": true,
         "lastDeliveryStatus": "delivered",
         "consecutiveErrors": 0
@@ -205,7 +205,7 @@
       "name": "healthcheck:docs-sync-daily",
       "enabled": true,
       "createdAtMs": 1772542733941,
-      "updatedAtMs": 1772542791744,
+      "updatedAtMs": 1772613024583,
       "schedule": {
         "kind": "cron",
         "expr": "30 3 * * *",
@@ -223,15 +223,14 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772613000000,
-        "lastRunAtMs": 1772542775492,
+        "nextRunAtMs": 1772699400000,
+        "lastRunAtMs": 1772613000014,
         "lastRunStatus": "ok",
         "lastStatus": "ok",
-        "lastDurationMs": 16252,
+        "lastDurationMs": 24569,
         "lastDelivered": false,
         "lastDeliveryStatus": "not-delivered",
-        "consecutiveErrors": 0,
-        "runningAtMs": 1772613000011
+        "consecutiveErrors": 0
       }
     },
     {
