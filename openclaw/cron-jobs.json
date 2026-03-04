@@ -8,7 +8,7 @@
       "name": "sync-openclaw-workspace",
       "enabled": true,
       "createdAtMs": 1772473326916,
-      "updatedAtMs": 1772532358779,
+      "updatedAtMs": 1772611216522,
       "schedule": {
         "kind": "cron",
         "expr": "0 3 * * *",
@@ -26,15 +26,14 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772611200000,
-        "lastRunAtMs": 1772526488903,
+        "nextRunAtMs": 1772697600000,
+        "lastRunAtMs": 1772611200036,
         "lastRunStatus": "ok",
         "lastStatus": "ok",
-        "lastDurationMs": 14603,
+        "lastDurationMs": 16486,
         "lastDelivered": false,
         "lastDeliveryStatus": "not-delivered",
-        "consecutiveErrors": 0,
-        "runningAtMs": 1772611200011
+        "consecutiveErrors": 0
       }
     },
     {
@@ -171,7 +170,7 @@
       "name": "healthcheck:agent-bench-daily",
       "enabled": true,
       "createdAtMs": 1772542721502,
-      "updatedAtMs": 1772542825327,
+      "updatedAtMs": 1772612442587,
       "schedule": {
         "kind": "cron",
         "expr": "20 3 * * *",
@@ -189,11 +188,11 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772612400000,
-        "lastRunAtMs": 1772542804152,
+        "nextRunAtMs": 1772698800000,
+        "lastRunAtMs": 1772612400016,
         "lastRunStatus": "ok",
         "lastStatus": "ok",
-        "lastDurationMs": 21175,
+        "lastDurationMs": 42571,
         "lastDelivered": false,
         "lastDeliveryStatus": "not-delivered",
         "consecutiveErrors": 0
@@ -231,7 +230,8 @@
         "lastDurationMs": 16252,
         "lastDelivered": false,
         "lastDeliveryStatus": "not-delivered",
-        "consecutiveErrors": 0
+        "consecutiveErrors": 0,
+        "runningAtMs": 1772613000011
       }
     },
     {
