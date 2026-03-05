@@ -15,6 +15,7 @@
 - Primary model: `anthropic/claude-opus-4-6` (set as default again on 2026-03-03; switch manually with `/model codex` when needed)
 - Git identity: commits as `dunamismax`. No AI attribution ever - no "Claude", "Scry", "Co-Authored-By", or agent fingerprints
 - Dual remotes: GitHub (`github.com-dunamismax`) + Codeberg (`codeberg.org-dunamismax`), force-push to main
+- Machine: M5 MacBook Pro 14" (32GB/1TB, macOS 26.3.1) — migrated from M4 Air 16GB on 2026-03-05 via Time Machine
 - Communication channel: Signal (primary)
 - WhatsApp + BlueBubbles: disabled by Stephen's request (2026-03-02)
 

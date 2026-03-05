@@ -122,7 +122,7 @@
         "bestEffort": true
       },
       "state": {
-        "nextRunAtMs": 1772717700000,
+        "nextRunAtMs": 1772804100000,
         "lastRunAtMs": 1772631300012,
         "lastRunStatus": "ok",
         "lastStatus": "ok",
@@ -324,7 +324,7 @@
         "text": "Reminder: Lock the fuck in. Build something. Break something. Learn to code. No excuses, no ceremony — just ship."
       },
       "state": {
-        "nextRunAtMs": 1772719200000,
+        "nextRunAtMs": 1772805600000,
         "lastRunAtMs": 1772632800022,
         "lastRunStatus": "ok",
         "lastStatus": "ok",
@@ -340,7 +340,7 @@
       "name": "healthcheck:sessions-autocleanup",
       "enabled": true,
       "createdAtMs": 1772636458182,
-      "updatedAtMs": 1772716500042,
+      "updatedAtMs": 1772727316249,
       "schedule": {
         "kind": "cron",
         "expr": "15 * * * *",
@@ -358,14 +358,14 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772720100000,
-        "lastRunAtMs": 1772716500029,
-        "lastRunStatus": "error",
-        "lastStatus": "error",
-        "lastDurationMs": 13,
-        "lastDeliveryStatus": "not-requested",
-        "consecutiveErrors": 1,
-        "lastError": "GatewayDrainingError: Gateway is draining for restart; new tasks are not accepted"
+        "nextRunAtMs": 1772730900000,
+        "lastRunAtMs": 1772727300033,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 16216,
+        "lastDeliveryStatus": "not-delivered",
+        "consecutiveErrors": 0,
+        "lastDelivered": false
       }
     },
     {
