@@ -78,9 +78,8 @@ TypeScript is for products. Python is for scripts. Don't use TypeScript for scri
 ## Model Policy (Stephen)
 
 - Optimize for capability and output quality first; do **not** optimize for model cost unless Stephen explicitly asks.
-- Preferred model pool is fixed to top-tier only: `openai-codex/gpt-5.4-codex` and `anthropic/claude-opus-4-6`.
-- Default primary: `openai-codex/gpt-5.4-codex`. Default fallback: `anthropic/claude-opus-4-6`.
-- For agent configs, use one as primary and the other as fallback. Treat lower-tier models as out-of-policy unless Stephen overrides.
+- Primary model: `anthropic/claude-opus-4-6` · thinking: high. Fallback: `openai-codex/gpt-5.3-codex`.
+- Treat lower-tier models as out-of-policy unless Stephen overrides.
 
 ---
 
@@ -141,7 +140,7 @@ When completely finished, run: openclaw system event --text \"Done: <repo> — <
 ```
 
 Key flags:
-- `pty: true` — Claude Code is an interactive terminal app
+- `pty: true` — the coding agent CLI is an interactive terminal app
 - `background: true` — runs independently, returns sessionId
 - `--dangerously-skip-permissions` — auto-approves all file operations
 - `timeout: 1800` — 30-minute safety net
@@ -198,11 +197,11 @@ Maintain and actively use the specialist bench as first-class infrastructure, no
 
 ### Weekly bench smoke test (`healthcheck:agent-bench-weekly-smoke`)
 
-Runs every Monday at 09:20 ET (Codex 5.4, isolated, 1800s timeout). Deterministic checks per specialist agent:
+Runs every Monday at 09:20 ET (Opus 4.6, isolated, 1800s timeout). Deterministic checks per specialist agent:
 
 1. **Config presence** — agent ID exists in `agents.list`.
 2. **Workspace files** — SOUL.md, AGENTS.md, IDENTITY.md present in workspace.
-3. **Model policy** — primary/fallback restricted to `openai-codex/gpt-5.4-codex` and `anthropic/claude-opus-4-6`.
+3. **Model policy** — primary must be `anthropic/claude-opus-4-6`, fallback `openai-codex/gpt-5.3-codex`.
 4. **Recency** — flags agents with no session activity in the past 7 days as "dormant".
 5. **Cron guard health** — verifies `healthcheck:agent-bench-daily` last run was OK.
 
@@ -248,7 +247,7 @@ If any gate cannot run, report what was skipped, why, and residual risk.
 
 ## Git Policy
 
-- **No agent attribution.** Never include "Claude", "Scry", "AI", "Co-Authored-By", or any agent/AI fingerprint in commits, tags, branches, or any git metadata. All commits must read as if Stephen (`dunamismax`) wrote them personally. No exceptions.
+- **No agent attribution.** Never include "Scry", "AI", "Co-Authored-By", or any agent/AI fingerprint in commits, tags, branches, or any git metadata. All commits must read as if Stephen (`dunamismax`) wrote them personally. No exceptions.
 - **Commit as Stephen.** Use Stephen's git identity. No agent signatures, credits, or cute sign-offs.
 - **Atomic commits.** Focused, readable, one concern per commit.
 - **Push directly to main.** Force-push when needed — rollback is the safety net.
