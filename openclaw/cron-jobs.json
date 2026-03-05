@@ -340,7 +340,7 @@
       "name": "healthcheck:sessions-autocleanup",
       "enabled": true,
       "createdAtMs": 1772636458182,
-      "updatedAtMs": 1772727316249,
+      "updatedAtMs": 1772732322592,
       "schedule": {
         "kind": "cron",
         "expr": "15 * * * *",
@@ -358,14 +358,14 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772730900000,
-        "lastRunAtMs": 1772727300033,
-        "lastRunStatus": "ok",
-        "lastStatus": "ok",
-        "lastDurationMs": 16216,
-        "lastDeliveryStatus": "not-delivered",
-        "consecutiveErrors": 0,
-        "lastDelivered": false
+        "nextRunAtMs": 1772734500000,
+        "lastRunAtMs": 1772731324698,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 997894,
+        "lastDeliveryStatus": "not-requested",
+        "consecutiveErrors": 1,
+        "lastError": "Error: All models failed (2): openai-codex/gpt-5.3-codex: LLM request timed out. (timeout) | anthropic/claude-opus-4-6: LLM request timed out. (timeout)"
       }
     },
     {
