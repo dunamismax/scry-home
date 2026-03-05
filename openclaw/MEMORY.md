@@ -13,139 +13,65 @@
 - Projects root: `~/github`
 - Timezone: America/New_York
 - Primary model: `anthropic/claude-opus-4-6` · thinking: high · fallback: `openai-codex/gpt-5.3-codex`
-- Git identity: commits as `dunamismax`. No AI attribution ever - no "Scry", "Co-Authored-By", or agent fingerprints
+- Git identity: commits as `dunamismax`. No AI attribution ever — no "Scry", "Co-Authored-By", or agent fingerprints
 - Dual remotes: GitHub (`github.com-dunamismax`) + Codeberg (`codeberg.org-dunamismax`), force-push to main
-- Machine: M5 MacBook Pro 14" (32GB/1TB, macOS 26.3.1) - migrated from M4 Air 16GB on 2026-03-05 via Time Machine
+- Machine: M5 MacBook Pro 14" (32GB/1TB, macOS 26.3.1)
 - Communication channel: Signal (primary)
-- WhatsApp + BlueBubbles: disabled by Stephen's request (2026-03-02)
+- App stack: Notion, GitHub, Codeberg, Docker, VSCode, M365, macOS, Ghostty, RustDesk, Tailscale, Signal, Brave, LocalSend
+- Email integration: declined (no Himalaya/Gmail/M365 access)
 
-## Stack Contract
+## Active Repos
 
-See `AGENTS.md` for the full stack table. Default is TypeScript + Bun; Python/Rust/Go when genuinely better.
+All under `~/github`, dual SSH remotes.
 
-## Active Repos (TypeScript - Apps & Products)
+**TypeScript + Bun (apps & products):**
+1. **grimoire** — Scry's identity/config repo, CLI tools, sync scripts
+2. **podwatch** — Podcast dashboard
+3. **rip** — Video download tool
+4. **CallRift** — React Native + Expo SIP/VoIP app
+5. **elchess** — Self-hostable chess platform
+6. **pr-firefighter** — Autonomous CI fix pipeline
 
-All under `~/github`, dual SSH remotes. TypeScript + Bun:
+**Python:**
+- **scripts** — Reusable scripts/utilities (`tools/`, `scratch/`, `lib/`). Linting via `ruff`.
+- **augur** — Trading system (IBKR + LLM analysis)
 
-1. **grimoire** (was scryai-typescript) - Scry's identity/config repo, CLI tools, sync scripts
-2. **podwatch** (was poddashboard) - Podcast dashboard
-3. **rip** (was open-video-downloader) - Video download tool
-4. **CallRift** - React Native + Expo SIP/VoIP app (zustand for client state)
-5. **elchess** - Self-hostable chess platform
-6. **pr-firefighter** - Autonomous CI fix pipeline
-
-## Python Repos
-
-- **scripts** - Reusable Python scripts and utilities. Structure: `tools/` (permanent), `scratch/` (one-offs/experiments), `lib/` (shared utils). Linting via `ruff`. All scripting goes here.
-- **augur** (was scry-trader) - Trading system (IBKR + LLM analysis). Python is best-in-class for this ecosystem.
-
-## Other Projects
-
-- **Sawyer-Visual-Media** - Stephen's drone photography/videography business (aerial work). DJI Mini 5 Pro. Keep this repo.
-- **dotfiles** - Personal workstation configuration backups (organized by OS/source path).
-- **dunamismax** - GitHub profile README repo.
-- **forks/openclaw** - Local fork of OpenClaw for contribution work.
-
-## Archived / Removed Repos
-
-- **scryai-swift**, **scryai-gorust**, **elixir**, **espanol** - archived (Phase 2), preserved on GitHub + Codeberg
-- **work**, **images** - deleted locally 2026-03-02, still on GitHub + Codeberg
-- **questlog**, **homepage**, **sentinel**, **oracle** - deleted locally 2026-03-03 by Stephen. May still exist on remotes.
+**Other:**
+- **Sawyer-Visual-Media** — Drone photography/videography business. DJI Mini 5 Pro.
+- **dotfiles** — Workstation config backups
+- **dunamismax** — GitHub profile README
+- **forks/openclaw** — Local fork for contribution work
 
 ## OpenClaw Setup
 
-- **Install**: Git-based at `~/openclaw` (no npm install). `~/.openclaw/lib/node_modules/openclaw` symlinks to git repo. Update via `git pull` + restart.
-- **Binary**: `~/.local/bin/openclaw` → `~/openclaw/openclaw.mjs`
-- **Service**: LaunchAgent, port 18789
-- Gateway mode: local, loopback-only, Tailscale allowed
-- Signal channel: active, DM allowlist only
-- Auth profiles: `openai-codex:default` (OAuth), `anthropic:default` (OAuth)
-- Daily cron at 3am ET syncs workspace → grimoire
-- **Browser**: Brave configured, profiles `openclaw` (18800) + `chrome` (18792)
-- **ACP**: enabled, acpx backend, default **codex**, allows pi/claude/codex/opencode/gemini, 8 concurrent
+- **Install**: Git-based at `~/openclaw`. Symlink: `~/.openclaw/lib/node_modules/openclaw` → `~/openclaw`. Binary: `~/.local/bin/openclaw` → `~/openclaw/openclaw.mjs`
+- **Service**: LaunchAgent, port 18789, loopback-only + Tailscale
+- **Auth**: `openai-codex:default` (OAuth), `anthropic:default` (OAuth)
+- **Signal**: DM allowlist, block streaming off, typing on thinking, reasoning hidden
+- **Browser**: Brave, profiles `openclaw` (18800) + `chrome` (18792)
+- **ACP**: acpx backend, default **codex**, allows pi/claude/codex/opencode/gemini, 8 concurrent
 - **Sub-agents**: depth 2, 8 concurrent, 5 children/agent
-- **Web**: search (Brave, needs API key), fetch (50K chars, 30s timeout)
+- **Web**: Brave search + fetch (50K chars, 30s timeout)
+- **Cron**: daily sync (3 AM), daily healthchecks, weekly bench smoke, daily briefing (8:35 AM)
 
-### File Sync Model (keep in lockstep)
+### File Sync Model
 
-Two canonical files live in the OpenClaw workspace. Everything else is a copy:
-
-| Canonical (workspace) | Grimoire copies | Other repos |
-|---|---|---|
-| `SOUL.md` | `SOUL.md` (root) + `openclaw/SOUL.md` | - |
-| `AGENTS.md` | `AGENTS.md` (root) + `openclaw/AGENTS.md` | `CLAUDE.md` (points to grimoire) |
-
-- **AGENTS.md = CLAUDE.md content.** Same file, different name. CLAUDE.md in other repos just points to grimoire.
-- **Workspace is always canonical.** Edit there, sync outward. Never edit grimoire copies directly.
-- **`sync-openclaw` script** copies workspace → grimoire root + `openclaw/` dir. Run with `--commit` to auto-push.
-- When SOUL.md or AGENTS.md change, sync immediately - don't let copies drift.
-
-### Signal Channel Config (tuned 2026-03-02)
-
-- Block streaming: **off** (single clean message per response)
-- Reasoning visibility: **off** (per-session `/reasoning off`)
-- Verbose: **off** (no tool call summaries leaked)
-- Human delay: **off** (no artificial latency)
-- Typing indicators: **thinking** (shows typing while processing)
-- Thinking level: **high** (full extended thinking, hidden from chat)
-- Heartbeat reasoning: **false**
-
-## Reference Docs
-
-- **CONTRIBUTING_TO_OPENCLAW.md** - field guide for contributing to OpenClaw. Repo setup, build system, PR template usage, Signal plugin architecture, test patterns, reviewer expectations. Lives in workspace (canonical) and grimoire.
+Workspace is canonical → synced to grimoire root + `openclaw/` dir via `sync-openclaw` script. CLAUDE.md in other repos points to grimoire. Edit workspace, sync outward.
 
 ## Open-Source Contributions
 
-- **PR #32217** (2026-03-02): fix - Signal reaction messageId fallback + queued message channelId passthrough. Issue #17651.
-- **PR #32396** (2026-03-02): docs - Signal block streaming guide. **CLOSED** - block streaming not recommended for Signal DM use.
-- **PR #32397** (2026-03-02): test - Numeric messageId coverage for Signal reaction handler.
-- **PR #32398** (2026-03-02): docs - Recommended DM configuration for personal assistant use.
-- All authored as `dunamismax`. No Signal subsystem maintainer exists yet - opportunity to establish ownership.
+- **PR #32217**: fix — Signal reaction messageId fallback + queued message channelId passthrough
+- **PR #32397**: test — Numeric messageId coverage for Signal reaction handler
+- **PR #32398**: docs — Recommended DM configuration for personal assistant use
+- All authored as `dunamismax`. No Signal subsystem maintainer exists yet.
 
-## Workflow Preferences
+## Decisions (current-state only)
 
-- **Multi-agent orchestration:** Stephen loves it. When work is parallelizable, fan out Codex/ACP coding agents - one per repo/task, focused prompts, push-based completion via `openclaw system event`. Scry orchestrates, agents execute. Don't serialize what can be parallelized.
-- **Project tracking:** For longer-running builds/features, maintain a root `BUILD.md` in each repo and keep it continuously accurate (phase status, checklist progress, verification snapshot, and next-pass priorities).
-- **Background-first workflow:** Stephen strongly prefers background agents for implementation while keeping the main chat thread continuously available for coordination, updates, and parallel work across repos.
-- **PTY spawn only - never ACP runtime for coding agents:** ACP runtime (`sessions_spawn runtime:"acp"`) silently fails on all writes (`ACP_TURN_FAILED`, exit code 5). Always use PTY exec: `exec pty:true background:true command:'claude -p "..." --dangerously-skip-permissions'` with `openclaw system event` for push-based completion. This is permanent.
-- **Max-capability posture:** Stephen wants OpenClaw/Scry configured for maximum practical leverage via strong integrations, automation, and orchestration across his tool stack, with explicit tradeoff/consent handling for risky enables.
-## Decisions Log
-
-- 2026-03-02: Adopted Scry identity (uppercase S). Unified SOUL.md/AGENTS.md across workspace + repo.
-- 2026-03-02: Repos get CLAUDE.md pointing to grimoire, not their own SOUL.md/AGENTS.md.
-- 2026-03-02: Stripped all `Co-Authored-By` agent tags from 12 repos. No agent attribution, ever.
-- 2026-03-02: Completed Phase 1 of repo alignment - all 19 repos have CLAUDE.md + dual SSH remotes.
-- 2026-03-02: Adopted "right tool for the job" philosophy - scry-trader stays Python, stack contract is a default not a religion.
-- 2026-03-02: CallRift Phase 2 shipped - real SIP engine (sip.js), API client (TanStack Query), server Bun migration, Docker Compose.
-- 2026-03-02: Tuned OpenClaw Signal config - disabled block streaming, reasoning, verbose, human delay; enabled typing indicators.
-- 2026-03-02: Closed PR #32396 (block streaming guide) - bad advice for Signal DM use case.
-- 2026-03-03: Switched back to Codex as default model for OpenClaw/Scry due Anthropic reliability issues.
-- 2026-03-03: Configured dual OAuth model switching. Codex retained as default.
-- 2026-03-03: Standardized BUILD.md project ledgers for long-running work; keep root BUILD.md in active repos and update it alongside implementation progress.
-- 2026-03-03: Reaffirmed background-agent-first workflow as preferred mode: run coding agents in background, keep main thread responsive for orchestration and concurrent work.
-- 2026-03-03: Adopted explicit max-capability integration posture: prioritize durable OpenClaw integrations/automation across Stephen's stack, with clear risk/consent gates for high-impact enables.
-- 2026-03-03: Nuked npm OpenClaw install, symlinked `~/.openclaw/lib/node_modules/openclaw` → `~/openclaw` git repo. Git-only install going forward.
-- 2026-03-03: Enabled browser (Brave), ACP coding agents (acpx/codex), nested sub-agents (depth 2), web fetch.
-- 2026-03-03: ACP defaultAgent set to codex. All agents standardized on Codex as primary model.
-- 2026-03-03: Stephen's app stack: Notion, GitHub, Codeberg, Docker, VSCode, M365, macOS, Ghostty, RustDesk, Tailscale, Signal, Brave, LocalSend.
-- 2026-03-03: Stephen declined email integration (Himalaya/Gmail/M365). Removed config + keychain entries. No email access.
-- 2026-03-03: Notion "Scry" integration connected to "Stephen's Notion" workspace. Brave Search API key configured. Peekaboo, summarize, tmux, whisper, clawhub all installed.
-- 2026-03-03: Skills ready: 15/52 (up from 8). New: acp-router, clawhub, peekaboo, summarize, tmux, whisper, himalaya (installed but unused).
-- 2026-03-03: Peekaboo CLI uninstalled by request; local Peekaboo automation is disabled unless reinstalled.
-- 2026-03-03: Added persistent multi-agent bench. All agents on Opus 4.6 primary, Codex 5.3 fallback. No exceptions unless Stephen manually overrides.
-- 2026-03-05: Renamed agents for consistency: Reviewer→**Arbiter** ⚖️, Builder Mobile→**Pixel** 📱, OpenClaw Maintainer→**Keeper** 🦞, Contributor→**Anvil** 🔨. Agent IDs unchanged (no routing breakage).
-- 2026-03-03: Added explicit specialist-bench stewardship rules to Scry's AGENTS/SOUL and validated delegation wiring with Sentinel/Reviewer smoke runs.
-- 2026-03-03: Added daily cron maintenance: `healthcheck:agent-bench-daily` (agent/workspace/model integrity) and `healthcheck:docs-sync-daily` (SOUL/AGENTS canonical sync + drift auto-commit), both verified with manual runs.
-- 2026-03-03: Repaired `optimization:weekly-agent-bench-review` cron by tightening prompt scope and lowering thinking; forced validation run succeeded and delivered.
-- 2026-03-03: Set explicit model policy: prioritize capability over cost; keep all agents on top-tier pool only.
-- 2026-03-05: **Global model set to Claude Opus 4.6.** Primary: `anthropic/claude-opus-4-6`, thinking: high. Fallback: `openai-codex/gpt-5.3-codex`. Applied to: global defaults, all 12 specialist agents, and all cron jobs. GPT 5.4 Codex was removed — not supported with ChatGPT OAuth.
-- 2026-03-03: Implemented all 5 weekly specialist-bench improvements in parallel (verification gates, handoff protocols, scope boundaries, role-specific agent docs, weekly smoke-check automation) and added `healthcheck:agent-bench-weekly-smoke` (Mon 09:20 ET).
-- 2026-03-03: **PTY spawn is the only valid method for background coding agents.** ACP runtime (`sessions_spawn runtime:"acp"`) fails silently on all writes (exit code 5, `--non-interactive-permissions fail`). Always use `exec pty:true background:true` with `claude -p --dangerously-skip-permissions`. Permanent decision.
-- 2026-03-03: **Full code review completed across all 7 active repos** (augur, CallRift, elchess, grimoire, podwatch, rip, Sawyer-Visual-Media). Two passes: deep pass (P0/P1 security + architecture fixes) then final polish (42 UX/DX items). All committed and pushed to both remotes. Master tracker removed.
-- 2026-03-04: Added specialist agent `openclaw-maintainer` with dedicated workspace and delegation policy. Default routing now sends `~/openclaw` tasks to this specialist unless Stephen overrides.
-- 2026-03-04: Completed OpenClaw Maintainer Phase 2 hardening: installed repo-local commit metadata guardrails via external `commit-msg`/`pre-push` hooks (`core.hooksPath`), added attribution audit + scored weekly smoke script, and scheduled `healthcheck:openclaw-maintainer-weekly-smoke` (Mon 09:32 ET) with Signal delivery.
-- 2026-03-04: Adopted formal language policy - TypeScript for apps/products, Python for all scripting/automation/utilities. Created `scripts` repo (`~/github/scripts`) with `tools/`, `scratch/`, `lib/` structure, `ruff` for linting/formatting. Grimoire scripts will be rewritten in Python later.
-- 2026-03-05: Created specialist agent `luma` — visual media, color science, LUT engineering, drone cinematography, video editing, photography. Dedicated to `~/github/Sawyer-Visual-Media`. Workspace at `~/.openclaw/workspace-luma`. Added to Scry's delegation allowlist.
-- 2026-03-04: Applied Phase 2 hardening across all specialist agents (Samantha, Sentinel, Shipwright, Caretaker, Archivist, Scout, Operator, Reviewer, Builder Mobile): standardized no-attribution hook packs + audit/smoke runbooks per workspace, added weekly cron smokes (Mon 10:02-10:18 ET), and force-ran all jobs successfully (all 10/10 PASS). Also set global git hooksPath to `/Users/sawyer/.openclaw/git-hooks` for cross-repo commit metadata enforcement.
-- 2026-03-04: Added shared specialist hardening generator in grimoire (`uv run python -m scripts specialists:harden`) as the single source for hook/template rollout across specialist workspaces; default target excludes `openclaw-maintainer` (custom profile) unless explicitly included.
-- 2026-03-04: Added cron manifest reconciler (`uv run python -m scripts cron:reconcile`) as single source of truth for all managed specialist smoke cron jobs + bench-wide smoke; prevents schedule/payload/delivery drift with dry-run default and `--apply` to converge.
+- No AI attribution in git. Ever. Global git hooksPath at `~/.openclaw/git-hooks` enforces this.
+- Repos get CLAUDE.md pointing to grimoire, not their own SOUL/AGENTS files.
+- PTY spawn is the only valid method for background coding agents. Never ACP runtime (`sessions_spawn runtime:"acp"`) — it silently fails on writes.
+- TypeScript for apps/products. Python for all scripting/automation/utilities. Right tool wins.
+- Model policy: capability over cost. Opus 4.6 primary, Codex 5.3 fallback. No downgrades.
+- Specialist bench: 6 agents (sentinel, reviewer, builder-mobile, openclaw-maintainer, contributor, luma). Trimmed from 12 on 2026-03-05.
+- Grimoire CLI tools: `specialists:harden` (hook/template rollout), `cron:reconcile` (manifest convergence).
+- Reference docs (CONTRIBUTING_TO_OPENCLAW.md, issue candidates) live in `grimoire/reference/`, not workspace.

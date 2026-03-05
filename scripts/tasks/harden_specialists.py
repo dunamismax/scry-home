@@ -23,13 +23,7 @@ HOME = os.environ.get("HOME", str(Path.home()))
 OPENCLAW_ROOT = Path(HOME) / ".openclaw"
 
 MANAGED_SPECIALISTS = [
-    "samantha",
     "sentinel",
-    "shipwright",
-    "caretaker",
-    "archivist",
-    "scout",
-    "operator",
     "reviewer",
     "builder-mobile",
 ]
