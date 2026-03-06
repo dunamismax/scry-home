@@ -10,7 +10,7 @@ Scry's identity, configuration, and operational tooling. The canonical source of
 
 - `SOUL.md` — identity, worldview, voice
 - `AGENTS.md` — operational rules, stack contract, verification
-- `CONTRIBUTING_TO_OPENCLAW.md` — field guide for OpenClaw contributions
+- `reference/CONTRIBUTING_TO_OPENCLAW.md` — field guide for OpenClaw contributions
 - `scripts/` — CLI tools, sync scripts, project management
 - `openclaw/` — auto-synced from OpenClaw workspace (do not edit directly)
 - `vault/` — encrypted backups

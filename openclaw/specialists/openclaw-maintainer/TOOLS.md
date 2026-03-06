@@ -5,7 +5,7 @@
 - All active repos: `~/github/<name>` (see MEMORY.md for full list)
 - OpenClaw workspace (canonical): `~/.openclaw/workspace`
 - Scry config repo: `~/github/grimoire`
-- Sync script: `~/github/grimoire/scripts/tasks/sync-openclaw.ts`
+- Sync script: `~/github/grimoire/scripts/tasks/sync_openclaw.py`
 
 ## OpenClaw Install
 

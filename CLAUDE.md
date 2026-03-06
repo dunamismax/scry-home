@@ -10,7 +10,7 @@
 
 - CLI entrypoint: `scripts/cli.py` → all tasks under `scripts/tasks/`.
 - Run `uv run python -m scripts doctor` to verify prerequisites and project health.
-- Run `bun run lint && bun run typecheck` before committing.
+- Run `bun run lint` before committing; use `uv run python -m scripts doctor` when you need a functional repo health check.
 - Use `uv run python -m scripts sync:remotes --fix` to configure dual push remotes on new repos.
 - The `openclaw/` directory is auto-synced from the OpenClaw workspace. Do not edit files there directly.
 - The `vault/` directory contains encrypted backups. Never commit decrypted secrets.

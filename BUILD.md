@@ -1,104 +1,90 @@
 # grimoire — Build Tracker
 
-**Status:** Phase 1 — Active maintenance (specialist routing + backup coverage reconciled)
-**Last Updated:** 2026-03-06
-**Branch:** `main`
+**Status:** Phase 1 — Active maintenance and stale-file cleanup  
+**Last Updated:** 2026-03-06  
+**Latest Relevant Commit:** `d2b46bd`
 
 ---
 
 ## What This Repo Is
 
-Scry's operational control plane. Contains identity files (SOUL.md, AGENTS.md), CLI tooling for multi-repo management, OpenClaw workspace sync, SSH/config backup scripts, and project templates. This is the source of truth for how the entire dev environment is configured and maintained.
+Scry's operational control plane. It holds canonical identity docs, Python CLI automation, an OpenClaw workspace mirror, encrypted backup artifacts, and a small Bun/Biome layer for formatting and linting repo files.
 
 ## Architecture Snapshot
 
-```
+```text
 grimoire/
-├── SOUL.md, AGENTS.md          # Canonical identity (workspace copies sync here)
-├── openclaw/                   # OpenClaw workspace mirror (MEMORY, HEARTBEAT, cron state, specialist doc backups)
+├── SOUL.md, AGENTS.md          # Canonical identity and operating rules
+├── BUILD.md                    # Current repo state ledger
+├── openclaw/                   # OpenClaw workspace mirror (do not edit directly)
 ├── scripts/
-│   ├── cli.ts                  # Unified CLI entry point
-│   ├── common.ts               # Shared utilities
-│   ├── crypto.ts               # Encryption helpers
-│   ├── projects.config.ts      # Multi-repo project registry
+│   ├── cli.py                  # Unified CLI entry point
+│   ├── common.py               # Shared subprocess/logging/path helpers
+│   ├── crypto.py               # Encryption helpers for backup tooling
+│   ├── projects_config.py      # Managed repo registry + verification commands
+│   ├── snapshot.py             # Fingerprinting / snapshot helpers
 │   └── tasks/                  # Individual CLI commands
-│       ├── sync-openclaw.ts    # Workspace → grimoire sync (--commit flag)
-│       ├── sync-remotes.ts     # Dual-push remote verification
-│       ├── doctor.ts           # Health check
-│       ├── bootstrap.ts        # Fresh machine setup
-│       ├── projects.ts         # Multi-repo list/doctor/install/verify
-│       └── setup-*.ts          # Workstation, SSH, config backup
-├── prompts/                    # Project prompt templates
-├── test/                       # Unit tests (parse-repos, sync-remotes, crypto, normalize-path)
-└── vault/                      # Encrypted sensitive config backups
+│       ├── doctor.py
+│       ├── bootstrap.py
+│       ├── projects.py
+│       ├── sync_openclaw.py
+│       ├── sync_remotes.py
+│       ├── reconcile_cron.py
+│       └── setup_*.py
+├── scripts/ops/                # Shell automation for backups / launch agents
+├── reference/                  # Reference docs and issue candidate notes
+├── vault/                      # Encrypted sensitive backups
+├── package.json                # Bun scripts for Biome + command shortcuts
+└── pyproject.toml              # Python project metadata + Ruff config
 ```
 
-**Stack:** TypeScript + Bun. Biome for linting. No framework — pure CLI tooling.
+**Stack:** Python + uv for automation, Ruff for Python lint/format, Bun + Biome for repo-wide formatting/lint where useful.
 
 ---
 
 ## Phase Plan
 
-### Phase 1 — Core Tooling (Current)
+### Phase 1 — Core Operations (current)
 
-- [x] CLI scaffold with unified `scripts/cli.py` entry
-- [x] Multi-repo project registry (`projects.config.ts`)
-- [x] `sync:openclaw` — workspace → grimoire canonical sync
-- [x] Specialist workspace doc mirror under `openclaw/specialists/`
-- [x] `sync:remotes` — verify/fix dual SSH push remotes
-- [x] `doctor` — environment health check
-- [x] `bootstrap` — fresh machine provisioning
-- [x] SSH key backup/restore tooling
-- [x] Config backup with encryption (vault)
-- [x] Unit tests for core utilities
-- [x] OpenClaw cron-based workspace sync (daily 3am ET)
-- [ ] `projects:verify` — run lint/typecheck across all repos in one pass
-- [ ] CLI help/docs generation from command registry
+- [x] Canonical identity docs and OpenClaw mirror established
+- [x] Python CLI scaffold with unified `scripts/cli.py` entrypoint
+- [x] Workspace sync, remote sync, project doctor, backup, and cron tooling
+- [x] Specialist workspace mirror under `openclaw/specialists/`
+- [x] Encrypted config backup artifacts and verification tooling
+- [x] Removed stale prompt templates that no longer reflect active work
+- [x] Removed stale repo artifacts (`.DS_Store`, `tsconfig.tsbuildinfo`, dead `bunfig.toml`)
+- [x] Trimmed unused TypeScript dev dependencies from `package.json`
+- [x] Consolidated OpenClaw contribution guide to `reference/`
+- [x] Removed stale `PROJECT_IDEAS.md`
 
-### Phase 2 — Operational Reliability
+### Phase 2 — Reliability and hygiene
 
-- [x] Specialist bench hardening expansion: codex-orchestrator routing documented, missing specialist bootstrap/runbook assets seeded, generic hardening rolled out bench-wide
-- [x] Managed weekly smoke reconciliation covers the full seven-agent specialist bench
-- [ ] Snapshot command: capture full environment state (versions, configs, repo SHAs) to timestamped file
-- [ ] Drift detection: compare workspace vs grimoire copies, alert on mismatch
-- [ ] Config backup verification cron (automated, not just manual)
-- [ ] Test coverage for all task scripts (currently only core utils tested)
-
-### Phase 3 — Multi-Machine Sync
-
-- [ ] `sync:work-desktop` improvements (currently exists but scope unclear)
-- [ ] Cross-machine config reconciliation
-- [ ] Tailscale-aware remote sync
+- [ ] Add clearer per-command CLI help / flag docs
+- [ ] Reconcile any stale workspace-mirror docs via canonical workspace sync
+- [ ] Add deterministic verification for cron / backup flows
+- [ ] Expand tests if Python task complexity grows enough to justify them
 
 ---
 
 ## Verification Snapshot
 
-```
-uv run ruff check scripts/tasks/sync_openclaw.py scripts/tasks/reconcile_cron.py scripts/tasks/harden_specialists.py ✅
-uv run python -m scripts.tasks.harden_specialists --discover --include-maintainer                                   ✅
-uv run python -m scripts.tasks.sync_openclaw                                                                        ✅
-uv run python -m scripts.tasks.reconcile_cron --scope=smoke                                                        ✅ (dry run)
-uv run python -m scripts.tasks.reconcile_cron --scope=smoke --apply                                                ✅
-workspace-codex-orchestrator/scripts/specialist-weekly-smoke.sh                                                    ✅
-workspace-contributor/scripts/specialist-weekly-smoke.sh                                                           ✅
-workspace-luma/scripts/specialist-weekly-smoke.sh                                                                  ✅
-```
+Current cleanup pass verified on 2026-03-06:
 
-Last verified: 2026-03-06
+- `bun install` ✅ (`3 packages removed`, lockfile updated)
+- `bun run lint` ✅
+- `uv run python -m scripts doctor` ✅
 
 ---
 
 ## Agent Instructions
 
-- **Canonical sync direction:** OpenClaw workspace → grimoire. Never edit grimoire copies of SOUL.md/AGENTS.md directly.
-- Run `uv run python -m scripts sync:openclaw --commit` after workspace identity file changes.
-- Keep `openclaw/cron-jobs.json` committed when state changes — it's the cron audit trail.
-- Update this BUILD.md in the same commit as meaningful changes.
-- If adding a new CLI command: register in `scripts/cli.py`, add to package.json scripts, document here.
+- **Canonical sync direction:** OpenClaw workspace → grimoire. Do not hand-edit mirrored files under `openclaw/` unless the source-of-truth rule is intentionally being changed.
+- Keep this file current when repo structure or operational state changes.
+- Prefer deletion of generated or stale artifacts over keeping ambiguous dead weight around.
+- Ask before deleting material that may still serve as backlog, reference, or historical record.
 
 ## Immediate Next Pass Priorities
 
-- Add a deterministic smoke that checks codex-orchestrator proactive heartbeat/update requirements, not just file presence/attribution policy.
-- Decide whether specialist generated assets (`hooks/`, `scripts/`) should also be mirrored into grimoire or continue to be derived from `harden_specialists.py`.
-- Keep vault backup artifacts and cron audit trail committed whenever scheduled jobs rotate them.
+1. Scan for any remaining dangling references to removed prompt/project-idea docs.
+2. Decide whether any additional historical/archive docs deserve pruning.
+3. Keep the Python-first repo contract consistent in docs and command shortcuts.
