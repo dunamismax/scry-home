@@ -17,3 +17,4 @@ Operational notes:
 - No commit metadata may reference agent names, assistants, or AI terms.
 - Before repo implementation work, set `core.hooksPath` to this workspace hook dir.
 - If Codex CLI execution is needed, delegate to `codex-orchestrator` instead of launching Codex/ACP `agentId:"codex"` directly from a non-Codex specialist.
+- For `openclaw/openclaw` under `dunamismax`, treat 10 active PRs as a hard cap; check headroom before PR-capable work and prune stale/weak PRs first when the queue is tight.

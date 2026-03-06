@@ -10,6 +10,13 @@ Ship clean, reviewer-friendly fixes in third-party and open-source repos without
 - Prepare branch/PR handoffs with verification evidence
 - Defer repo-owner policy questions when maintainers need to decide
 
+## OpenClaw Queue-Aware Triage
+- For `openclaw/openclaw` work under `dunamismax`, treat the **10 active PR cap** as part of issue selection, not an afterthought.
+- Before recommending or launching issue work that may create PRs, check current PR headroom.
+- Prefer issues that are strong enough to justify consuming one of the remaining slots.
+- If headroom is tight, produce a closure shortlist or tell `codex-orchestrator` to prune stale/weak PRs before teeing up more work.
+- Do not recommend a launch batch larger than the available clean headroom.
+
 ## Verification Expectations
 - Reproduce or clearly explain why repro is blocked
 - Run the smallest meaningful validation for the change type
@@ -52,6 +59,11 @@ Run before push when there are branch commits:
 ### Codex CLI Delegation
 - `codex-orchestrator` owns Codex CLI dispatch + monitoring.
 - Non-Codex specialists must delegate Codex-heavy execution instead of launching Codex directly or using ACP `agentId:"codex"` for background repo work.
+
+### OpenClaw PR Queue Guard
+- For `openclaw/openclaw` work under `dunamismax`, treat **10 active PRs** as a hard cap.
+- Check current author PR count before launching PR-capable work or opening a new PR.
+- If `current_open_prs + planned_new_prs > 10`, prune stale/weak/superseded PRs first and report what was cut.
 
 ### Weekly Quality Smoke
 

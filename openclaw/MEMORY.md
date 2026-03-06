@@ -16,7 +16,7 @@
 - Git identity: commits as `dunamismax`. No AI attribution ever — no "Scry", "Co-Authored-By", or agent fingerprints
 - Dual remotes: GitHub (`github.com-dunamismax`) + Codeberg (`codeberg.org-dunamismax`), force-push to main
 - Machine: M5 MacBook Pro 14" (32GB/1TB, macOS 26.3.1)
-- Communication channel: Signal (primary)
+- Communication channels: Signal + Discord
 - App stack: Notion, GitHub, Codeberg, Docker, VSCode, M365, macOS, Ghostty, RustDesk, Tailscale, Signal, Brave, LocalSend
 - Email integration: declined (no Himalaya/Gmail/M365 access)
 
@@ -48,6 +48,7 @@ All under `~/github`, dual SSH remotes.
 - **Service**: LaunchAgent, port 18789, loopback-only + Tailscale
 - **Auth**: `openai-codex:default` (OAuth), `anthropic:manual` (token)
 - **Signal**: DM allowlist, block streaming off, typing on thinking, reasoning hidden
+- **Discord**: enabled alongside Signal; Stephen DM allowlist active; guild `1479614326774956167` allowlisted with per-agent channels bound to `main/sentinel/reviewer/builder-mobile/openclaw-maintainer/contributor/luma/codex-orchestrator`; Discord thread bindings enabled for `/focus`, subagent thread spawns, and ACP thread spawns
 - **Browser**: Brave, profiles `openclaw` (18800) + `chrome` (18792)
 - **ACP**: acpx backend, default **codex**, allows pi/claude/codex/opencode/gemini, 8 concurrent
 - **Sub-agents**: depth 2, 8 concurrent, 5 children/agent
@@ -75,7 +76,10 @@ Workspace is canonical → synced to grimoire root + `openclaw/` dir via `sync-o
 - Model policy: capability over cost. GPT-5.4 primary (via Codex OAuth), Opus 4.6 fallback. No downgrades. Switched 2026-03-06 after PR #36590 merged.
 - Specialist bench: 7 agents (codex-orchestrator, sentinel, reviewer, builder-mobile, openclaw-maintainer, contributor, luma). Codex ⚡ added 2026-03-05 — dispatches Codex CLI (GPT-5.4) instances via `codex exec --full-auto` for parallel programming work. OpenClaw itself now supports GPT-5.4 via Codex OAuth, so this is an orchestration path, not an OAuth workaround.
 - Workflow decision (2026-03-06): background Codex/GPT-5.4 coding work routes through `codex-orchestrator`; main and other specialists do not spawn Codex CLI or ACP `agentId:"codex"` directly for repo implementation. Repo specialists own framing; `codex-orchestrator` owns Codex execution, monitoring, and proactive status updates.
+- OpenClaw upstream queue policy (2026-03-06): keep `dunamismax` at **<= 10 active PRs** in `openclaw/openclaw`. `contributor` must account for PR headroom during issue triage, and `codex-orchestrator` must prune stale/weak/superseded PRs before launching or opening more when the queue is tight.
+- Codex-orchestrator prompt policy (2026-03-06): every spawned Codex CLI lane must be told to use local repo docs first for repo behavior, Context7 first for external/current docs and patterns, and web search only as fallback when Context7 lacks coverage or seems stale.
 - Grimoire CLI tools: `specialists:harden` (hook/template rollout), `cron:reconcile` (manifest convergence).
 - Grimoire workspace sync now mirrors specialist workspace docs under `grimoire/openclaw/specialists/<agentId>/` for bench backup coverage.
 - Cron smoke reconciliation now covers all seven specialists, including codex-orchestrator, contributor, and luma weekly smoke jobs.
 - Reference docs (CONTRIBUTING_TO_OPENCLAW.md, issue candidates) live in `grimoire/reference/`, not workspace.
+- Communication architecture (2026-03-06): Signal remains active as a parallel channel, but Discord is now configured as the clean multi-agent front door: one dedicated Discord text channel per agent plus thread-bound session support.

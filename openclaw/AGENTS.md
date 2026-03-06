@@ -141,6 +141,17 @@ ACP runtime uses `--non-interactive-permissions fail` which silently kills any a
 - For OpenClaw repo work, apply `openclaw-maintainer` guardrails (worktree discipline, no implementation on the live clone) and then delegate Codex execution to `codex-orchestrator`.
 - Reserve ACP/runtime Codex sessions for explicit harness/thread conversations where platform policy requires ACP semantics.
 
+### OpenClaw PR Queue Guard (mandatory)
+
+For `openclaw/openclaw` work under `dunamismax`, treat **10 active PRs** as a hard ceiling.
+
+- Before spawning PR-capable work or opening a new PR, check the current open PR count for `--author @me`.
+- Maintain headroom for in-flight work: if you are about to run 2 issue-fix lanes, prune until `current_open_prs + planned_new_prs <= 10`.
+- Prefer pruning the weakest queue entries first: stale/no-traction PRs, docs-only or test-only PRs, superseded/duplicate work, narrow low-priority provider fixes, or repeatedly failing PRs that are unlikely to merge.
+- Preserve the strongest/highest-signal bugfixes and anything with clear maintainer traction.
+- `contributor` must treat queue headroom as part of issue triage. `codex-orchestrator` must treat it as launch gating and PR-open gating.
+- When queue pressure requires pruning, close the weakest PRs with a brief honest note and report what was cut and why.
+
 The correct pattern:
 
 ```bash

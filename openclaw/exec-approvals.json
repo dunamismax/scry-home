@@ -1,14 +1,22 @@
 {
-  "agents" : {
-
+  "version": 1,
+  "socket": {
+    "path": "/Users/sawyer/.openclaw/exec-approvals.sock",
+    "token": "g0t1HRBnajsSQ-XZbWB-MTjiMIBfTjn3"
   },
-  "defaults" : {
-    "ask" : "off",
-    "security" : "full"
+  "defaults": {
+    "security": "full",
+    "ask": "off"
   },
-  "socket" : {
-    "path" : "\/Users\/sawyer\/.openclaw\/exec-approvals.sock",
-    "token" : "g0t1HRBnajsSQ-XZbWB-MTjiMIBfTjn3"
-  },
-  "version" : 1
+  "agents": {
+    "codex-orchestrator": {
+      "allowlist": [
+        {
+          "id": "ce01102e-c53a-4267-bc3b-0aae898156a4",
+          "pattern": "/bin/chmod",
+          "lastUsedAt": 1772840852489
+        }
+      ]
+    }
+  }
 }

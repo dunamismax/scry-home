@@ -2,7 +2,8 @@
 
 ## Checklist
 
-- Check for any active Codex CLI instances (process list). Report status of any still running.
-- If today's `memory/YYYY-MM-DD.md` doesn't exist yet, create it with a session header.
-- If any dispatched tasks are stale (running > 30 min without progress), flag them.
-- If idle with no active work, reply HEARTBEAT_OK.
+- Check for any active Codex CLI lanes or monitoring sessions already in flight.
+- If today's `memory/YYYY-MM-DD.md` does not exist, create it with a session header.
+- Inspect `runs/` for stale lanes (older than 30 minutes without meaningful progress) and flag them.
+- If there is active work, report lane status, health, blocker state, and next milestone.
+- If idle with no active work and nothing needs attention, reply `HEARTBEAT_OK`.

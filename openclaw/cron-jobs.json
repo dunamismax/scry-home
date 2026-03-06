@@ -199,38 +199,6 @@
       }
     },
     {
-      "id": "b70fcac5-4a11-4a73-95b8-21dac9afb536",
-      "agentId": "main",
-      "name": "healthcheck:agent-bench-weekly-smoke",
-      "enabled": true,
-      "createdAtMs": 1772556326134,
-      "updatedAtMs": 1772745154789,
-      "schedule": {
-        "kind": "cron",
-        "expr": "20 9 * * 1",
-        "tz": "America/New_York",
-        "staggerMs": 0
-      },
-      "sessionTarget": "isolated",
-      "wakeMode": "now",
-      "payload": {
-        "kind": "agentTurn",
-        "message": "Run the weekly specialist-agent bench smoke test. This is a deterministic health + recency check — not a deep optimization review.\n\n## Agents to check\ncodex-orchestrator, sentinel, reviewer, builder-mobile, openclaw-maintainer, contributor, luma\n\n## Required checks (deterministic, per agent)\n\n1. **Config presence**: Run `openclaw config get agents.list` and verify each agent ID exists.\n2. **Workspace files**: For each agent, check that these files exist in `~/.openclaw/workspace-<agentId>/`:\n   - SOUL.md, AGENTS.md, IDENTITY.md\n   - (CLAUDE.md is optional — note if missing but do not fail)\n3. **Model policy compliance**: Verify each agent uses `openai-codex/gpt-5.4` as primary and `anthropic/claude-opus-4-6` as fallback.\n4. **Recency check**: Run `openclaw cron runs --limit 50 --json 2>/dev/null` and `ls -lt ~/.openclaw/sessions/ 2>/dev/null | head -30` to assess recent agent activity. Flag any specialist with no session activity in the last 7 days as \"dormant\".\n5. **Cron guard health**: Verify that `healthcheck:agent-bench-daily` exists and its lastRunStatus is \"ok\" (run `openclaw cron list --json`).\n\n## Output format (concise, structured)\n\n```\n## Weekly Bench Smoke Test — <date>\n\n### Pass/Fail Summary\n| Agent | Config | Files | Model | Recency | Status |\n|-------|--------|-------|-------|---------|--------|\n| codex-orchestrator | ✅ | ✅ | ✅ | active | PASS |\n| ... | ... | ... | ... | ... | ... |\n\n### Recency & Risk Watchlist\n- <agent>: <risk note or \"nominal\">\n- ...\n\n### Cron Guard Status\n- healthcheck:agent-bench-daily: <status>\n\n### Overall: <PASS/FAIL> (<N>/<total> agents healthy)\n```\n\n## Model policy (hard constraint)\nUse/recommend only: `openai-codex/gpt-5.4` (primary) and `anthropic/claude-opus-4-6` (fallback). Do not suggest downgrades.\n\nIf any check cannot complete, report partial results with exact blockers.",
-        "model": "openai-codex/gpt-5.4",
-        "thinking": "low",
-        "timeoutSeconds": 1800
-      },
-      "delivery": {
-        "mode": "announce",
-        "channel": "signal",
-        "to": "+19412897570",
-        "bestEffort": true
-      },
-      "state": {
-        "nextRunAtMs": 1773062400000
-      }
-    },
-    {
       "id": "c4be3a27-f08e-4908-bb9d-2084048115db",
       "agentId": "main",
       "sessionKey": "agent:main:main",
@@ -266,7 +234,7 @@
       "name": "healthcheck:sessions-autocleanup",
       "enabled": true,
       "createdAtMs": 1772636458182,
-      "updatedAtMs": 1772784011171,
+      "updatedAtMs": 1772835324740,
       "schedule": {
         "kind": "cron",
         "expr": "0 3 * * *",
@@ -278,110 +246,20 @@
         "kind": "agentTurn",
         "model": "openai-codex/gpt-5.4",
         "timeoutSeconds": 1800,
-        "message": "Run the daily session-store cleanup.\n\nExecute exactly:\nset -euo pipefail\nopenclaw sessions cleanup --all-agents --enforce --fix-missing --json >/tmp/session-cleanup-cli.json || true\n\nuv run python - <<'PY'\nimport json, os, glob\nbase='/Users/sawyer/.openclaw/agents'\n\n# Keep only the active DM thread in main store\nmain_store=f'{base}/main/sessions/sessions.json'\nif os.path.exists(main_store):\n    with open(main_store,'r',encoding='utf-8') as f:\n        data=json.load(f)\n    keep={'agent:main:main'}\n    data={k:v for k,v in data.items() if k in keep}\n    with open(main_store,'w',encoding='utf-8') as f:\n        json.dump(data,f,indent=2,ensure_ascii=False)\n        f.write('\\n')\n\n# Remove unreferenced transcript files\nfor agent_dir in glob.glob(f'{base}/*/sessions'):\n    sp=f'{agent_dir}/sessions.json'\n    if not os.path.exists(sp):\n        continue\n    with open(sp,'r',encoding='utf-8') as f:\n        data=json.load(f)\n    keep_files=set()\n    for v in data.values():\n        if isinstance(v,dict):\n            sf=v.get('sessionFile')\n            sid=v.get('sessionId')\n            if sf:\n                keep_files.add(os.path.basename(sf))\n            if sid:\n                keep_files.add(f'{sid}.jsonl')\n    for fp in glob.glob(f'{agent_dir}/*.jsonl*'):\n        bn=os.path.basename(fp)\n        root=bn.split('.jsonl')[0]+'.jsonl'\n        if root not in keep_files:\n            try:\n                os.remove(fp)\n            except FileNotFoundError:\n                pass\n\nprint('OK: session cleanup complete')\nPY"
+        "message": "Run the daily session-store cleanup.\n\nExecute exactly:\nset -euo pipefail\nopenclaw sessions cleanup --all-agents --enforce --fix-missing --json >/tmp/session-cleanup-cli.json || true\n\nuv run python - <<'PY'\nimport json, os, glob, time, shutil, subprocess\nfrom pathlib import Path\nbase=Path('/Users/sawyer/.openclaw/agents')\n\nconfigured={'main'}\ntry:\n    raw = subprocess.check_output(['openclaw','config','get','agents.list'], text=True)\n    for agent in json.loads(raw):\n        aid = agent.get('id')\n        if aid:\n            configured.add(aid)\nexcept Exception:\n    pass\n\n# Keep only the active DM thread in main store\nmain_store=base/'main'/'sessions'/'sessions.json'\nif main_store.exists():\n    with open(main_store,'r',encoding='utf-8') as f:\n        data=json.load(f)\n    keep={'agent:main:main'}\n    data={k:v for k,v in data.items() if k in keep}\n    with open(main_store,'w',encoding='utf-8') as f:\n        json.dump(data,f,indent=2,ensure_ascii=False)\n        f.write('\\n')\n\n# Remove unreferenced transcript files and reap stale unknown agent stores\nnow=time.time()\nfor agent_dir in base.glob('*/sessions'):\n    sp=agent_dir/'sessions.json'\n    if not sp.exists():\n        continue\n    with open(sp,'r',encoding='utf-8') as f:\n        data=json.load(f)\n\n    keep_files=set()\n    newest_updated_at=0\n    for v in data.values():\n        if isinstance(v,dict):\n            sf=v.get('sessionFile')\n            sid=v.get('sessionId')\n            if sf:\n                keep_files.add(os.path.basename(sf))\n            if sid:\n                keep_files.add(f'{sid}.jsonl')\n            updated=v.get('updatedAt') or 0\n            try:\n                newest_updated_at=max(newest_updated_at, float(updated)/1000.0)\n            except Exception:\n                pass\n\n    for fp in agent_dir.glob('*.jsonl*'):\n        bn=fp.name\n        root=bn.split('.jsonl')[0]+'.jsonl'\n        if root not in keep_files:\n            try:\n                fp.unlink()\n            except FileNotFoundError:\n                pass\n\n    agent_id=agent_dir.parent.name\n    leftover_non_store=[p for p in agent_dir.iterdir() if p.name!='sessions.json']\n    age_seconds=(now-newest_updated_at) if newest_updated_at else float('inf')\n    if agent_id not in configured and not leftover_non_store and age_seconds > 24*3600:\n        shutil.rmtree(agent_dir.parent, ignore_errors=True)\n\nprint('OK: session cleanup complete')\nPY"
       },
       "delivery": {
         "mode": "none"
       },
       "state": {
         "nextRunAtMs": 1772870400000,
-        "lastRunAtMs": 1772784000012,
+        "lastRunAtMs": 1772835301998,
         "lastRunStatus": "ok",
         "lastStatus": "ok",
-        "lastDurationMs": 11159,
+        "lastDurationMs": 22742,
         "lastDeliveryStatus": "not-delivered",
         "consecutiveErrors": 0,
         "lastDelivered": false
-      }
-    },
-    {
-      "id": "bea5c48c-b53c-4acd-8995-a6842b4888e9",
-      "name": "healthcheck:sentinel-weekly-smoke",
-      "enabled": true,
-      "createdAtMs": 1772807524364,
-      "updatedAtMs": 1772807524364,
-      "schedule": {
-        "kind": "cron",
-        "expr": "4 10 * * 1",
-        "tz": "America/New_York"
-      },
-      "sessionTarget": "isolated",
-      "wakeMode": "now",
-      "payload": {
-        "kind": "agentTurn",
-        "message": "Run Sentinel weekly specialist smoke test.\n\nExecute exactly:\nset -euo pipefail\nOUT=\"$(/Users/sawyer/.openclaw/workspace-sentinel/scripts/specialist-weekly-smoke.sh 2>&1)\" || RC=$?\nRC=${RC:-0}\nprintf '%s\\n' \"$OUT\"\nif [ \"$RC\" -ne 0 ]; then\n  openclaw system event --text \"Reminder: Sentinel weekly smoke failed. Review protocol, verification discipline, and attribution guardrails.\" --mode now\n  exit 1\nfi\nexit 0",
-        "model": "openai-codex/gpt-5.4",
-        "thinking": "low",
-        "timeoutSeconds": 1800
-      },
-      "delivery": {
-        "mode": "announce",
-        "channel": "signal",
-        "to": "+19412897570",
-        "bestEffort": true
-      },
-      "state": {
-        "nextRunAtMs": 1773065040000
-      }
-    },
-    {
-      "id": "87c00aed-54e2-49f9-8f66-e92d04f126ea",
-      "name": "healthcheck:reviewer-weekly-smoke",
-      "enabled": true,
-      "createdAtMs": 1772807525479,
-      "updatedAtMs": 1772807525479,
-      "schedule": {
-        "kind": "cron",
-        "expr": "16 10 * * 1",
-        "tz": "America/New_York"
-      },
-      "sessionTarget": "isolated",
-      "wakeMode": "now",
-      "payload": {
-        "kind": "agentTurn",
-        "message": "Run Reviewer weekly specialist smoke test.\n\nExecute exactly:\nset -euo pipefail\nOUT=\"$(/Users/sawyer/.openclaw/workspace-reviewer/scripts/specialist-weekly-smoke.sh 2>&1)\" || RC=$?\nRC=${RC:-0}\nprintf '%s\\n' \"$OUT\"\nif [ \"$RC\" -ne 0 ]; then\n  openclaw system event --text \"Reminder: Reviewer weekly smoke failed. Review protocol, verification discipline, and attribution guardrails.\" --mode now\n  exit 1\nfi\nexit 0",
-        "model": "openai-codex/gpt-5.4",
-        "thinking": "low",
-        "timeoutSeconds": 1800
-      },
-      "delivery": {
-        "mode": "announce",
-        "channel": "signal",
-        "to": "+19412897570",
-        "bestEffort": true
-      },
-      "state": {
-        "nextRunAtMs": 1773065760000
-      }
-    },
-    {
-      "id": "ad8f93b2-3a8e-467d-9e25-0d1ad07aeb80",
-      "name": "healthcheck:builder-mobile-weekly-smoke",
-      "enabled": true,
-      "createdAtMs": 1772807526586,
-      "updatedAtMs": 1772807526586,
-      "schedule": {
-        "kind": "cron",
-        "expr": "18 10 * * 1",
-        "tz": "America/New_York"
-      },
-      "sessionTarget": "isolated",
-      "wakeMode": "now",
-      "payload": {
-        "kind": "agentTurn",
-        "message": "Run Builder Mobile weekly specialist smoke test.\n\nExecute exactly:\nset -euo pipefail\nOUT=\"$(/Users/sawyer/.openclaw/workspace-builder-mobile/scripts/specialist-weekly-smoke.sh 2>&1)\" || RC=$?\nRC=${RC:-0}\nprintf '%s\\n' \"$OUT\"\nif [ \"$RC\" -ne 0 ]; then\n  openclaw system event --text \"Reminder: Builder Mobile weekly smoke failed. Review protocol, verification discipline, and attribution guardrails.\" --mode now\n  exit 1\nfi\nexit 0",
-        "model": "openai-codex/gpt-5.4",
-        "thinking": "low",
-        "timeoutSeconds": 1800
-      },
-      "delivery": {
-        "mode": "announce",
-        "channel": "signal",
-        "to": "+19412897570",
-        "bestEffort": true
-      },
-      "state": {
-        "nextRunAtMs": 1773065880000
       }
     },
     {
@@ -442,66 +320,6 @@
       },
       "state": {
         "nextRunAtMs": 1773064920000
-      }
-    },
-    {
-      "id": "c4183dab-b8bf-4837-86cf-b63a93d3e4f8",
-      "name": "healthcheck:contributor-weekly-smoke",
-      "enabled": true,
-      "createdAtMs": 1772814580094,
-      "updatedAtMs": 1772814580094,
-      "schedule": {
-        "kind": "cron",
-        "expr": "34 9 * * 1",
-        "tz": "America/New_York"
-      },
-      "sessionTarget": "isolated",
-      "wakeMode": "now",
-      "payload": {
-        "kind": "agentTurn",
-        "message": "Run Contributor weekly specialist smoke test.\n\nExecute exactly:\nset -euo pipefail\nOUT=\"$(/Users/sawyer/.openclaw/workspace-contributor/scripts/specialist-weekly-smoke.sh 2>&1)\" || RC=$?\nRC=${RC:-0}\nprintf '%s\\n' \"$OUT\"\nif [ \"$RC\" -ne 0 ]; then\n  openclaw system event --text \"Reminder: Contributor weekly smoke failed. Review protocol, verification discipline, and attribution guardrails.\" --mode now\n  exit 1\nfi\nexit 0",
-        "model": "openai-codex/gpt-5.4",
-        "thinking": "low",
-        "timeoutSeconds": 1800
-      },
-      "delivery": {
-        "mode": "announce",
-        "channel": "signal",
-        "to": "+19412897570",
-        "bestEffort": true
-      },
-      "state": {
-        "nextRunAtMs": 1773063240000
-      }
-    },
-    {
-      "id": "104adb41-0485-48f7-a353-b17e94c7d8d1",
-      "name": "healthcheck:luma-weekly-smoke",
-      "enabled": true,
-      "createdAtMs": 1772814581008,
-      "updatedAtMs": 1772814581008,
-      "schedule": {
-        "kind": "cron",
-        "expr": "36 9 * * 1",
-        "tz": "America/New_York"
-      },
-      "sessionTarget": "isolated",
-      "wakeMode": "now",
-      "payload": {
-        "kind": "agentTurn",
-        "message": "Run Luma weekly specialist smoke test.\n\nExecute exactly:\nset -euo pipefail\nOUT=\"$(/Users/sawyer/.openclaw/workspace-luma/scripts/specialist-weekly-smoke.sh 2>&1)\" || RC=$?\nRC=${RC:-0}\nprintf '%s\\n' \"$OUT\"\nif [ \"$RC\" -ne 0 ]; then\n  openclaw system event --text \"Reminder: Luma weekly smoke failed. Review protocol, verification discipline, and attribution guardrails.\" --mode now\n  exit 1\nfi\nexit 0",
-        "model": "openai-codex/gpt-5.4",
-        "thinking": "low",
-        "timeoutSeconds": 1800
-      },
-      "delivery": {
-        "mode": "announce",
-        "channel": "signal",
-        "to": "+19412897570",
-        "bestEffort": true
-      },
-      "state": {
-        "nextRunAtMs": 1773063360000
       }
     }
   ]
