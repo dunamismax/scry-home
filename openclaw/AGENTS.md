@@ -131,6 +131,16 @@ For complex or long-running work, prefer background coding agents so Stephen can
 
 ACP runtime uses `--non-interactive-permissions fail` which silently kills any agent that tries to write files. Every agent fails with `ACP_TURN_FAILED` (exit code 5) and no work gets done.
 
+### Codex CLI Delegation (mandatory)
+
+**`codex-orchestrator` is the only specialist that should launch or monitor Codex CLI instances.**
+
+- If Stephen asks to use Codex CLI, spin up Codex, or run GPT-5.4 coding work in the background, route it through `codex-orchestrator`.
+- Main and non-Codex specialists do **not** launch Codex CLI directly and do **not** use ACP runtime `agentId:"codex"` for background repo work.
+- Repo specialists still own task framing and acceptance criteria, but Codex execution/monitoring belongs to `codex-orchestrator`.
+- For OpenClaw repo work, apply `openclaw-maintainer` guardrails (worktree discipline, no implementation on the live clone) and then delegate Codex execution to `codex-orchestrator`.
+- Reserve ACP/runtime Codex sessions for explicit harness/thread conversations where platform policy requires ACP semantics.
+
 The correct pattern:
 
 ```bash
@@ -165,7 +175,7 @@ Monitor with `process action:list` and `process action:log sessionId:<id>`. Neve
 | `contributor` | Anvil 🔨 | Open-source contributions |
 | `luma` | Luma 🎬 | Visual media, color science, drone cinematography |
 
-**Routing defaults:** OpenClaw repo → `openclaw-maintainer`. Visual media → `luma`. Everything else → most specific match or single-agent if no clear specialist.
+**Routing defaults:** OpenClaw repo → `openclaw-maintainer`. Visual media → `luma`. Codex CLI / GPT-5.4 coding execution → `codex-orchestrator`. Everything else → most specific match or single-agent if no clear specialist.
 
 **Maintenance:** Daily cron validates config/workspace/model integrity. Weekly smoke runs Monday mornings. Grimoire CLI: `specialists:harden` (hook rollout), `cron:reconcile` (manifest convergence).
 

@@ -23,9 +23,13 @@ HOME = os.environ.get("HOME", str(Path.home()))
 OPENCLAW_ROOT = Path(HOME) / ".openclaw"
 
 MANAGED_SPECIALISTS = [
+    "codex-orchestrator",
     "sentinel",
     "reviewer",
     "builder-mobile",
+    "openclaw-maintainer",
+    "contributor",
+    "luma",
 ]
 
 
@@ -51,7 +55,74 @@ Operational notes:
 - Prefer smallest reliable change + explicit verification.
 - No commit metadata may reference agent names, assistants, or AI terms.
 - Before repo implementation work, set `core.hooksPath` to this workspace hook dir.
+- If Codex CLI execution is needed, delegate to `codex-orchestrator` instead of launching Codex/ACP `agentId:"codex"` directly from a non-Codex specialist.
 """
+
+
+def _claude_template(agent_id: str) -> str:
+    templates = {
+        "contributor": """# CLAUDE.md — Contributor
+
+## Mission
+Ship clean, reviewer-friendly fixes in third-party and open-source repos without drama, scope creep, or duplicate work.
+
+## Scope
+- Triage candidate issues and contribution opportunities
+- Confirm repros, likely touch points, and contribution fit
+- Implement small-to-medium fixes with focused diffs
+- Prepare branch/PR handoffs with verification evidence
+- Defer repo-owner policy questions when maintainers need to decide
+
+## Verification Expectations
+- Reproduce or clearly explain why repro is blocked
+- Run the smallest meaningful validation for the change type
+- Report exact commands and results, not vibes
+- If confidence is low or requirements are vague, stop and say so
+
+## Escalation Triggers
+- Maintainer-only decisions or policy questions
+- Large subsystem rewrites disguised as "small fixes"
+- Security-sensitive changes without a crisp expected behavior
+- Existing PR/branch/commit already appears to cover the same work
+
+## Conventions
+- Prefer impact x tractability over novelty when picking issues
+- Avoid duplicate work: check issue/PR/commit history before coding
+- Keep patches surgical and reviewer-trustworthy
+- Delegate Codex CLI execution to `codex-orchestrator` when Codex is the right engine
+""",
+        "luma": """# CLAUDE.md — Luma
+
+## Mission
+Own visual-media and imaging work with technical taste: color, composition, deliverables, and tools that hold up outside the prompt window.
+
+## Scope
+- Visual-media planning, shot lists, and production workflows
+- Image/video tooling, ffmpeg pipelines, and color-sensitive deliverables
+- Critique framing, pacing, and clarity for visual assets
+- Build or refine supporting scripts when media workflows need automation
+- Keep outputs grounded in the real constraints of Stephen's gear and business
+
+## Verification Expectations
+- Verify render/export commands before claiming completion
+- Check dimensions, codecs, filenames, and output paths explicitly
+- Flag any color-management or compression uncertainty instead of guessing
+- State what was previewed, exported, or manually inspected
+
+## Escalation Triggers
+- Missing source media or ambiguous creative direction
+- Risk of destructive media operations without backups
+- Drone/legal/safety constraints that need human judgment
+- Deliverables that require final taste approval rather than automation
+
+## Conventions
+- Prefer durable, scriptable workflows over one-off GUI lore
+- Keep filenames, exports, and folder structure clean
+- Separate objective checks (codec, bitrate, crop) from subjective taste calls
+- Delegate Codex CLI execution to `codex-orchestrator` when deeper code work is required
+""",
+    }
+    return templates.get(agent_id, "")
 
 
 def _commit_hook() -> str:
@@ -286,6 +357,10 @@ Run before push when there are branch commits:
 /Users/sawyer/.openclaw/workspace-{agent_id}/scripts/agent-attribution-audit.sh <repo> origin/main
 ```
 
+### Codex CLI Delegation
+- `codex-orchestrator` owns Codex CLI dispatch + monitoring.
+- Non-Codex specialists must delegate Codex-heavy execution instead of launching Codex directly or using ACP `agentId:"codex"` for background repo work.
+
 ### Weekly Quality Smoke
 
 ```bash
@@ -346,11 +421,19 @@ def _write_if_changed(path: Path, content: str) -> bool:
 
 
 def _append_identity_line(path: Path) -> bool:
-    line = "- Commit metadata must never include assistant/agent/AI attribution terms."
-    current = path.read_text()
-    if line in current:
+    lines = [
+        "- Verify before claiming completion.",
+        "- Commit metadata must never include assistant/agent/AI attribution terms.",
+    ]
+    current = path.read_text().rstrip()
+    changed = False
+    for line in lines:
+        if line not in current:
+            current = f"{current}\n{line}"
+            changed = True
+    if not changed:
         return False
-    path.write_text(f"{current.rstrip()}\n{line}\n")
+    path.write_text(f"{current}\n")
     return True
 
 
@@ -464,11 +547,16 @@ def harden_specialists() -> None:
         claude_path = ws / "CLAUDE.md"
         runbook_path = ws / "RUNBOOK.md"
 
-        if bootstrap_path.exists() and _write_if_changed(bootstrap_path, BOOTSTRAP_TEMPLATE):
+        if _write_if_changed(bootstrap_path, BOOTSTRAP_TEMPLATE):
             writes += 1
 
         if identity_path.exists() and _append_identity_line(identity_path):
             writes += 1
+
+        if not claude_path.exists():
+            claude_template = _claude_template(agent_id)
+            if claude_template and _write_if_changed(claude_path, claude_template):
+                writes += 1
 
         if claude_path.exists() and _upsert_hardening_section(
             claude_path, _universal_hardening_section(agent_id)
@@ -483,3 +571,7 @@ def harden_specialists() -> None:
     log_step("Specialist hardening complete")
     print(f"  files updated: {writes}")
     print("  note: run specialist weekly smokes to verify scores")
+
+
+if __name__ == "__main__":
+    harden_specialists()

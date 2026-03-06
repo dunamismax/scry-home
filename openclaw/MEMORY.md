@@ -46,7 +46,7 @@ All under `~/github`, dual SSH remotes.
 
 - **Install**: Git-based at `~/openclaw`. Symlink: `~/.openclaw/lib/node_modules/openclaw` → `~/openclaw`. Binary: `~/.local/bin/openclaw` → `~/openclaw/openclaw.mjs`
 - **Service**: LaunchAgent, port 18789, loopback-only + Tailscale
-- **Auth**: `openai-codex:default` (OAuth), `anthropic:default` (OAuth)
+- **Auth**: `openai-codex:default` (OAuth), `anthropic:manual` (token)
 - **Signal**: DM allowlist, block streaming off, typing on thinking, reasoning hidden
 - **Browser**: Brave, profiles `openclaw` (18800) + `chrome` (18792)
 - **ACP**: acpx backend, default **codex**, allows pi/claude/codex/opencode/gemini, 8 concurrent
@@ -72,6 +72,7 @@ Workspace is canonical → synced to grimoire root + `openclaw/` dir via `sync-o
 - PTY spawn is the only valid method for background coding agents. Never ACP runtime (`sessions_spawn runtime:"acp"`) — it silently fails on writes.
 - TypeScript for apps/products. Python for all scripting/automation/utilities. Right tool wins.
 - Model policy: capability over cost. GPT-5.4 primary (via Codex OAuth), Opus 4.6 fallback. No downgrades. Switched 2026-03-06 after PR #36590 merged.
-- Specialist bench: 7 agents (codex-orchestrator, sentinel, reviewer, builder-mobile, openclaw-maintainer, contributor, luma). Codex ⚡ added 2026-03-05 — runs Opus for orchestration, dispatches Codex CLI (GPT-5.4) instances via `codex exec --full-auto` for all programming tasks. Bypasses OpenClaw OAuth by using codex's own local auth.
+- Specialist bench: 7 agents (codex-orchestrator, sentinel, reviewer, builder-mobile, openclaw-maintainer, contributor, luma). Codex ⚡ added 2026-03-05 — dispatches Codex CLI (GPT-5.4) instances via `codex exec --full-auto` for parallel programming work. OpenClaw itself now supports GPT-5.4 via Codex OAuth, so this is an orchestration path, not an OAuth workaround.
+- Workflow decision (2026-03-06): background Codex/GPT-5.4 coding work routes through `codex-orchestrator`; main and other specialists do not spawn Codex CLI or ACP `agentId:"codex"` directly for repo implementation. Repo specialists own framing; `codex-orchestrator` owns Codex execution, monitoring, and proactive status updates.
 - Grimoire CLI tools: `specialists:harden` (hook/template rollout), `cron:reconcile` (manifest convergence).
 - Reference docs (CONTRIBUTING_TO_OPENCLAW.md, issue candidates) live in `grimoire/reference/`, not workspace.
