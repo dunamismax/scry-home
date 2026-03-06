@@ -75,4 +75,6 @@ Workspace is canonical → synced to grimoire root + `openclaw/` dir via `sync-o
 - Specialist bench: 7 agents (codex-orchestrator, sentinel, reviewer, builder-mobile, openclaw-maintainer, contributor, luma). Codex ⚡ added 2026-03-05 — dispatches Codex CLI (GPT-5.4) instances via `codex exec --full-auto` for parallel programming work. OpenClaw itself now supports GPT-5.4 via Codex OAuth, so this is an orchestration path, not an OAuth workaround.
 - Workflow decision (2026-03-06): background Codex/GPT-5.4 coding work routes through `codex-orchestrator`; main and other specialists do not spawn Codex CLI or ACP `agentId:"codex"` directly for repo implementation. Repo specialists own framing; `codex-orchestrator` owns Codex execution, monitoring, and proactive status updates.
 - Grimoire CLI tools: `specialists:harden` (hook/template rollout), `cron:reconcile` (manifest convergence).
+- Grimoire workspace sync now mirrors specialist workspace docs under `grimoire/openclaw/specialists/<agentId>/` for bench backup coverage.
+- Cron smoke reconciliation now covers all seven specialists, including codex-orchestrator, contributor, and luma weekly smoke jobs.
 - Reference docs (CONTRIBUTING_TO_OPENCLAW.md, issue candidates) live in `grimoire/reference/`, not workspace.

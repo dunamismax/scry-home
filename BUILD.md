@@ -1,6 +1,6 @@
 # grimoire — Build Tracker
 
-**Status:** Phase 1 — Active maintenance (specialist routing + bench hardening in progress)
+**Status:** Phase 1 — Active maintenance (specialist routing + backup coverage reconciled)
 **Last Updated:** 2026-03-06
 **Branch:** `main`
 
@@ -15,7 +15,7 @@ Scry's operational control plane. Contains identity files (SOUL.md, AGENTS.md), 
 ```
 grimoire/
 ├── SOUL.md, AGENTS.md          # Canonical identity (workspace copies sync here)
-├── openclaw/                   # OpenClaw workspace mirror (MEMORY, HEARTBEAT, cron state)
+├── openclaw/                   # OpenClaw workspace mirror (MEMORY, HEARTBEAT, cron state, specialist doc backups)
 ├── scripts/
 │   ├── cli.ts                  # Unified CLI entry point
 │   ├── common.ts               # Shared utilities
@@ -44,6 +44,7 @@ grimoire/
 - [x] CLI scaffold with unified `scripts/cli.py` entry
 - [x] Multi-repo project registry (`projects.config.ts`)
 - [x] `sync:openclaw` — workspace → grimoire canonical sync
+- [x] Specialist workspace doc mirror under `openclaw/specialists/`
 - [x] `sync:remotes` — verify/fix dual SSH push remotes
 - [x] `doctor` — environment health check
 - [x] `bootstrap` — fresh machine provisioning
@@ -57,6 +58,7 @@ grimoire/
 ### Phase 2 — Operational Reliability
 
 - [x] Specialist bench hardening expansion: codex-orchestrator routing documented, missing specialist bootstrap/runbook assets seeded, generic hardening rolled out bench-wide
+- [x] Managed weekly smoke reconciliation covers the full seven-agent specialist bench
 - [ ] Snapshot command: capture full environment state (versions, configs, repo SHAs) to timestamped file
 - [ ] Drift detection: compare workspace vs grimoire copies, alert on mismatch
 - [ ] Config backup verification cron (automated, not just manual)
@@ -73,11 +75,14 @@ grimoire/
 ## Verification Snapshot
 
 ```
-uv run ruff check scripts/tasks/harden_specialists.py                         ✅
-uv run python -m scripts.tasks.harden_specialists --discover --include-maintainer ✅
-workspace-codex-orchestrator/scripts/specialist-weekly-smoke.sh              ✅
-workspace-contributor/scripts/specialist-weekly-smoke.sh                     ✅
-workspace-luma/scripts/specialist-weekly-smoke.sh                            ✅
+uv run ruff check scripts/tasks/sync_openclaw.py scripts/tasks/reconcile_cron.py scripts/tasks/harden_specialists.py ✅
+uv run python -m scripts.tasks.harden_specialists --discover --include-maintainer                                   ✅
+uv run python -m scripts.tasks.sync_openclaw                                                                        ✅
+uv run python -m scripts.tasks.reconcile_cron --scope=smoke                                                        ✅ (dry run)
+uv run python -m scripts.tasks.reconcile_cron --scope=smoke --apply                                                ✅
+workspace-codex-orchestrator/scripts/specialist-weekly-smoke.sh                                                    ✅
+workspace-contributor/scripts/specialist-weekly-smoke.sh                                                           ✅
+workspace-luma/scripts/specialist-weekly-smoke.sh                                                                  ✅
 ```
 
 Last verified: 2026-03-06
@@ -94,6 +99,6 @@ Last verified: 2026-03-06
 
 ## Immediate Next Pass Priorities
 
-- Extend grimoire backup coverage for specialist workspace docs if Stephen wants specialist workspaces mirrored verbatim instead of regenerated from hardening templates/scripts.
 - Add a deterministic smoke that checks codex-orchestrator proactive heartbeat/update requirements, not just file presence/attribution policy.
-- Reconcile unrelated dirty grimoire files (`reconcile_cron.py`, vault artifacts, cron mirror) in a separate scoped pass.
+- Decide whether specialist generated assets (`hooks/`, `scripts/`) should also be mirrored into grimoire or continue to be derived from `harden_specialists.py`.
+- Keep vault backup artifacts and cron audit trail committed whenever scheduled jobs rotate them.

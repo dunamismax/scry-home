@@ -1,6 +1,7 @@
 """One-directional sync: OpenClaw workspace → this repo.
 
 The OpenClaw workspace is canonical for identity and memory.
+Specialist workspaces are mirrored for doc/back-up coverage.
 
 Sync map:
   ~/.openclaw/workspace/SOUL.md      → <repo>/SOUL.md
@@ -10,6 +11,7 @@ Sync map:
   ~/.openclaw/workspace/TOOLS.md     → <repo>/openclaw/TOOLS.md
   ~/.openclaw/workspace/HEARTBEAT.md → <repo>/openclaw/HEARTBEAT.md
   ~/.openclaw/workspace/memory/      → <repo>/openclaw/memory/
+  ~/.openclaw/workspace-*/docs       → <repo>/openclaw/specialists/<agentId>/
   ~/.openclaw/cron/jobs.json         → <repo>/openclaw/cron-jobs.json
   ~/.openclaw/exec-approvals.json    → <repo>/openclaw/exec-approvals.json
 
@@ -17,7 +19,7 @@ Secrets (openclaw.json, credentials/, tokens) are NOT synced here.
 
 Usage:
   uv run python -m scripts sync:openclaw               # sync only
-  uv run python -m scripts sync:openclaw --commit       # sync + git commit + push
+  uv run python -m scripts sync:openclaw --commit      # sync + git commit + push
 """
 
 from __future__ import annotations
@@ -41,6 +43,19 @@ REPO_ROOT = Path.cwd().resolve()
 
 ROOT_FILES = ["SOUL.md", "AGENTS.md"]
 OPENCLAW_FILES = ["SOUL.md", "AGENTS.md", "MEMORY.md", "TOOLS.md", "HEARTBEAT.md"]
+SPECIALIST_FILES = [
+    "SOUL.md",
+    "AGENTS.md",
+    "IDENTITY.md",
+    "CLAUDE.md",
+    "BOOTSTRAP.md",
+    "RUNBOOK.md",
+    "TOOLS.md",
+    "USER.md",
+    "HEARTBEAT.md",
+    "MEMORY.md",
+]
+SPECIALIST_EXCLUDE = {"main", "claude", "codex"}
 EXTRA_FILES = [
     ("cron/jobs.json", "cron-jobs.json"),
     ("exec-approvals.json", "exec-approvals.json"),
@@ -81,12 +96,8 @@ def _sync_file(src: Path, dest: Path, result: SyncResult) -> None:
         result.errors.append(str(exc))
 
 
-def _sync_memory(result: SyncResult) -> None:
-    src_dir = OPENCLAW_WORKSPACE / "memory"
-    dest_dir = REPO_ROOT / "openclaw" / "memory"
-
+def _sync_markdown_dir(src_dir: Path, dest_dir: Path, result: SyncResult) -> None:
     if not src_dir.exists():
-        print("  [SKIP] no memory directory in workspace")
         return
 
     ensure_dir(dest_dir)
@@ -111,6 +122,80 @@ def _sync_memory(result: SyncResult) -> None:
             except Exception as exc:
                 print(f"  [ERROR] delete {dest_path}: {exc}", file=sys.stderr)
                 result.errors.append(str(exc))
+
+
+def _sync_memory(result: SyncResult) -> None:
+    src_dir = OPENCLAW_WORKSPACE / "memory"
+    dest_dir = REPO_ROOT / "openclaw" / "memory"
+
+    if not src_dir.exists():
+        print("  [SKIP] no memory directory in workspace")
+        return
+
+    _sync_markdown_dir(src_dir, dest_dir, result)
+
+
+def _iter_specialist_ids() -> list[str]:
+    if not OPENCLAW_ROOT.exists():
+        return []
+    return sorted(
+        d.name.removeprefix("workspace-")
+        for d in OPENCLAW_ROOT.iterdir()
+        if d.is_dir()
+        and d.name.startswith("workspace-")
+        and d.name.removeprefix("workspace-") not in SPECIALIST_EXCLUDE
+    )
+
+
+def _sync_specialists(result: SyncResult) -> None:
+    dest_root = REPO_ROOT / "openclaw" / "specialists"
+    ensure_dir(dest_root)
+
+    specialist_ids = _iter_specialist_ids()
+    seen = set(specialist_ids)
+
+    for agent_id in specialist_ids:
+        src_ws = OPENCLAW_ROOT / f"workspace-{agent_id}"
+        dest_ws = dest_root / agent_id
+        ensure_dir(dest_ws)
+
+        for file in SPECIALIST_FILES:
+            src = src_ws / file
+            dest = dest_ws / file
+            if src.exists():
+                _sync_file(src, dest, result)
+            elif dest.exists():
+                try:
+                    dest.unlink()
+                    print(f"  [DELETE] {dest}")
+                    result.deleted += 1
+                except Exception as exc:
+                    print(f"  [ERROR] delete {dest}: {exc}", file=sys.stderr)
+                    result.errors.append(str(exc))
+
+        src_memory = src_ws / "memory"
+        dest_memory = dest_ws / "memory"
+        if src_memory.exists():
+            _sync_markdown_dir(src_memory, dest_memory, result)
+        elif dest_memory.exists():
+            try:
+                shutil.rmtree(dest_memory)
+                print(f"  [DELETE] {dest_memory}")
+                result.deleted += 1
+            except Exception as exc:
+                print(f"  [ERROR] delete {dest_memory}: {exc}", file=sys.stderr)
+                result.errors.append(str(exc))
+
+    existing_dirs = {d.name for d in dest_root.iterdir() if d.is_dir()} if dest_root.exists() else set()
+    for agent_id in existing_dirs - seen:
+        stale = dest_root / agent_id
+        try:
+            shutil.rmtree(stale)
+            print(f"  [DELETE] {stale}")
+            result.deleted += 1
+        except Exception as exc:
+            print(f"  [ERROR] delete {stale}: {exc}", file=sys.stderr)
+            result.errors.append(str(exc))
 
 
 def sync_openclaw() -> None:
@@ -140,6 +225,9 @@ def sync_openclaw() -> None:
     log_step("Memory → openclaw/memory/")
     _sync_memory(result)
 
+    log_step("Specialist docs → openclaw/specialists/")
+    _sync_specialists(result)
+
     log_step("Sync complete")
     print(f"  copied: {result.copied}")
     print(f"  skipped: {result.skipped} (unchanged)")
@@ -166,6 +254,7 @@ def sync_openclaw() -> None:
         *(str(REPO_ROOT / "openclaw" / f) for f in OPENCLAW_FILES),
         *(str(REPO_ROOT / "openclaw" / dest) for _, dest in EXTRA_FILES),
         str(REPO_ROOT / "openclaw" / "memory"),
+        str(REPO_ROOT / "openclaw" / "specialists"),
     ]
     run_or_throw(["git", "add", "--", *sync_paths], cwd=str(REPO_ROOT))
 
@@ -182,3 +271,7 @@ def sync_openclaw() -> None:
 
     run_or_throw(["git", "push", "origin", "main"], cwd=str(REPO_ROOT))
     print("  committed and pushed")
+
+
+if __name__ == "__main__":
+    sync_openclaw()

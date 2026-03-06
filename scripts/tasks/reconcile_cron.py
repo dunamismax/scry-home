@@ -74,6 +74,7 @@ def _specialist_smoke_payload(agent_id: str, dn: str) -> str:
 
 
 SPECIALIST_SCHEDULE = [
+    {"id": "codex-orchestrator", "minute": 2, "hour": 10},
     {"id": "sentinel", "minute": 4, "hour": 10},
     {"id": "reviewer", "minute": 16, "hour": 10},
     {"id": "builder-mobile", "minute": 18, "hour": 10},
@@ -99,23 +100,23 @@ def _build_manifest() -> list[dict]:
             "sessionTarget": "isolated",
             "payload": {
                 "kind": "agentTurn",
-                "model": "anthropic/claude-opus-4-6",
+                "model": "openai-codex/gpt-5.4",
                 "thinking": "low",
                 "timeoutSeconds": 1800,
                 "message": (
                     "Run the weekly specialist-agent bench smoke test. This is a deterministic health + recency check — not a deep optimization review.\n\n"
-                    "## Agents to check\nsentinel, reviewer, builder-mobile, openclaw-maintainer, contributor, luma\n\n"
+                    "## Agents to check\ncodex-orchestrator, sentinel, reviewer, builder-mobile, openclaw-maintainer, contributor, luma\n\n"
                     "## Required checks (deterministic, per agent)\n\n"
                     "1. **Config presence**: Run `openclaw config get agents.list` and verify each agent ID exists.\n"
                     "2. **Workspace files**: For each agent, check that these files exist in `~/.openclaw/workspace-<agentId>/`:\n"
                     "   - SOUL.md, AGENTS.md, IDENTITY.md\n"
                     "   - (CLAUDE.md is optional — note if missing but do not fail)\n"
-                    "3. **Model policy compliance**: Verify each agent uses only `anthropic/claude-opus-4-6` or `openai-codex/gpt-5.3-codex` as primary and fallback.\n"
+                    "3. **Model policy compliance**: Verify each agent uses `openai-codex/gpt-5.4` as primary and `anthropic/claude-opus-4-6` as fallback.\n"
                     '4. **Recency check**: Run `openclaw cron runs --limit 50 --json 2>/dev/null` and `ls -lt ~/.openclaw/sessions/ 2>/dev/null | head -30` to assess recent agent activity. Flag any specialist with no session activity in the last 7 days as "dormant".\n'
                     '5. **Cron guard health**: Verify that `healthcheck:agent-bench-daily` exists and its lastRunStatus is "ok" (run `openclaw cron list --json`).\n\n'
                     "## Output format (concise, structured)\n\n"
-                    '```\n## Weekly Bench Smoke Test — <date>\n\n### Pass/Fail Summary\n| Agent | Config | Files | Model | Recency | Status |\n|-------|--------|-------|-------|---------|--------|\n| sentinel | ✅ | ✅ | ✅ | active | PASS |\n| ... | ... | ... | ... | ... | ... |\n\n### Recency & Risk Watchlist\n- <agent>: <risk note or "nominal">\n- ...\n\n### Cron Guard Status\n- healthcheck:agent-bench-daily: <status>\n\n### Overall: <PASS/FAIL> (<N>/<total> agents healthy)\n```\n\n'
-                    "## Model policy (hard constraint)\nUse/recommend only: `anthropic/claude-opus-4-6` and `openai-codex/gpt-5.3-codex`. Do not suggest downgrades.\n\n"
+                    '```\n## Weekly Bench Smoke Test — <date>\n\n### Pass/Fail Summary\n| Agent | Config | Files | Model | Recency | Status |\n|-------|--------|-------|-------|---------|--------|\n| codex-orchestrator | ✅ | ✅ | ✅ | active | PASS |\n| ... | ... | ... | ... | ... | ... |\n\n### Recency & Risk Watchlist\n- <agent>: <risk note or "nominal">\n- ...\n\n### Cron Guard Status\n- healthcheck:agent-bench-daily: <status>\n\n### Overall: <PASS/FAIL> (<N>/<total> agents healthy)\n```\n\n'
+                    "## Model policy (hard constraint)\nUse/recommend only: `openai-codex/gpt-5.4` (primary) and `anthropic/claude-opus-4-6` (fallback). Do not suggest downgrades.\n\n"
                     "If any check cannot complete, report partial results with exact blockers."
                 ),
             },
@@ -146,7 +147,7 @@ def _build_manifest() -> list[dict]:
                 "sessionTarget": "isolated",
                 "payload": {
                     "kind": "agentTurn",
-                    "model": "anthropic/claude-opus-4-6",
+                    "model": "openai-codex/gpt-5.4",
                     "thinking": "low",
                     "timeoutSeconds": 1800,
                     "message": _specialist_smoke_payload(agent_id, dn),
@@ -403,3 +404,7 @@ def reconcile_cron() -> None:
     _apply_actions(actions)
 
     log_step("Reconciliation complete")
+
+
+if __name__ == "__main__":
+    reconcile_cron()

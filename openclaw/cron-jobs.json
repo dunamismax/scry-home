@@ -8,7 +8,7 @@
       "name": "healthcheck:backup-freshness",
       "enabled": true,
       "createdAtMs": 1772532367675,
-      "updatedAtMs": 1772740219555,
+      "updatedAtMs": 1772795408623,
       "schedule": {
         "kind": "cron",
         "expr": "10 6 * * *",
@@ -18,7 +18,7 @@
       "wakeMode": "now",
       "payload": {
         "kind": "agentTurn",
-        "model": "anthropic/claude-opus-4-6",
+        "model": "openai-codex/gpt-5.4",
         "timeoutSeconds": 1800,
         "message": "Run a daily encrypted backup freshness check.\n\nExecute exactly:\ncd /Users/sawyer/github/grimoire\nMETA=\"/Users/sawyer/github/grimoire/vault/config/critical-configs.meta.json\"\nif [ ! -f \"$META\" ]; then\n  openclaw system event --text \"Reminder: daily backup freshness check failed — critical-configs.meta.json is missing in grimoire/vault/config. Investigate backup automation.\" --mode now\n  exit 1\nfi\nuv run python - \"$META\" <<'PY'\nimport json, sys, datetime\nfrom datetime import timezone\np=sys.argv[1]\nwith open(p,'r',encoding='utf-8') as f:\n    m=json.load(f)\ncreated=m.get('createdAt')\nif not created:\n    print('MISSING_CREATED_AT')\n    sys.exit(2)\ncreated_dt=datetime.datetime.fromisoformat(created.replace('Z','+00:00'))\nage=(datetime.datetime.now(timezone.utc)-created_dt).total_seconds()/3600\nprint(f'AGE_HOURS={age:.2f}')\nif age>26:\n    sys.exit(3)\nPY\nRC=$?\nif [ \"$RC\" -eq 0 ]; then\n  exit 0\nelif [ \"$RC\" -eq 2 ]; then\n  openclaw system event --text \"Reminder: backup freshness check found invalid metadata (missing createdAt). Please inspect critical-configs.meta.json.\" --mode now\n  exit 1\nelse\n  openclaw system event --text \"Reminder: encrypted config backup is stale (>26h old). Run backup and investigate scheduler/logs.\" --mode now\n  exit 1\nfi"
       },
@@ -26,11 +26,11 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772795400000,
-        "lastRunAtMs": 1772709000073,
+        "nextRunAtMs": 1772881800000,
+        "lastRunAtMs": 1772795400010,
         "lastRunStatus": "ok",
         "lastStatus": "ok",
-        "lastDurationMs": 12016,
+        "lastDurationMs": 8613,
         "lastDelivered": false,
         "lastDeliveryStatus": "not-delivered",
         "consecutiveErrors": 0
@@ -66,7 +66,7 @@
       "name": "briefing:daily-repo-priority-summary",
       "enabled": true,
       "createdAtMs": 1772533964511,
-      "updatedAtMs": 1772738472417,
+      "updatedAtMs": 1772804133929,
       "schedule": {
         "kind": "cron",
         "expr": "35 8 * * *",
@@ -76,7 +76,7 @@
       "wakeMode": "now",
       "payload": {
         "kind": "agentTurn",
-        "model": "anthropic/claude-opus-4-6",
+        "model": "openai-codex/gpt-5.4",
         "timeoutSeconds": 1800,
         "message": "Generate a concise daily engineering summary for Stephen.\n\nContext:\n- Repos root: /Users/sawyer/github\n- Primary tracked repos: grimoire, pr-firefighter, CallRift, elchess, augur, podwatch, rip, Sawyer-Visual-Media\n\nTasks:\n1) Check each repo for branch state and uncommitted changes.\n2) Read each repo BUILD.md status line + next priorities when present.\n3) Produce a priority-ranked \"today\" list (top 5) with why.\n4) Include blockers/risk flags.\n\nOutput style:\n- 6–12 bullets max, high signal, no fluff.\n- Action-first and decision-oriented."
       },
@@ -87,11 +87,11 @@
         "bestEffort": true
       },
       "state": {
-        "nextRunAtMs": 1772804100000,
-        "lastRunAtMs": 1772631300012,
+        "nextRunAtMs": 1772890500000,
+        "lastRunAtMs": 1772804100017,
         "lastRunStatus": "ok",
         "lastStatus": "ok",
-        "lastDurationMs": 87224,
+        "lastDurationMs": 33912,
         "lastDelivered": true,
         "lastDeliveryStatus": "delivered",
         "consecutiveErrors": 0
@@ -114,7 +114,7 @@
       "wakeMode": "now",
       "payload": {
         "kind": "agentTurn",
-        "model": "anthropic/claude-opus-4-6",
+        "model": "openai-codex/gpt-5.4",
         "timeoutSeconds": 1800,
         "message": "Run a weekly project review summary for Stephen.\n\nScope:\n- Repos: grimoire, pr-firefighter, CallRift, elchess, augur, podwatch, rip, Sawyer-Visual-Media\n\nTasks:\n1) Summarize progress vs BUILD.md in each repo.\n2) Identify stale trackers or missing verification evidence.\n3) Recommend next-week execution plan (top 3 initiatives + sequencing).\n4) Flag any integration opportunities with high ROI and low risk.\n\nOutput style:\n- Short executive summary first.\n- Then ranked action plan (top 3) with rationale.\n- Keep it concise and actionable."
       },
@@ -135,7 +135,7 @@
       "name": "healthcheck:agent-bench-daily",
       "enabled": true,
       "createdAtMs": 1772542721502,
-      "updatedAtMs": 1772745154775,
+      "updatedAtMs": 1772785212003,
       "schedule": {
         "kind": "cron",
         "expr": "20 3 * * *",
@@ -145,19 +145,19 @@
       "wakeMode": "now",
       "payload": {
         "kind": "agentTurn",
-        "model": "anthropic/claude-opus-4-6",
+        "model": "openai-codex/gpt-5.4",
         "timeoutSeconds": 1800,
-        "message": "Run the daily specialist-agent bench health check.\n\nExecute exactly:\nset -euo pipefail\nOUT=\"$(uv run python - <<'PY'\nimport json, subprocess, pathlib, sys\nexpected = ['main','sentinel','reviewer','builder-mobile','openclaw-maintainer','contributor','luma']\nspecialists = [a for a in expected if a != 'main']\nissues=[]\n\nraw = subprocess.check_output(['openclaw','config','get','agents.list'], text=True)\nagents = json.loads(raw)\nby_id = {a.get('id'): a for a in agents}\n\nfor aid in expected:\n    if aid not in by_id:\n        issues.append(f'missing-agent:{aid}')\n\nfor aid in expected:\n    if aid not in by_id:\n        continue\n    a=by_id[aid]\n    ws = pathlib.Path(a.get('workspace') or '/Users/sawyer/.openclaw/workspace')\n    for f in ['SOUL.md','AGENTS.md','IDENTITY.md']:\n        if not (ws/f).exists():\n            issues.append(f'missing-file:{aid}:{f}')\n\nfor aid in specialists:\n    a = by_id.get(aid)\n    if not a:\n        continue\n    m = a.get('model', {})\n    if m.get('primary') != 'anthropic/claude-opus-4-6':\n        issues.append(f'model-mismatch:{aid}:primary')\n    fb = m.get('fallbacks') or []\n    if 'openai-codex/gpt-5.3-codex' not in fb:\n        issues.append(f'model-mismatch:{aid}:fallback')\n\nif issues:\n    print('FAIL')\n    for i in issues:\n        print(i)\n    sys.exit(2)\n\nprint('OK: agent bench config + workspace files validated')\nPY\n)\" || RC=$?\nRC=${RC:-0}\n\nif [ \"$RC\" -ne 0 ]; then\n  MSG=\"$(printf '%s' \"$OUT\" | tail -n 30 | tr '\\n' '; ' | sed 's/\"//g')\"\n  openclaw system event --text \"Reminder: daily agent bench health check found issues. ${MSG}\" --mode now\n  exit 1\nfi\n\nopenclaw agents list --bindings >/tmp/agent-bench-list.txt\nexit 0"
+        "message": "Run the daily specialist-agent bench health check.\n\nExecute exactly:\nset -euo pipefail\nOUT=\"$(uv run python - <<'PY'\nimport json, subprocess, pathlib, sys\nexpected = ['main','codex-orchestrator','sentinel','reviewer','builder-mobile','openclaw-maintainer','contributor','luma']\nspecialists = [a for a in expected if a != 'main']\nissues=[]\n\nraw = subprocess.check_output(['openclaw','config','get','agents.list'], text=True)\nagents = json.loads(raw)\nby_id = {a.get('id'): a for a in agents}\n\nfor aid in expected:\n    if aid not in by_id:\n        issues.append(f'missing-agent:{aid}')\n\nfor aid in expected:\n    if aid not in by_id:\n        continue\n    a=by_id[aid]\n    ws = pathlib.Path(a.get('workspace') or '/Users/sawyer/.openclaw/workspace')\n    for f in ['SOUL.md','AGENTS.md','IDENTITY.md']:\n        if not (ws/f).exists():\n            issues.append(f'missing-file:{aid}:{f}')\n\nfor aid in specialists:\n    a = by_id.get(aid)\n    if not a:\n        continue\n    m = a.get('model', {})\n    if m.get('primary') != 'openai-codex/gpt-5.4':\n        issues.append(f'model-mismatch:{aid}:primary')\n    fb = m.get('fallbacks') or []\n    if 'anthropic/claude-opus-4-6' not in fb:\n        issues.append(f'model-mismatch:{aid}:fallback')\n\nif issues:\n    print('FAIL')\n    for i in issues:\n        print(i)\n    sys.exit(2)\n\nprint('OK: agent bench config + workspace files validated')\nPY\n)\" || RC=$?\nRC=${RC:-0}\n\nif [ \"$RC\" -ne 0 ]; then\n  MSG=\"$(printf '%s' \"$OUT\" | tail -n 30 | tr '\\n' '; ' | sed 's/\"//g')\"\n  openclaw system event --text \"Reminder: daily agent bench health check found issues. ${MSG}\" --mode now\n  exit 1\nfi\n\nopenclaw agents list --bindings >/tmp/agent-bench-list.txt\nexit 0"
       },
       "delivery": {
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772785200000,
-        "lastRunAtMs": 1772698800068,
+        "nextRunAtMs": 1772871600000,
+        "lastRunAtMs": 1772785200011,
         "lastRunStatus": "ok",
         "lastStatus": "ok",
-        "lastDurationMs": 27413,
+        "lastDurationMs": 11992,
         "lastDelivered": false,
         "lastDeliveryStatus": "not-delivered",
         "consecutiveErrors": 0
@@ -170,7 +170,7 @@
       "name": "sync-and-validate-daily",
       "enabled": true,
       "createdAtMs": 1772542733941,
-      "updatedAtMs": 1772745663599,
+      "updatedAtMs": 1772785809954,
       "schedule": {
         "kind": "cron",
         "expr": "30 3 * * *",
@@ -180,7 +180,7 @@
       "wakeMode": "now",
       "payload": {
         "kind": "agentTurn",
-        "model": "anthropic/claude-opus-4-6",
+        "model": "openai-codex/gpt-5.4",
         "timeoutSeconds": 1800,
         "message": "Run the daily workspace sync + consistency validation.\n\nExecute exactly:\nset -euo pipefail\ncd /Users/sawyer/github/grimoire\n\n# 1) Sync canonical workspace files into grimoire copies\nuv run python -m scripts sync:openclaw >/tmp/docs-sync-check.log 2>&1 || {\n  openclaw system event --text \"Reminder: daily sync failed while running sync-openclaw. Check grimoire sync automation.\" --mode now\n  exit 1\n}\n\n# 2) If sync produced drift, auto-commit + push\nif ! git diff --quiet -- SOUL.md AGENTS.md openclaw/SOUL.md openclaw/AGENTS.md openclaw/MEMORY.md openclaw/TOOLS.md; then\n  uv run python -m scripts sync:openclaw --commit >/tmp/docs-sync-commit.log 2>&1 || {\n    openclaw system event --text \"Reminder: daily sync detected drift but auto-commit failed. Review grimoire sync output.\" --mode now\n    exit 1\n  }\nfi\n\n# 3) Validate canonical file equality\nOUT=\"$(uv run python - <<'PY'\nfrom pathlib import Path\nissues=[]\nws=Path('/Users/sawyer/.openclaw/workspace')\ngr=Path('/Users/sawyer/github/grimoire')\nchecks=[\n    (ws/'SOUL.md', gr/'SOUL.md', 'SOUL root'),\n    (ws/'AGENTS.md', gr/'AGENTS.md', 'AGENTS root'),\n    (ws/'SOUL.md', gr/'openclaw'/'SOUL.md', 'SOUL openclaw copy'),\n    (ws/'AGENTS.md', gr/'openclaw'/'AGENTS.md', 'AGENTS openclaw copy'),\n]\nfor a,b,label in checks:\n    if not a.exists() or not b.exists():\n        issues.append(f'missing:{label}')\n        continue\n    if a.read_text() != b.read_text():\n        issues.append(f'mismatch:{label}')\n\nfor p,label in [\n    (gr/'CLAUDE.md','grimoire CLAUDE.md'),\n    (Path('/Users/sawyer/openclaw/CLAUDE.md'),'openclaw CLAUDE.md'),\n]:\n    if not p.exists():\n        issues.append(f'missing:{label}')\n\nif issues:\n    print('FAIL')\n    for i in issues:\n        print(i)\n    raise SystemExit(2)\nprint('OK: sync + validation passed')\nPY\n)\" || RC=$?\nRC=${RC:-0}\n\nif [ \"$RC\" -ne 0 ]; then\n  MSG=\"$(printf '%s' \"$OUT\" | tail -n 30 | tr '\\n' '; ' | sed 's/\"//g')\"\n  openclaw system event --text \"Reminder: daily sync validation found consistency issues. ${MSG}\" --mode now\n  exit 1\nfi\n\nexit 0"
       },
@@ -188,11 +188,11 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772785800000,
-        "lastRunAtMs": 1772699400023,
+        "nextRunAtMs": 1772872200000,
+        "lastRunAtMs": 1772785800011,
         "lastRunStatus": "ok",
         "lastStatus": "ok",
-        "lastDurationMs": 19060,
+        "lastDurationMs": 9943,
         "lastDelivered": false,
         "lastDeliveryStatus": "not-delivered",
         "consecutiveErrors": 0
@@ -215,8 +215,8 @@
       "wakeMode": "now",
       "payload": {
         "kind": "agentTurn",
-        "message": "Run the weekly specialist-agent bench smoke test. This is a deterministic health + recency check — not a deep optimization review.\n\n## Agents to check\nsentinel, reviewer, builder-mobile, openclaw-maintainer, contributor, luma\n\n## Required checks (deterministic, per agent)\n\n1. **Config presence**: Run `openclaw config get agents.list` and verify each agent ID exists.\n2. **Workspace files**: For each agent, check that these files exist in `~/.openclaw/workspace-<agentId>/`:\n   - SOUL.md, AGENTS.md, IDENTITY.md\n   - (CLAUDE.md is optional — note if missing but do not fail)\n3. **Model policy compliance**: Verify each agent uses `anthropic/claude-opus-4-6` as primary and `openai-codex/gpt-5.3-codex` as fallback.\n4. **Recency check**: Run `openclaw cron runs --limit 50 --json 2>/dev/null` and `ls -lt ~/.openclaw/sessions/ 2>/dev/null | head -30` to assess recent agent activity. Flag any specialist with no session activity in the last 7 days as \"dormant\".\n5. **Cron guard health**: Verify that `healthcheck:agent-bench-daily` exists and its lastRunStatus is \"ok\" (run `openclaw cron list --json`).\n\n## Output format (concise, structured)\n\n```\n## Weekly Bench Smoke Test — <date>\n\n### Pass/Fail Summary\n| Agent | Config | Files | Model | Recency | Status |\n|-------|--------|-------|-------|---------|--------|\n| sentinel | ✅ | ✅ | ✅ | active | PASS |\n| ... | ... | ... | ... | ... | ... |\n\n### Recency & Risk Watchlist\n- <agent>: <risk note or \"nominal\">\n- ...\n\n### Cron Guard Status\n- healthcheck:agent-bench-daily: <status>\n\n### Overall: <PASS/FAIL> (<N>/<total> agents healthy)\n```\n\n## Model policy (hard constraint)\nUse/recommend only: `anthropic/claude-opus-4-6` (primary) and `openai-codex/gpt-5.3-codex` (fallback). Do not suggest downgrades.\n\nIf any check cannot complete, report partial results with exact blockers.",
-        "model": "anthropic/claude-opus-4-6",
+        "message": "Run the weekly specialist-agent bench smoke test. This is a deterministic health + recency check — not a deep optimization review.\n\n## Agents to check\ncodex-orchestrator, sentinel, reviewer, builder-mobile, openclaw-maintainer, contributor, luma\n\n## Required checks (deterministic, per agent)\n\n1. **Config presence**: Run `openclaw config get agents.list` and verify each agent ID exists.\n2. **Workspace files**: For each agent, check that these files exist in `~/.openclaw/workspace-<agentId>/`:\n   - SOUL.md, AGENTS.md, IDENTITY.md\n   - (CLAUDE.md is optional — note if missing but do not fail)\n3. **Model policy compliance**: Verify each agent uses `openai-codex/gpt-5.4` as primary and `anthropic/claude-opus-4-6` as fallback.\n4. **Recency check**: Run `openclaw cron runs --limit 50 --json 2>/dev/null` and `ls -lt ~/.openclaw/sessions/ 2>/dev/null | head -30` to assess recent agent activity. Flag any specialist with no session activity in the last 7 days as \"dormant\".\n5. **Cron guard health**: Verify that `healthcheck:agent-bench-daily` exists and its lastRunStatus is \"ok\" (run `openclaw cron list --json`).\n\n## Output format (concise, structured)\n\n```\n## Weekly Bench Smoke Test — <date>\n\n### Pass/Fail Summary\n| Agent | Config | Files | Model | Recency | Status |\n|-------|--------|-------|-------|---------|--------|\n| codex-orchestrator | ✅ | ✅ | ✅ | active | PASS |\n| ... | ... | ... | ... | ... | ... |\n\n### Recency & Risk Watchlist\n- <agent>: <risk note or \"nominal\">\n- ...\n\n### Cron Guard Status\n- healthcheck:agent-bench-daily: <status>\n\n### Overall: <PASS/FAIL> (<N>/<total> agents healthy)\n```\n\n## Model policy (hard constraint)\nUse/recommend only: `openai-codex/gpt-5.4` (primary) and `anthropic/claude-opus-4-6` (fallback). Do not suggest downgrades.\n\nIf any check cannot complete, report partial results with exact blockers.",
+        "model": "openai-codex/gpt-5.4",
         "thinking": "low",
         "timeoutSeconds": 1800
       },
@@ -237,7 +237,7 @@
       "name": "daily-lock-in",
       "enabled": true,
       "createdAtMs": 1772585596763,
-      "updatedAtMs": 1772632920174,
+      "updatedAtMs": 1772805606231,
       "schedule": {
         "kind": "cron",
         "expr": "0 9 * * *",
@@ -250,11 +250,11 @@
         "text": "Reminder: Lock the fuck in. Build something. Break something. Learn to code. No excuses, no ceremony — just ship."
       },
       "state": {
-        "nextRunAtMs": 1772805600000,
-        "lastRunAtMs": 1772632800022,
+        "nextRunAtMs": 1772892000000,
+        "lastRunAtMs": 1772805600010,
         "lastRunStatus": "ok",
         "lastStatus": "ok",
-        "lastDurationMs": 120152,
+        "lastDurationMs": 6221,
         "lastDeliveryStatus": "not-requested",
         "consecutiveErrors": 0
       }
@@ -266,7 +266,7 @@
       "name": "healthcheck:sessions-autocleanup",
       "enabled": true,
       "createdAtMs": 1772636458182,
-      "updatedAtMs": 1772745673559,
+      "updatedAtMs": 1772784011171,
       "schedule": {
         "kind": "cron",
         "expr": "0 3 * * *",
@@ -276,7 +276,7 @@
       "wakeMode": "now",
       "payload": {
         "kind": "agentTurn",
-        "model": "anthropic/claude-opus-4-6",
+        "model": "openai-codex/gpt-5.4",
         "timeoutSeconds": 1800,
         "message": "Run the daily session-store cleanup.\n\nExecute exactly:\nset -euo pipefail\nopenclaw sessions cleanup --all-agents --enforce --fix-missing --json >/tmp/session-cleanup-cli.json || true\n\nuv run python - <<'PY'\nimport json, os, glob\nbase='/Users/sawyer/.openclaw/agents'\n\n# Keep only the active DM thread in main store\nmain_store=f'{base}/main/sessions/sessions.json'\nif os.path.exists(main_store):\n    with open(main_store,'r',encoding='utf-8') as f:\n        data=json.load(f)\n    keep={'agent:main:main'}\n    data={k:v for k,v in data.items() if k in keep}\n    with open(main_store,'w',encoding='utf-8') as f:\n        json.dump(data,f,indent=2,ensure_ascii=False)\n        f.write('\\n')\n\n# Remove unreferenced transcript files\nfor agent_dir in glob.glob(f'{base}/*/sessions'):\n    sp=f'{agent_dir}/sessions.json'\n    if not os.path.exists(sp):\n        continue\n    with open(sp,'r',encoding='utf-8') as f:\n        data=json.load(f)\n    keep_files=set()\n    for v in data.values():\n        if isinstance(v,dict):\n            sf=v.get('sessionFile')\n            sid=v.get('sessionId')\n            if sf:\n                keep_files.add(os.path.basename(sf))\n            if sid:\n                keep_files.add(f'{sid}.jsonl')\n    for fp in glob.glob(f'{agent_dir}/*.jsonl*'):\n        bn=os.path.basename(fp)\n        root=bn.split('.jsonl')[0]+'.jsonl'\n        if root not in keep_files:\n            try:\n                os.remove(fp)\n            except FileNotFoundError:\n                pass\n\nprint('OK: session cleanup complete')\nPY"
       },
@@ -284,14 +284,224 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772784000000,
-        "lastRunAtMs": 1772745300015,
+        "nextRunAtMs": 1772870400000,
+        "lastRunAtMs": 1772784000012,
         "lastRunStatus": "ok",
         "lastStatus": "ok",
-        "lastDurationMs": 11794,
+        "lastDurationMs": 11159,
         "lastDeliveryStatus": "not-delivered",
         "consecutiveErrors": 0,
         "lastDelivered": false
+      }
+    },
+    {
+      "id": "bea5c48c-b53c-4acd-8995-a6842b4888e9",
+      "name": "healthcheck:sentinel-weekly-smoke",
+      "enabled": true,
+      "createdAtMs": 1772807524364,
+      "updatedAtMs": 1772807524364,
+      "schedule": {
+        "kind": "cron",
+        "expr": "4 10 * * 1",
+        "tz": "America/New_York"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run Sentinel weekly specialist smoke test.\n\nExecute exactly:\nset -euo pipefail\nOUT=\"$(/Users/sawyer/.openclaw/workspace-sentinel/scripts/specialist-weekly-smoke.sh 2>&1)\" || RC=$?\nRC=${RC:-0}\nprintf '%s\\n' \"$OUT\"\nif [ \"$RC\" -ne 0 ]; then\n  openclaw system event --text \"Reminder: Sentinel weekly smoke failed. Review protocol, verification discipline, and attribution guardrails.\" --mode now\n  exit 1\nfi\nexit 0",
+        "model": "openai-codex/gpt-5.4",
+        "thinking": "low",
+        "timeoutSeconds": 1800
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "signal",
+        "to": "+19412897570",
+        "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1773065040000
+      }
+    },
+    {
+      "id": "87c00aed-54e2-49f9-8f66-e92d04f126ea",
+      "name": "healthcheck:reviewer-weekly-smoke",
+      "enabled": true,
+      "createdAtMs": 1772807525479,
+      "updatedAtMs": 1772807525479,
+      "schedule": {
+        "kind": "cron",
+        "expr": "16 10 * * 1",
+        "tz": "America/New_York"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run Reviewer weekly specialist smoke test.\n\nExecute exactly:\nset -euo pipefail\nOUT=\"$(/Users/sawyer/.openclaw/workspace-reviewer/scripts/specialist-weekly-smoke.sh 2>&1)\" || RC=$?\nRC=${RC:-0}\nprintf '%s\\n' \"$OUT\"\nif [ \"$RC\" -ne 0 ]; then\n  openclaw system event --text \"Reminder: Reviewer weekly smoke failed. Review protocol, verification discipline, and attribution guardrails.\" --mode now\n  exit 1\nfi\nexit 0",
+        "model": "openai-codex/gpt-5.4",
+        "thinking": "low",
+        "timeoutSeconds": 1800
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "signal",
+        "to": "+19412897570",
+        "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1773065760000
+      }
+    },
+    {
+      "id": "ad8f93b2-3a8e-467d-9e25-0d1ad07aeb80",
+      "name": "healthcheck:builder-mobile-weekly-smoke",
+      "enabled": true,
+      "createdAtMs": 1772807526586,
+      "updatedAtMs": 1772807526586,
+      "schedule": {
+        "kind": "cron",
+        "expr": "18 10 * * 1",
+        "tz": "America/New_York"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run Builder Mobile weekly specialist smoke test.\n\nExecute exactly:\nset -euo pipefail\nOUT=\"$(/Users/sawyer/.openclaw/workspace-builder-mobile/scripts/specialist-weekly-smoke.sh 2>&1)\" || RC=$?\nRC=${RC:-0}\nprintf '%s\\n' \"$OUT\"\nif [ \"$RC\" -ne 0 ]; then\n  openclaw system event --text \"Reminder: Builder Mobile weekly smoke failed. Review protocol, verification discipline, and attribution guardrails.\" --mode now\n  exit 1\nfi\nexit 0",
+        "model": "openai-codex/gpt-5.4",
+        "thinking": "low",
+        "timeoutSeconds": 1800
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "signal",
+        "to": "+19412897570",
+        "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1773065880000
+      }
+    },
+    {
+      "id": "9dd7175b-8262-457c-ae1b-436e01e9ba08",
+      "name": "healthcheck:openclaw-maintainer-weekly-smoke",
+      "enabled": true,
+      "createdAtMs": 1772807527790,
+      "updatedAtMs": 1772807527790,
+      "schedule": {
+        "kind": "cron",
+        "expr": "32 9 * * 1",
+        "tz": "America/New_York"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run the OpenClaw Maintainer weekly scored smoke test and report results.\n\nExecute exactly:\nset -euo pipefail\nOUT=\"$(/Users/sawyer/.openclaw/workspace-openclaw-maintainer/scripts/openclaw-maintainer-weekly-smoke.sh 2>&1)\" || RC=$?\nRC=${RC:-0}\nprintf '%s\\n' \"$OUT\"\nif [ \"$RC\" -ne 0 ]; then\n  openclaw system event --text \"Reminder: weekly OpenClaw maintainer smoke failed. Review hook wiring, triage protocol, verification gates, and attribution compliance.\" --mode now\n  exit 1\nfi\nexit 0",
+        "model": "openai-codex/gpt-5.4",
+        "thinking": "low",
+        "timeoutSeconds": 1800
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "signal",
+        "to": "+19412897570",
+        "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1773063120000
+      }
+    },
+    {
+      "id": "22e1493b-124d-45c1-b8bf-8cdcfc782261",
+      "name": "healthcheck:codex-orchestrator-weekly-smoke",
+      "enabled": true,
+      "createdAtMs": 1772814579004,
+      "updatedAtMs": 1772814579004,
+      "schedule": {
+        "kind": "cron",
+        "expr": "2 10 * * 1",
+        "tz": "America/New_York"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run Codex-orchestrator weekly specialist smoke test.\n\nExecute exactly:\nset -euo pipefail\nOUT=\"$(/Users/sawyer/.openclaw/workspace-codex-orchestrator/scripts/specialist-weekly-smoke.sh 2>&1)\" || RC=$?\nRC=${RC:-0}\nprintf '%s\\n' \"$OUT\"\nif [ \"$RC\" -ne 0 ]; then\n  openclaw system event --text \"Reminder: Codex-orchestrator weekly smoke failed. Review protocol, verification discipline, and attribution guardrails.\" --mode now\n  exit 1\nfi\nexit 0",
+        "model": "openai-codex/gpt-5.4",
+        "thinking": "low",
+        "timeoutSeconds": 1800
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "signal",
+        "to": "+19412897570",
+        "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1773064920000
+      }
+    },
+    {
+      "id": "c4183dab-b8bf-4837-86cf-b63a93d3e4f8",
+      "name": "healthcheck:contributor-weekly-smoke",
+      "enabled": true,
+      "createdAtMs": 1772814580094,
+      "updatedAtMs": 1772814580094,
+      "schedule": {
+        "kind": "cron",
+        "expr": "34 9 * * 1",
+        "tz": "America/New_York"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run Contributor weekly specialist smoke test.\n\nExecute exactly:\nset -euo pipefail\nOUT=\"$(/Users/sawyer/.openclaw/workspace-contributor/scripts/specialist-weekly-smoke.sh 2>&1)\" || RC=$?\nRC=${RC:-0}\nprintf '%s\\n' \"$OUT\"\nif [ \"$RC\" -ne 0 ]; then\n  openclaw system event --text \"Reminder: Contributor weekly smoke failed. Review protocol, verification discipline, and attribution guardrails.\" --mode now\n  exit 1\nfi\nexit 0",
+        "model": "openai-codex/gpt-5.4",
+        "thinking": "low",
+        "timeoutSeconds": 1800
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "signal",
+        "to": "+19412897570",
+        "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1773063240000
+      }
+    },
+    {
+      "id": "104adb41-0485-48f7-a353-b17e94c7d8d1",
+      "name": "healthcheck:luma-weekly-smoke",
+      "enabled": true,
+      "createdAtMs": 1772814581008,
+      "updatedAtMs": 1772814581008,
+      "schedule": {
+        "kind": "cron",
+        "expr": "36 9 * * 1",
+        "tz": "America/New_York"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run Luma weekly specialist smoke test.\n\nExecute exactly:\nset -euo pipefail\nOUT=\"$(/Users/sawyer/.openclaw/workspace-luma/scripts/specialist-weekly-smoke.sh 2>&1)\" || RC=$?\nRC=${RC:-0}\nprintf '%s\\n' \"$OUT\"\nif [ \"$RC\" -ne 0 ]; then\n  openclaw system event --text \"Reminder: Luma weekly smoke failed. Review protocol, verification discipline, and attribution guardrails.\" --mode now\n  exit 1\nfi\nexit 0",
+        "model": "openai-codex/gpt-5.4",
+        "thinking": "low",
+        "timeoutSeconds": 1800
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "signal",
+        "to": "+19412897570",
+        "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1773063360000
       }
     }
   ]
