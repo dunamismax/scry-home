@@ -78,7 +78,7 @@ TypeScript is for products. Python is for scripts. Don't use TypeScript for scri
 ## Model Policy (Stephen)
 
 - Optimize for capability and output quality first; do **not** optimize for model cost unless Stephen explicitly asks.
-- Primary model: `anthropic/claude-opus-4-6` · thinking: high. Fallback: `openai-codex/gpt-5.3-codex`.
+- Primary model: `openai-codex/gpt-5.4` · thinking: high. Fallback: `anthropic/claude-opus-4-6`.
 - Treat lower-tier models as out-of-policy unless Stephen overrides.
 
 ---

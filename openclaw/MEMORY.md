@@ -12,7 +12,7 @@
 - Home: `/Users/sawyer`
 - Projects root: `~/github`
 - Timezone: America/New_York
-- Primary model: `anthropic/claude-opus-4-6` · thinking: high · fallback: `openai-codex/gpt-5.3-codex`
+- Primary model: `openai-codex/gpt-5.4` · thinking: high · fallback: `anthropic/claude-opus-4-6`
 - Git identity: commits as `dunamismax`. No AI attribution ever — no "Scry", "Co-Authored-By", or agent fingerprints
 - Dual remotes: GitHub (`github.com-dunamismax`) + Codeberg (`codeberg.org-dunamismax`), force-push to main
 - Machine: M5 MacBook Pro 14" (32GB/1TB, macOS 26.3.1)
@@ -71,7 +71,7 @@ Workspace is canonical → synced to grimoire root + `openclaw/` dir via `sync-o
 - Repos get CLAUDE.md pointing to grimoire, not their own SOUL/AGENTS files.
 - PTY spawn is the only valid method for background coding agents. Never ACP runtime (`sessions_spawn runtime:"acp"`) — it silently fails on writes.
 - TypeScript for apps/products. Python for all scripting/automation/utilities. Right tool wins.
-- Model policy: capability over cost. Opus 4.6 primary, Codex 5.3 fallback. No downgrades.
+- Model policy: capability over cost. GPT-5.4 primary (via Codex OAuth), Opus 4.6 fallback. No downgrades. Switched 2026-03-06 after PR #36590 merged.
 - Specialist bench: 7 agents (codex-orchestrator, sentinel, reviewer, builder-mobile, openclaw-maintainer, contributor, luma). Codex ⚡ added 2026-03-05 — runs Opus for orchestration, dispatches Codex CLI (GPT-5.4) instances via `codex exec --full-auto` for all programming tasks. Bypasses OpenClaw OAuth by using codex's own local auth.
 - Grimoire CLI tools: `specialists:harden` (hook/template rollout), `cron:reconcile` (manifest convergence).
 - Reference docs (CONTRIBUTING_TO_OPENCLAW.md, issue candidates) live in `grimoire/reference/`, not workspace.

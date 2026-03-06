@@ -42,7 +42,7 @@ All repos use dual SSH remotes with host aliases:
 
 - Stephen's MacBook Air (remote macOS node — use `nodes.run` for macOS-only tasks)
 
-## Enabled Integrations (updated 2026-03-05)
+## Enabled Integrations (updated 2026-03-06)
 
 - **Browser**: Brave, profiles `openclaw` (port 18800) and `chrome` (port 18792)
 - **ACP**: acpx backend, default agent codex, allowed: pi/claude/codex/opencode/gemini
