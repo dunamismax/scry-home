@@ -12,6 +12,9 @@ Sync map:
   ~/.openclaw/workspace/HEARTBEAT.md → <repo>/openclaw/HEARTBEAT.md
   ~/.openclaw/workspace/memory/      → <repo>/openclaw/memory/
   ~/.openclaw/workspace-*/docs       → <repo>/openclaw/specialists/<agentId>/
+  ~/.openclaw/workspace-*/scripts/   → <repo>/openclaw/specialists/<agentId>/scripts/
+  ~/.openclaw/workspace-*/templates/ → <repo>/openclaw/specialists/<agentId>/templates/
+  ~/.openclaw/workspace-*/hooks/     → <repo>/openclaw/specialists/<agentId>/hooks/
   ~/.openclaw/cron/jobs.json         → <repo>/openclaw/cron-jobs.json
   ~/.openclaw/exec-approvals.json    → <repo>/openclaw/exec-approvals.json
 
@@ -56,6 +59,7 @@ SPECIALIST_FILES = [
     "MEMORY.md",
 ]
 SPECIALIST_EXCLUDE = {"main", "claude", "codex"}
+SPECIALIST_DIRS = ["scripts", "templates", "hooks"]
 EXTRA_FILES = [
     ("cron/jobs.json", "cron-jobs.json"),
     ("exec-approvals.json", "exec-approvals.json"),
@@ -124,6 +128,39 @@ def _sync_markdown_dir(src_dir: Path, dest_dir: Path, result: SyncResult) -> Non
                 result.errors.append(str(exc))
 
 
+def _sync_tree(src_dir: Path, dest_dir: Path, result: SyncResult) -> None:
+    if not src_dir.exists():
+        return
+
+    ensure_dir(dest_dir)
+
+    src_entries = {p.relative_to(src_dir) for p in src_dir.rglob("*")}
+    dest_entries = {p.relative_to(dest_dir) for p in dest_dir.rglob("*")} if dest_dir.exists() else set()
+
+    for rel in sorted(src_entries):
+        src = src_dir / rel
+        dest = dest_dir / rel
+        if src.is_dir():
+            ensure_dir(dest)
+            continue
+        _sync_file(src, dest, result)
+
+    for rel in sorted(dest_entries, reverse=True):
+        if rel in src_entries:
+            continue
+        dest = dest_dir / rel
+        try:
+            if dest.is_dir():
+                shutil.rmtree(dest)
+            else:
+                dest.unlink()
+            print(f"  [DELETE] {dest}")
+            result.deleted += 1
+        except Exception as exc:
+            print(f"  [ERROR] delete {dest}: {exc}", file=sys.stderr)
+            result.errors.append(str(exc))
+
+
 def _sync_memory(result: SyncResult) -> None:
     src_dir = OPENCLAW_WORKSPACE / "memory"
     dest_dir = REPO_ROOT / "openclaw" / "memory"
@@ -185,6 +222,20 @@ def _sync_specialists(result: SyncResult) -> None:
             except Exception as exc:
                 print(f"  [ERROR] delete {dest_memory}: {exc}", file=sys.stderr)
                 result.errors.append(str(exc))
+
+        for dirname in SPECIALIST_DIRS:
+            src_dir = src_ws / dirname
+            dest_dir = dest_ws / dirname
+            if src_dir.exists():
+                _sync_tree(src_dir, dest_dir, result)
+            elif dest_dir.exists():
+                try:
+                    shutil.rmtree(dest_dir)
+                    print(f"  [DELETE] {dest_dir}")
+                    result.deleted += 1
+                except Exception as exc:
+                    print(f"  [ERROR] delete {dest_dir}: {exc}", file=sys.stderr)
+                    result.errors.append(str(exc))
 
     existing_dirs = {d.name for d in dest_root.iterdir() if d.is_dir()} if dest_root.exists() else set()
     for agent_id in existing_dirs - seen:
