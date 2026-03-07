@@ -8,7 +8,7 @@
       "name": "healthcheck:backup-freshness",
       "enabled": true,
       "createdAtMs": 1772532367675,
-      "updatedAtMs": 1772881832423,
+      "updatedAtMs": 1772913303632,
       "schedule": {
         "kind": "cron",
         "expr": "10 6 * * *",
@@ -20,7 +20,7 @@
         "kind": "agentTurn",
         "model": "openai-codex/gpt-5.4",
         "timeoutSeconds": 1800,
-        "message": "Run a daily encrypted backup freshness check.\n\nExecute exactly:\ncd /Users/sawyer/github/grimoire\nMETA=\"/Users/sawyer/github/grimoire/vault/config/critical-configs.meta.json\"\nif [ ! -f \"$META\" ]; then\n  openclaw system event --text \"Reminder: daily backup freshness check failed — critical-configs.meta.json is missing in grimoire/vault/config. Investigate backup automation.\" --mode now\n  exit 1\nfi\nuv run python - \"$META\" <<'PY'\nimport json, sys, datetime\nfrom datetime import timezone\np=sys.argv[1]\nwith open(p,'r',encoding='utf-8') as f:\n    m=json.load(f)\ncreated=m.get('createdAt')\nif not created:\n    print('MISSING_CREATED_AT')\n    sys.exit(2)\ncreated_dt=datetime.datetime.fromisoformat(created.replace('Z','+00:00'))\nage=(datetime.datetime.now(timezone.utc)-created_dt).total_seconds()/3600\nprint(f'AGE_HOURS={age:.2f}')\nif age>26:\n    sys.exit(3)\nPY\nRC=$?\nif [ \"$RC\" -eq 0 ]; then\n  exit 0\nelif [ \"$RC\" -eq 2 ]; then\n  openclaw system event --text \"Reminder: backup freshness check found invalid metadata (missing createdAt). Please inspect critical-configs.meta.json.\" --mode now\n  exit 1\nelse\n  openclaw system event --text \"Reminder: encrypted config backup is stale (>26h old). Run backup and investigate scheduler/logs.\" --mode now\n  exit 1\nfi"
+        "message": "Run a daily encrypted backup freshness check.\n\nExecute exactly:\ncd /Users/sawyer/github/scry-home\nMETA=\"/Users/sawyer/github/scry-home/vault/config/critical-configs.meta.json\"\nif [ ! -f \"$META\" ]; then\n  openclaw system event --text \"Reminder: daily backup freshness check failed — critical-configs.meta.json is missing in scry-home/vault/config. Investigate backup automation.\" --mode now\n  exit 1\nfi\nuv run python - \"$META\" <<'PY'\nimport json, sys, datetime\nfrom datetime import timezone\np=sys.argv[1]\nwith open(p,'r',encoding='utf-8') as f:\n    m=json.load(f)\ncreated=m.get('createdAt')\nif not created:\n    print('MISSING_CREATED_AT')\n    sys.exit(2)\ncreated_dt=datetime.datetime.fromisoformat(created.replace('Z','+00:00'))\nage=(datetime.datetime.now(timezone.utc)-created_dt).total_seconds()/3600\nprint(f'AGE_HOURS={age:.2f}')\nif age>26:\n    sys.exit(3)\nPY\nRC=$?\nif [ \"$RC\" -eq 0 ]; then\n  exit 0\nelif [ \"$RC\" -eq 2 ]; then\n  openclaw system event --text \"Reminder: backup freshness check found invalid metadata (missing createdAt). Please inspect critical-configs.meta.json.\" --mode now\n  exit 1\nelse\n  openclaw system event --text \"Reminder: encrypted config backup is stale (>26h old). Run backup and investigate scheduler/logs.\" --mode now\n  exit 1\nfi"
       },
       "delivery": {
         "mode": "none"
@@ -43,7 +43,7 @@
       "name": "healthcheck:restore-drill-reminder",
       "enabled": true,
       "createdAtMs": 1772532375030,
-      "updatedAtMs": 1772532375030,
+      "updatedAtMs": 1772913303643,
       "schedule": {
         "kind": "cron",
         "expr": "0 10 1 * *",
@@ -53,7 +53,7 @@
       "wakeMode": "now",
       "payload": {
         "kind": "systemEvent",
-        "text": "Reminder: monthly restore drill is due. Run the OpenClaw backup restore drill checklist in ~/github/grimoire/openclaw/BACKUPS.md and log pass/fail + follow-ups."
+        "text": "Reminder: monthly restore drill is due. Run the OpenClaw backup restore drill checklist in ~/github/scry-home/openclaw/BACKUPS.md and log pass/fail + follow-ups."
       },
       "state": {
         "nextRunAtMs": 1775052000000
@@ -66,7 +66,7 @@
       "name": "briefing:daily-repo-priority-summary",
       "enabled": true,
       "createdAtMs": 1772533964511,
-      "updatedAtMs": 1772890579765,
+      "updatedAtMs": 1772913303650,
       "schedule": {
         "kind": "cron",
         "expr": "35 8 * * *",
@@ -78,7 +78,7 @@
         "kind": "agentTurn",
         "model": "openai-codex/gpt-5.4",
         "timeoutSeconds": 1800,
-        "message": "Generate a concise daily engineering summary for Stephen.\n\nContext:\n- Repos root: /Users/sawyer/github\n- Primary tracked repos: grimoire, pr-firefighter, CallRift, elchess, augur, podwatch, rip, Sawyer-Visual-Media\n\nTasks:\n1) Check each repo for branch state and uncommitted changes.\n2) Read each repo BUILD.md status line + next priorities when present.\n3) Produce a priority-ranked \"today\" list (top 5) with why.\n4) Include blockers/risk flags.\n\nOutput style:\n- 6–12 bullets max, high signal, no fluff.\n- Action-first and decision-oriented."
+        "message": "Generate a concise daily engineering summary for Stephen.\n\nContext:\n- Repos root: /Users/sawyer/github\n- Primary tracked repos: scry-home, pr-firefighter, CallRift, elchess, augur, podwatch, rip, Sawyer-Visual-Media\n\nTasks:\n1) Check each repo for branch state and uncommitted changes.\n2) Read each repo BUILD.md status line + next priorities when present.\n3) Produce a priority-ranked \"today\" list (top 5) with why.\n4) Include blockers/risk flags.\n\nOutput style:\n- 6–12 bullets max, high signal, no fluff.\n- Action-first and decision-oriented."
       },
       "delivery": {
         "mode": "announce",
@@ -103,7 +103,7 @@
       "name": "briefing:weekly-project-review",
       "enabled": true,
       "createdAtMs": 1772533970252,
-      "updatedAtMs": 1772738472431,
+      "updatedAtMs": 1772913303656,
       "schedule": {
         "kind": "cron",
         "expr": "0 9 * * 1",
@@ -115,7 +115,7 @@
         "kind": "agentTurn",
         "model": "openai-codex/gpt-5.4",
         "timeoutSeconds": 1800,
-        "message": "Run a weekly project review summary for Stephen.\n\nScope:\n- Repos: grimoire, pr-firefighter, CallRift, elchess, augur, podwatch, rip, Sawyer-Visual-Media\n\nTasks:\n1) Summarize progress vs BUILD.md in each repo.\n2) Identify stale trackers or missing verification evidence.\n3) Recommend next-week execution plan (top 3 initiatives + sequencing).\n4) Flag any integration opportunities with high ROI and low risk.\n\nOutput style:\n- Short executive summary first.\n- Then ranked action plan (top 3) with rationale.\n- Keep it concise and actionable."
+        "message": "Run a weekly project review summary for Stephen.\n\nScope:\n- Repos: scry-home, pr-firefighter, CallRift, elchess, augur, podwatch, rip, Sawyer-Visual-Media\n\nTasks:\n1) Summarize progress vs BUILD.md in each repo.\n2) Identify stale trackers or missing verification evidence.\n3) Recommend next-week execution plan (top 3 initiatives + sequencing).\n4) Flag any integration opportunities with high ROI and low risk.\n\nOutput style:\n- Short executive summary first.\n- Then ranked action plan (top 3) with rationale.\n- Keep it concise and actionable."
       },
       "delivery": {
         "mode": "announce",
@@ -169,7 +169,7 @@
       "name": "sync-and-validate-daily",
       "enabled": true,
       "createdAtMs": 1772542733941,
-      "updatedAtMs": 1772872224400,
+      "updatedAtMs": 1772913303663,
       "schedule": {
         "kind": "cron",
         "expr": "30 3 * * *",
@@ -181,7 +181,7 @@
         "kind": "agentTurn",
         "model": "openai-codex/gpt-5.4",
         "timeoutSeconds": 1800,
-        "message": "Run the daily workspace sync + consistency validation.\n\nExecute exactly:\nset -euo pipefail\ncd /Users/sawyer/github/grimoire\n\n# 1) Sync canonical workspace files into grimoire copies\nuv run python -m scripts sync:openclaw >/tmp/docs-sync-check.log 2>&1 || {\n  openclaw system event --text \"Reminder: daily sync failed while running sync-openclaw. Check grimoire sync automation.\" --mode now\n  exit 1\n}\n\n# 2) If sync produced drift, auto-commit + push\nif ! git diff --quiet -- SOUL.md AGENTS.md openclaw/SOUL.md openclaw/AGENTS.md openclaw/MEMORY.md openclaw/TOOLS.md; then\n  uv run python -m scripts sync:openclaw --commit >/tmp/docs-sync-commit.log 2>&1 || {\n    openclaw system event --text \"Reminder: daily sync detected drift but auto-commit failed. Review grimoire sync output.\" --mode now\n    exit 1\n  }\nfi\n\n# 3) Validate canonical file equality\nOUT=\"$(uv run python - <<'PY'\nfrom pathlib import Path\nissues=[]\nws=Path('/Users/sawyer/.openclaw/workspace')\ngr=Path('/Users/sawyer/github/grimoire')\nchecks=[\n    (ws/'SOUL.md', gr/'SOUL.md', 'SOUL root'),\n    (ws/'AGENTS.md', gr/'AGENTS.md', 'AGENTS root'),\n    (ws/'SOUL.md', gr/'openclaw'/'SOUL.md', 'SOUL openclaw copy'),\n    (ws/'AGENTS.md', gr/'openclaw'/'AGENTS.md', 'AGENTS openclaw copy'),\n]\nfor a,b,label in checks:\n    if not a.exists() or not b.exists():\n        issues.append(f'missing:{label}')\n        continue\n    if a.read_text() != b.read_text():\n        issues.append(f'mismatch:{label}')\n\nfor p,label in [\n    (gr/'CLAUDE.md','grimoire CLAUDE.md'),\n    (Path('/Users/sawyer/openclaw/CLAUDE.md'),'openclaw CLAUDE.md'),\n]:\n    if not p.exists():\n        issues.append(f'missing:{label}')\n\nif issues:\n    print('FAIL')\n    for i in issues:\n        print(i)\n    raise SystemExit(2)\nprint('OK: sync + validation passed')\nPY\n)\" || RC=$?\nRC=${RC:-0}\n\nif [ \"$RC\" -ne 0 ]; then\n  MSG=\"$(printf '%s' \"$OUT\" | tail -n 30 | tr '\\n' '; ' | sed 's/\"//g')\"\n  openclaw system event --text \"Reminder: daily sync validation found consistency issues. ${MSG}\" --mode now\n  exit 1\nfi\n\nexit 0"
+        "message": "Run the daily workspace sync + consistency validation.\n\nExecute exactly:\nset -euo pipefail\ncd /Users/sawyer/github/scry-home\n\n# 1) Sync canonical workspace files into scry-home copies\nuv run python -m scripts sync:openclaw >/tmp/docs-sync-check.log 2>&1 || {\n  openclaw system event --text \"Reminder: daily sync failed while running sync-openclaw. Check scry-home sync automation.\" --mode now\n  exit 1\n}\n\n# 2) If sync produced drift, auto-commit + push\nif ! git diff --quiet -- SOUL.md AGENTS.md openclaw/SOUL.md openclaw/AGENTS.md openclaw/MEMORY.md openclaw/TOOLS.md; then\n  uv run python -m scripts sync:openclaw --commit >/tmp/docs-sync-commit.log 2>&1 || {\n    openclaw system event --text \"Reminder: daily sync detected drift but auto-commit failed. Review scry-home sync output.\" --mode now\n    exit 1\n  }\nfi\n\n# 3) Validate canonical file equality\nOUT=\"$(uv run python - <<'PY'\nfrom pathlib import Path\nissues=[]\nws=Path('/Users/sawyer/.openclaw/workspace')\nrepo=Path('/Users/sawyer/github/scry-home')\nchecks=[\n    (ws/'SOUL.md', repo/'SOUL.md', 'SOUL root'),\n    (ws/'AGENTS.md', repo/'AGENTS.md', 'AGENTS root'),\n    (ws/'SOUL.md', repo/'openclaw'/'SOUL.md', 'SOUL openclaw copy'),\n    (ws/'AGENTS.md', repo/'openclaw'/'AGENTS.md', 'AGENTS openclaw copy'),\n]\nfor a,b,label in checks:\n    if not a.exists() or not b.exists():\n        issues.append(f'missing:{label}')\n        continue\n    if a.read_text() != b.read_text():\n        issues.append(f'mismatch:{label}')\n\nfor p,label in [\n    (repo/'CLAUDE.md','scry-home CLAUDE.md'),\n    (Path('/Users/sawyer/openclaw/CLAUDE.md'),'openclaw CLAUDE.md'),\n]:\n    if not p.exists():\n        issues.append(f'missing:{label}')\n\nif issues:\n    print('FAIL')\n    for i in issues:\n        print(i)\n    raise SystemExit(2)\nprint('OK: sync + validation passed')\nPY\n)\" || RC=$?\nRC=${RC:-0}\n\nif [ \"$RC\" -ne 0 ]; then\n  MSG=\"$(printf '%s' \"$OUT\" | tail -n 30 | tr '\\n' '; ' | sed 's/\"//g')\"\n  openclaw system event --text \"Reminder: daily sync validation found consistency issues. ${MSG}\" --mode now\n  exit 1\nfi\n\nexit 0"
       },
       "delivery": {
         "mode": "none"
@@ -337,7 +337,7 @@
       "name": "healthcheck:workspace-doc-drift",
       "enabled": true,
       "createdAtMs": 1772893167048,
-      "updatedAtMs": 1772907730995,
+      "updatedAtMs": 1772913303677,
       "schedule": {
         "kind": "cron",
         "expr": "40 3 * * *",
@@ -350,7 +350,7 @@
         "model": "openai-codex/gpt-5.4",
         "thinking": "low",
         "timeoutSeconds": 1800,
-        "message": "Run the daily OpenClaw workspace doc drift audit.\n\nExecute exactly:\nset -euo pipefail\ncd /Users/sawyer/github/grimoire\nOUT=\"$(uv run python -m scripts openclaw:audit 2>&1)\" || RC=$?\nRC=${RC:-0}\nprintf '%s\\n' \"$OUT\"\nif [ \"$RC\" -ne 0 ]; then\n  MSG=\"$(printf \"%s\" \"$OUT\" | tail -n 40 | tr \"\\n\" \"; \" | sed \"s/\\\"//g\")\"\n  openclaw system event --text \"Reminder: workspace doc drift audit found issues. ${MSG}\" --mode now\n  exit 1\nfi\nexit 0"
+        "message": "Run the daily OpenClaw workspace doc drift audit.\n\nExecute exactly:\nset -euo pipefail\ncd /Users/sawyer/github/scry-home\nOUT=\"$(uv run python -m scripts openclaw:audit 2>&1)\" || RC=$?\nRC=${RC:-0}\nprintf '%s\\n' \"$OUT\"\nif [ \"$RC\" -ne 0 ]; then\n  MSG=\"$(printf \"%s\" \"$OUT\" | tail -n 40 | tr \"\\n\" \"; \" | sed \"s/\\\"//g\")\"\n  openclaw system event --text \"Reminder: workspace doc drift audit found issues. ${MSG}\" --mode now\n  exit 1\nfi\nexit 0"
       },
       "delivery": {
         "mode": "none"

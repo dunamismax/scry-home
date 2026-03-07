@@ -1,8 +1,8 @@
 # scry-home — Build Tracker
 
-**Status:** canonical doc refresh and specialist bench inheritance refresh complete in working tree  
+**Status:** canonical doc refresh, specialist bench inheritance refresh, and rename-drift cleanup complete in working tree  
 **Last Updated:** 2026-03-07  
-**Latest Relevant Commit:** uncommitted specialist hardening + mirror sync pass
+**Latest Relevant Commit:** uncommitted `scry-home` rename cleanup + full audit pass
 
 ---
 
@@ -29,7 +29,7 @@ The live OpenClaw workspace is canonical. The local `openclaw/` tree is a mirror
 - [x] Update workstation docs and manual notes to point at `scry-home`
 - [x] Replace stale managed-project entries with the expected keeper repos
 - [x] Remove the fake `typecheck` assumption for this repo's managed verification
-- [ ] Propagate remaining `grimoire` references from the canonical OpenClaw workspace and re-sync mirrors
+- [x] Propagate remaining operational `grimoire` references from the canonical OpenClaw workspace, cron jobs, and launchagent paths; re-sync mirrors
 
 ### Phase 2 — Verification
 
@@ -37,7 +37,7 @@ The live OpenClaw workspace is canonical. The local `openclaw/` tree is a mirror
 - [x] Run repo doctor
 - [x] Syntax-check the updated shell scripts
 - [x] Refresh generated workstation inventory metadata
-- [ ] Re-run `openclaw:audit` after canonical workspace docs are updated upstream
+- [x] Re-run `openclaw:audit` after canonical workspace docs are updated upstream
 
 ### Phase 3 — Canonical doc + specialist bench refresh
 
@@ -75,18 +75,19 @@ The live OpenClaw workspace is canonical. The local `openclaw/` tree is a mirror
 - `cd ~/github/scry-home && uv run python -m scripts specialists:harden` ✅
 - bench smoke verification ✅ all six active specialists passed their regenerated `scripts/specialist-weekly-smoke.sh`
 - `cd ~/github/scry-home && uv run python -m scripts sync:openclaw` ✅
-- `UV_CACHE_DIR=/tmp/uv-cache-scry-home uv run python -m scripts openclaw:audit` ⚠️ earlier failed on upstream OpenClaw workspace drift: stale `~/github/grimoire` path references, unsynced specialist mirror files, and specialist mirror drift outside this repo
+- `cd ~/github/scry-home && uv run python -m scripts openclaw:audit` ✅ after fixing canonical stale paths, excluding historical `runs/` from mirror/path checks, and skipping stale-path validation for `memory/` history logs
+- `launchctl bootstrap gui/$(id -u) /Users/sawyer/Library/LaunchAgents/com.scry.openclaw.backup.plist` ✅ reloaded live backup LaunchAgent with `scry-home` paths
 
 ---
 
 ## Immediate Next Pass Priorities
 
-1. Re-run `uv run python -m scripts openclaw:audit` after the specialist refresh and fix any remaining mirror/path drift.
-2. Reinstall any live LaunchAgents that still point at `~/github/grimoire` by using the updated installer scripts from this repo.
-3. Delete non-keeper repos locally only after any remaining useful content has been migrated elsewhere.
+1. If desired, run `uv run python -m scripts cron:reconcile --scope=all --apply` to converge any managed-cron manifest drift.
+2. Delete non-keeper repos locally only after any remaining useful content has been migrated elsewhere.
+3. Tighten any remaining repo docs if future renames introduce new drift.
 
 ---
 
 ## Blockers / Human Decisions
 
-- Some stale `grimoire` references may still remain elsewhere in the upstream OpenClaw workspace or installed LaunchAgents; a fresh `openclaw:audit` pass should confirm what is left after this sync.
+- No blockers on the canonical-doc / specialist-bench / rename-drift pass. Remaining repo cleanup is optional follow-on work, not a dependency.

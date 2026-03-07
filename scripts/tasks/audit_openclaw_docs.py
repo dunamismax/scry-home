@@ -2,8 +2,8 @@
 
 Checks:
 - required canonical main-workspace markdown files exist
-- grimoire root SOUL/AGENTS match canonical workspace copies
-- grimoire openclaw mirror matches all canonical main-workspace `.md` files
+- repo-root SOUL/AGENTS match canonical workspace copies
+- local `openclaw/` mirror matches all canonical main-workspace `.md` files
 - specialist mirrors match all canonical specialist-workspace `.md` files
 - local filesystem paths referenced in markdown actually exist (best-effort, low-noise)
 
@@ -14,7 +14,6 @@ Usage:
 from __future__ import annotations
 
 import re
-import sys
 from pathlib import Path
 
 from scripts.common import log_step
@@ -46,8 +45,9 @@ SKIP_PATH_FRAGMENTS = (
     "<PROMPT>",
 )
 COMMON_GIT_REF_NAMES = {"main", "master", "develop", "dev", "HEAD"}
-IGNORED_TOP_LEVEL_DIRS = {"reviews"}
+IGNORED_TOP_LEVEL_DIRS = {"reviews", "runs"}
 MAIN_MARKDOWN_DIRS = {"memory", "docs", "prompts", "templates"}
+PATH_SCAN_IGNORED_TOP_LEVEL_DIRS = {"memory", "reviews", "runs"}
 
 
 def _read(path: Path) -> str:
@@ -199,6 +199,8 @@ def audit_openclaw_docs() -> None:
     checked_refs = 0
     for root in source_markdown_roots:
         for rel in sorted(_workspace_markdown_files(root)):
+            if rel.parts and rel.parts[0] in PATH_SCAN_IGNORED_TOP_LEVEL_DIRS:
+                continue
             file_path = root / rel
             for token in sorted(_referenced_local_paths(file_path)):
                 checked_refs += 1

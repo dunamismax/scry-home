@@ -1,6 +1,6 @@
 # BUILD.md
 
-**Current status:** phase = specialist bench doc inheritance refreshed and synced · last updated = 2026-03-07 14:48 America/New_York · latest relevant commit = specialist hardening baselines refreshed; mirror sync completed
+**Current status:** phase = rename drift cleanup complete and verified · last updated = 2026-03-07 15:10 America/New_York · latest relevant commit = canonical docs, cron jobs, and launchagent paths reconciled to `scry-home`
 
 ## Phase plan
 
@@ -33,18 +33,21 @@
 - Specialist inheritance refresh: `scripts/tasks/harden_specialists.py` rebuilt to generate upgraded specialist `SOUL.md` / `AGENTS.md` / `CLAUDE.md` baselines plus stronger smoke enforcement.
 - Specialist verification: `uv run python -m scripts specialists:harden` ✅ and all six `scripts/specialist-weekly-smoke.sh` runs ✅ at 10/10 across protocol, verification, and attribution.
 - Mirror propagation: `cd ~/github/scry-home && uv run python -m scripts sync:openclaw` ✅ copied updated root and `openclaw/` mirror docs.
+- Rename drift cleanup: canonical `TOOLS.md`, `MEMORY.md`, specialist mirrored `TOOLS.md`, live cron jobs, repo cron mirror, and the installed OpenClaw backup LaunchAgent now point at `scry-home` instead of `grimoire`.
+- Audit verification: `cd ~/github/scry-home && uv run python -m scripts openclaw:audit` ✅ now passes after excluding historical `runs/` from mirror/path checks and skipping stale-path checks for `memory/` history logs.
 - Known drift repaired: missing `BOOTSTRAP.md`, missing `BUILD.md`, stale `TOOLS.md` reference to a workspace-local `CONTRIBUTING_TO_OPENCLAW.md`.
 
 ### Phase 4 — Propagation
 - [x] Run `specialists:harden` to deploy updated templates/hooks/smoke to specialist workspaces
-- [x] Run `sync:openclaw` to mirror canonical workspace into grimoire
-- [ ] Run `openclaw:audit` to verify full-stack consistency
+- [x] Run `sync:openclaw` to mirror canonical workspace into `scry-home`
+- [x] Run `openclaw:audit` to verify full-stack consistency
 - [ ] Consider `cron:reconcile --scope=all --apply` to converge all manifest jobs
 
 ### Phase 5 — Audit fix
 - [x] Diagnose false-positive path checks in `openclaw:audit`
 - [x] Patch trailing-whitespace / markdown-punctuation trimming in path extraction
-- [ ] Re-run `openclaw:audit`
+- [x] Exclude historical `runs/` from mirror/path drift checks and skip stale-path validation for `memory/` history logs
+- [x] Re-run `openclaw:audit`
 
 ### Phase 6 — Agent roster cutover
 - [x] Replace the old bench (`reviewer`, `builder-mobile`, `openclaw-maintainer`, `contributor`) with the new bench (`scribe`, `research`, `operator`) in live config and docs
@@ -68,6 +71,6 @@
 
 ## Immediate next pass priorities
 
-1. Re-run `openclaw:audit` after the specialist refresh and fix any remaining mirror/path drift.
-2. If desired, tighten specialist-specific `IDENTITY.md` files beyond the shared verification/attribution anchors.
+1. If desired, tighten specialist-specific `IDENTITY.md` files beyond the shared verification/attribution anchors.
+2. Optionally run `cron:reconcile --scope=all --apply` to converge any manifest drift in managed jobs.
 3. Optionally prune any legacy Discord text channels that still exist unbound in the guild UI.

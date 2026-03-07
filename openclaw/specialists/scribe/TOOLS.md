@@ -4,8 +4,8 @@
 
 - All active repos: `~/github/<name>` (see MEMORY.md for full list)
 - OpenClaw workspace (canonical): `~/.openclaw/workspace`
-- Scry config repo: `~/github/grimoire`
-- Sync script: `~/github/grimoire/scripts/tasks/sync_openclaw.py`
+- Scry config repo: `~/github/scry-home`
+- Sync script: `~/github/scry-home/scripts/tasks/sync_openclaw.py`
 
 ## OpenClaw Install
 
@@ -19,13 +19,13 @@
 
 - **OpenClaw docs (local mirror)**: `/Users/sawyer/openclaw/docs`
 - **OpenClaw docs index**: `https://docs.openclaw.ai/llms.txt`
-- **CONTRIBUTING_TO_OPENCLAW.md**: `~/github/grimoire/reference/CONTRIBUTING_TO_OPENCLAW.md` — read before any work on the OpenClaw repo. Covers repo setup, build system, PR template, Signal plugin architecture, test patterns, reviewer expectations.
+- **CONTRIBUTING_TO_OPENCLAW.md**: `~/github/scry-home/reference/CONTRIBUTING_TO_OPENCLAW.md` — read before any work on the OpenClaw repo. Covers repo setup, build system, PR template, Signal plugin architecture, test patterns, reviewer expectations.
 
-## Grimoire CLI Commands
+## Scry-Home CLI Commands
 
-- `uv run python -m scripts sync:openclaw` — sync workspace → grimoire (add `--commit` to auto-push); now mirrors all `.md` files dynamically
+- `uv run python -m scripts sync:openclaw` — sync workspace → `scry-home` (add `--commit` to auto-push); now mirrors all `.md` files dynamically
 - `uv run python -m scripts specialists:harden` — deploy hooks, templates, smoke scripts, USER.md, TOOLS.md, and reporting rules to specialist workspaces
-- `uv run python -m scripts openclaw:audit` — check workspace doc completeness, grimoire mirror consistency, and stale path references
+- `uv run python -m scripts openclaw:audit` — check workspace doc completeness, `scry-home` mirror consistency, and stale path references
 - `uv run python -m scripts cron:reconcile` — reconcile managed cron jobs against manifest (add `--apply` to converge; `--scope=all` for system + smoke jobs)
 
 ## SSH Remotes

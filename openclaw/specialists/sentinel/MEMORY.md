@@ -26,7 +26,7 @@ See `AGENTS.md` for the full stack table. Default is TypeScript + Bun; Python/Ru
 
 All under `~/github`, dual SSH remotes. TypeScript + Bun unless noted:
 
-1. **grimoire** (was scryai-typescript) - Scry's identity/config repo, CLI tools, sync scripts
+1. **scry-home** (was `grimoire`, originally `scryai-typescript`) - Scry's identity/config repo, CLI tools, sync scripts
 2. **questlog** (was mylife-rpg) - RPG-style life tracker
 3. **podwatch** (was poddashboard) - Podcast dashboard
 4. **homepage** (was reactiveweb) - Personal website
@@ -57,7 +57,7 @@ All under `~/github`, dual SSH remotes. TypeScript + Bun unless noted:
 - Gateway mode: local, loopback-only, Tailscale allowed
 - Signal channel: active, DM allowlist only
 - Auth profiles: `openai-codex:default` (OAuth), `anthropic:default` (OAuth)
-- Daily cron at 3am ET syncs workspace → grimoire
+- Daily cron at 3am ET syncs workspace → `scry-home`
 - **Browser**: Brave configured, profiles `openclaw` (18800) + `chrome` (18792)
 - **ACP**: enabled, acpx backend, default codex, allows pi/claude/codex/opencode/gemini, 8 concurrent
 - **Sub-agents**: depth 2, 8 concurrent, 5 children/agent
@@ -67,15 +67,15 @@ All under `~/github`, dual SSH remotes. TypeScript + Bun unless noted:
 
 Two canonical files live in the OpenClaw workspace. Everything else is a copy:
 
-| Canonical (workspace) | Grimoire copies | Other repos |
+| Canonical (workspace) | `scry-home` copies | Other repos |
 |---|---|---|
 | `SOUL.md` | `SOUL.md` (root) + `openclaw/SOUL.md` | - |
-| `AGENTS.md` | `AGENTS.md` (root) + `openclaw/AGENTS.md` | `CLAUDE.md` (points to grimoire) |
+| `AGENTS.md` | `AGENTS.md` (root) + `openclaw/AGENTS.md` | `CLAUDE.md` (points to `scry-home`) |
 
-- **AGENTS.md = CLAUDE.md content.** Same file, different name. CLAUDE.md in other repos just points to grimoire.
-- **Workspace is always canonical.** Edit there, sync outward. Never edit grimoire copies directly.
-- **`sync-openclaw` script** copies workspace → grimoire root + `openclaw/` dir. Run with `--commit` to auto-push.
-- When SOUL.md or AGENTS.md change, sync immediately - don't let copies drift.
+- **AGENTS.md = CLAUDE.md content.** Same file, different name. `CLAUDE.md` in other repos points to `scry-home`.
+- **Workspace is always canonical.** Edit there, sync outward. Never edit `scry-home` copies directly.
+- **`sync-openclaw` script** copies workspace → `scry-home` root + `openclaw/` dir. Run with `--commit` to auto-push.
+- When `SOUL.md` or `AGENTS.md` change, sync immediately - don't let copies drift.
 
 ### Signal Channel Config (tuned 2026-03-02)
 
@@ -89,7 +89,7 @@ Two canonical files live in the OpenClaw workspace. Everything else is a copy:
 
 ## Reference Docs
 
-- **CONTRIBUTING_TO_OPENCLAW.md** - field guide for contributing to OpenClaw. Repo setup, build system, PR template usage, Signal plugin architecture, test patterns, reviewer expectations. Lives in workspace (canonical) and grimoire.
+- **CONTRIBUTING_TO_OPENCLAW.md** - field guide for contributing to OpenClaw. Repo setup, build system, PR template usage, Signal plugin architecture, test patterns, reviewer expectations. Lives in workspace (canonical) and `scry-home`.
 
 ## Open-Source Contributions
 
@@ -107,10 +107,10 @@ Two canonical files live in the OpenClaw workspace. Everything else is a copy:
 - **Max-capability posture:** Stephen wants OpenClaw/Scry configured for maximum practical leverage via strong integrations, automation, and orchestration across his tool stack, with explicit tradeoff/consent handling for risky enables.
 ## Decisions Log
 
-- 2026-03-02: Adopted Scry identity (uppercase S). Unified SOUL.md/AGENTS.md across workspace + repo.
-- 2026-03-02: Repos get CLAUDE.md pointing to grimoire, not their own SOUL.md/AGENTS.md.
+- 2026-03-02: Adopted Scry identity (uppercase S). Unified `SOUL.md`/`AGENTS.md` across workspace + repo.
+- 2026-03-02: Repos get `CLAUDE.md` pointing to `scry-home`, not their own `SOUL.md`/`AGENTS.md`.
 - 2026-03-02: Stripped all `Co-Authored-By: Claude` from 12 repos. No agent attribution, ever.
-- 2026-03-02: Completed Phase 1 of repo alignment - all 19 repos have CLAUDE.md + dual SSH remotes.
+- 2026-03-02: Completed Phase 1 of repo alignment - all 19 repos have `CLAUDE.md` + dual SSH remotes.
 - 2026-03-02: Adopted "right tool for the job" philosophy - scry-trader stays Python, stack contract is a default not a religion.
 - 2026-03-02: CallRift Phase 2 shipped - real SIP engine (sip.js), API client (TanStack Query), server Bun migration, Docker Compose.
 - 2026-03-02: Tuned OpenClaw Signal config - disabled block streaming, reasoning, verbose, human delay; enabled typing indicators.
@@ -118,7 +118,7 @@ Two canonical files live in the OpenClaw workspace. Everything else is a copy:
 - 2026-03-03: Switched back to Codex as default model for OpenClaw/Scry due Anthropic reliability issues.
 - 2026-03-03: Configured dual OAuth model switching (`/model claude` and `/model codex`) with Codex retained as default.
 - 2026-03-03: Set Claude Opus back to the global default by request; keep `/model codex` available for manual override.
-- 2026-03-03: Standardized BUILD.md project ledgers for long-running work; keep root BUILD.md in active repos and update it alongside implementation progress.
+- 2026-03-03: Standardized `BUILD.md` project ledgers for long-running work; keep root `BUILD.md` in active repos and update it alongside implementation progress.
 - 2026-03-03: Reaffirmed background-agent-first workflow as preferred mode: run coding agents in background, keep main thread responsive for orchestration and concurrent work.
 - 2026-03-03: Adopted explicit max-capability integration posture: prioritize durable OpenClaw integrations/automation across Stephen's stack, with clear risk/consent gates for high-impact enables.
 - 2026-03-03: Nuked npm OpenClaw install, symlinked `~/.openclaw/lib/node_modules/openclaw` → `~/openclaw` git repo. Git-only install going forward.
@@ -129,3 +129,4 @@ Two canonical files live in the OpenClaw workspace. Everything else is a copy:
 - 2026-03-03: Skills ready: 15/52 (up from 8). New: acp-router, clawhub, peekaboo, summarize, tmux, whisper, himalaya (installed but unused).
 - 2026-03-03: Peekaboo CLI uninstalled by request; local Peekaboo automation is disabled unless reinstalled.
 - 2026-03-04: Phase 2 hardening applied: added commit-msg/pre-push attribution guard hooks, attribution audit script, weekly scored smoke script, and runbook.
+- 2026-03-07: `grimoire` was renamed to `scry-home`; current docs, cron jobs, and operational paths should use `~/github/scry-home`.

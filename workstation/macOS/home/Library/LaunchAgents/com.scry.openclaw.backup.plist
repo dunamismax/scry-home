@@ -8,10 +8,10 @@
 	<array>
 		<string>/bin/zsh</string>
 		<string>-lc</string>
-		<string>/Users/sawyer/github/grimoire/scripts/ops/daily-openclaw-backup.sh</string>
+		<string>/Users/sawyer/github/scry-home/scripts/ops/daily-openclaw-backup.sh</string>
 	</array>
 	<key>WorkingDirectory</key>
-	<string>/Users/sawyer/github/grimoire</string>
+	<string>/Users/sawyer/github/scry-home</string>
 	<key>StartCalendarInterval</key>
 	<dict>
 		<key>Hour</key>

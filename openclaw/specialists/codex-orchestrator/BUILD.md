@@ -12,7 +12,7 @@ Full local cleanup pass across `/Users/sawyer/github` with an aggressive keep/de
 
 ## Ranked Execution Checklist
 1. **Stabilize keepers**
-   - `scry-home`: resolve canonical naming (`scry-home` vs `grimoire`), fix self-location/path drift, tighten docs to reality
+   - `scry-home`: resolve canonical naming/path drift, tighten docs to reality
    - `dunamismax`: trim profile metadata to surviving repos and simplify generation surface
    - `boring-go-web`: make repo honest, fix public auth/CRUD contradiction, remove stale schema/docs claims
    - `c-from-the-ground-up`: fix README drift, repair multithreaded word-count bug, add compile-all smoke coverage, remove tracked build artifacts

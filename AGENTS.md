@@ -81,7 +81,7 @@ The default stack for web and CLI projects. Use it unless something else is genu
 ### Language Policy
 
 - **TypeScript + Bun** — applications, websites, CLIs with rich UI, and libraries.
-- **Python** — all scripting, automation, data pipelines, trading, ML, Discord bots, and any standalone tool/utility. Scripts live in `~/github/scripts`. Python toolchain: **uv** (package/project/venv management), **ruff** (linting/formatting). Use `uv run` to execute, `uv add` for deps, `uv pip` for global installs. No raw `pip3` or `python3` invocations.
+- **Python** — all scripting, automation, data pipelines, trading, ML, Discord bots, and any standalone tool/utility. Scripts live in `~/github/pyforge`. Python toolchain: **uv** (package/project/venv management), **ruff** (linting/formatting). Use `uv run` to execute, `uv add` for deps, `uv pip` for global installs. No raw `pip3` or `python3` invocations.
 - **Rust / Go** — when performance or systems constraints demand it.
 
 TypeScript is for products. Python is for scripts. Don't use TypeScript for scripting; don't use Python for web apps. If the line is blurry, ask.
