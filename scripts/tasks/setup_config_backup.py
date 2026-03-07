@@ -1,4 +1,4 @@
-"""Encrypted backup of critical config files (SSH, OpenClaw, dotfiles)."""
+"""Encrypted backup of critical config files (SSH, OpenClaw, workstation state)."""
 
 from __future__ import annotations
 

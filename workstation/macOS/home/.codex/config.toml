@@ -1,0 +1,13 @@
+model = "gpt-5.4"
+model_reasoning_effort = "high"
+[projects."/Users/sawyer"]
+trust_level = "trusted"
+
+[projects."/Users/sawyer/github"]
+trust_level = "trusted"
+
+[projects."/Users/sawyer/Downloads"]
+trust_level = "trusted"
+
+[projects."/Users/sawyer/github/work"]
+trust_level = "trusted"

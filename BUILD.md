@@ -1,8 +1,8 @@
 # grimoire — Build Tracker
 
-**Status:** Phase 1 — Active maintenance, specialist sync, and prompt-template hardening  
-**Last Updated:** 2026-03-06  
-**Latest Relevant Commit:** `d2b46bd`
+**Status:** Phase 1 — Active maintenance, workstation-backup consolidation, and specialist sync  
+**Last Updated:** 2026-03-07  
+**Latest Relevant Commit:** `6621ffb`
 
 ---
 
@@ -16,6 +16,7 @@ Scry's operational control plane. It holds canonical identity docs, Python CLI a
 grimoire/
 ├── SOUL.md, AGENTS.md          # Canonical identity and operating rules
 ├── BUILD.md                    # Current repo state ledger
+├── workstation/                # Tracked workstation config snapshots (former dotfiles content)
 ├── openclaw/                   # OpenClaw workspace mirror (do not edit directly)
 ├── scripts/
 │   ├── cli.py                  # Unified CLI entry point
@@ -23,6 +24,7 @@ grimoire/
 │   ├── crypto.py               # Encryption helpers for backup tooling
 │   ├── projects_config.py      # Managed repo registry + verification commands
 │   ├── snapshot.py             # Fingerprinting / snapshot helpers
+│   ├── ops/                    # Shell automation for workstation/OpenClaw backups + launch agents
 │   └── tasks/                  # Individual CLI commands
 │       ├── doctor.py
 │       ├── bootstrap.py
@@ -31,7 +33,6 @@ grimoire/
 │       ├── sync_remotes.py
 │       ├── reconcile_cron.py
 │       └── setup_*.py
-├── scripts/ops/                # Shell automation for backups / launch agents
 ├── reference/                  # Reference docs and issue candidate notes
 ├── vault/                      # Encrypted sensitive backups
 ├── package.json                # Bun scripts for Biome + command shortcuts
@@ -51,6 +52,7 @@ grimoire/
 - [x] Workspace sync, remote sync, project doctor, backup, and cron tooling
 - [x] Specialist workspace mirror under `openclaw/specialists/`
 - [x] Encrypted config backup artifacts and verification tooling
+- [x] Imported former `dotfiles` workstation snapshots and backup automation into `workstation/` + `scripts/ops/`
 - [x] Added reusable specialist self-improvement master prompt template under `openclaw/templates/agents/`
 - [x] Reconciled obvious stale specialist-doc conflicts before sync (`openclaw-maintainer`, `contributor`)
 - [x] Removed stale prompt templates that no longer reflect active work
@@ -75,11 +77,14 @@ grimoire/
 
 ## Verification Snapshot
 
-Current cleanup pass verified on 2026-03-06:
+Current workstation-consolidation pass verified on 2026-03-07:
 
-- `bun install` ✅ (`3 packages removed`, lockfile updated)
-- `bun run lint` ✅
-- `uv run python -m scripts doctor` ✅
+- `bash -n scripts/ops/backup-macos-configs.sh` ✅
+- `bash -n scripts/ops/run-automated-backups.sh` ✅
+- `bash -n scripts/ops/install-backup-launchagent.sh` ✅
+- `bash scripts/ops/backup-macos-configs.sh` ✅ refreshed `workstation/macOS/metadata/backup-inventory.txt`
+- `uv run ruff check scripts/tasks/setup_config_backup.py` ✅
+- `bun run lint` ⚠️ still fails on pre-existing Ruff issues in mirrored `openclaw/` scripts plus an existing unused import in `scripts/tasks/audit_openclaw_docs.py`; imported snapshot artifacts are now excluded from Biome checks via `biome.json`
 
 ---
 
@@ -92,7 +97,7 @@ Current cleanup pass verified on 2026-03-06:
 
 ## Immediate Next Pass Priorities
 
-1. Re-run `openclaw:audit` after the trailing-whitespace path-fix patch.
-2. Scan for any remaining dangling references to removed prompt/project-idea docs.
-3. Consider whether `cron:reconcile --scope=all --apply` should converge the new drift audit job from manifest instead of the manually-created live copy.
-4. Optionally run weekly specialist smokes after the hardening refresh.
+1. Keep the existing nightly OpenClaw/grimoire flow as the long-term single scheduler; treat the imported interval LaunchAgent helper as legacy/manual-only.
+2. Re-run `openclaw:audit` after the trailing-whitespace path-fix patch.
+3. Scan for any remaining dangling references to removed prompt/project-idea docs.
+4. Consider whether `cron:reconcile --scope=all --apply` should converge the new drift audit job from manifest instead of the manually-created live copy.

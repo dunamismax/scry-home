@@ -1,0 +1,45 @@
+[user]
+	name = dunamismax
+	email = dunamismax@tutamail.com
+[core]
+	hooksPath = /Users/sawyer/.openclaw/git-hooks
+	pager = delta
+	autocrlf = input
+	fsmonitor = true
+	untrackedcache = true
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	navigate = true
+	side-by-side = true
+	line-numbers = true
+	syntax-theme = Catppuccin-macchiato
+	dark = true
+	hyperlinks = true
+[merge]
+	conflictstyle = diff3
+[diff]
+	colorMoved = default
+	algorithm = histogram
+[init]
+	defaultBranch = main
+[push]
+	default = current
+	autoSetupRemote = true
+[pull]
+	rebase = true
+[fetch]
+	prune = true
+[rerere]
+	enabled = true
+[rebase]
+	autosquash = true
+	autostash = true
+[column]
+	ui = auto
+[branch]
+	sort = -committerdate
+[tag]
+	sort = -version:refname
+[transfer]
+	fsckobjects = true
