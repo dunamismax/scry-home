@@ -1,6 +1,6 @@
 # BUILD.md
 
-**Current status:** phase = agent roster cutover complete · last updated = 2026-03-07 13:32 America/New_York · latest relevant commit = live workspace updated; mirror sync pending
+**Current status:** phase = canonical doc refresh merged and synced · last updated = 2026-03-07 14:30 America/New_York · latest relevant commit = live workspace docs refreshed; mirror sync completed
 
 ## Phase plan
 
@@ -29,6 +29,8 @@
 - Session/runtime check: `session_status` confirms OpenClaw 2026.3.3 on `openai-codex/gpt-5.4`, healthy active session, current time 2026-03-07 08:57 EST.
 - Cron health snapshot: 11 jobs listed; no failing/stuck jobs observed in the returned scheduler state. Recent jobs with state data showed `lastStatus: ok`.
 - Workspace doc consistency: re-read `SOUL.md`, `AGENTS.md`, `BOOTSTRAP.md`, `IDENTITY.md`, `TOOLS.md`, `HEARTBEAT.md`, and `MEMORY.md` after edits; changes are internally consistent.
+- 2026-03-07 doc refresh: canonical `SOUL.md`, `AGENTS.md`, and `CLAUDE.md` updated from reviewed `improved_files` proposals, with stale bench guidance filtered out.
+- Mirror propagation: `cd ~/github/scry-home && uv run python -m scripts sync:openclaw` ✅ copied updated root and `openclaw/` mirror docs.
 - Known drift repaired: missing `BOOTSTRAP.md`, missing `BUILD.md`, stale `TOOLS.md` reference to a workspace-local `CONTRIBUTING_TO_OPENCLAW.md`.
 
 ### Phase 4 — Propagation
@@ -49,8 +51,14 @@
 - [x] Reconcile cron/sync/hardening automation with the new active specialist list
 - [x] Verify new agents are live and reachable
 
+### Phase 7 — Canonical doc refresh from `improved_files`
+- [x] Review proposed `SOUL`, `AGENTS`, and `CLAUDE` rewrites against live workspace docs
+- [x] Merge worthwhile improvements without reintroducing stale bench/runtime guidance
+- [x] Update canonical workspace docs and repo-root `CLAUDE.md`
+- [x] Run `sync:openclaw` so repo-root and `openclaw/` mirror copies match the live workspace
+
 ## Immediate next pass priorities
 
-1. Run `sync:openclaw` so the git mirror matches the corrected live workspace.
-2. Re-run `openclaw:audit` after sync and fix any remaining mirror/path drift.
+1. Re-run `openclaw:audit` after the doc refresh and fix any remaining mirror/path drift.
+2. Optionally run `specialists:harden` if future changes need to propagate new shared templates or shared specialist-doc structure.
 3. Optionally prune any legacy Discord text channels that still exist unbound in the guild UI.

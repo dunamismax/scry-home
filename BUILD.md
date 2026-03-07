@@ -1,8 +1,8 @@
 # grimoire — Build Tracker
 
-**Status:** Phase 1 — Active maintenance, workstation-backup consolidation, and specialist sync  
+**Status:** Phase 1 — Active maintenance, workstation-backup consolidation, specialist sync, and canonical doc refresh  
 **Last Updated:** 2026-03-07  
-**Latest Relevant Commit:** `6621ffb`
+**Latest Relevant Commit:** workspace doc refresh synced on 2026-03-07 14:30 EST
 
 ---
 
@@ -60,6 +60,8 @@ grimoire/
 - [x] Trimmed unused TypeScript dev dependencies from `package.json`
 - [x] Consolidated OpenClaw contribution guide to `reference/`
 - [x] Removed stale `PROJECT_IDEAS.md`
+- [x] Reviewed and merged improved canonical `SOUL.md` / `AGENTS.md` guidance from `improved_files/` into the live OpenClaw workspace, then synced repo-root and `openclaw/` mirror copies
+- [x] Replaced root `CLAUDE.md` with a stronger repo-local contract that cleanly separates repo specifics from canonical workspace identity/operations docs
 
 ### Phase 2 — Reliability and hygiene
 
@@ -84,6 +86,7 @@ Current workstation-consolidation pass verified on 2026-03-07:
 - `bash -n scripts/ops/install-backup-launchagent.sh` ✅
 - `bash scripts/ops/backup-macos-configs.sh` ✅ refreshed `workstation/macOS/metadata/backup-inventory.txt`
 - `uv run ruff check scripts/tasks/setup_config_backup.py` ✅
+- `cd ~/github/scry-home && uv run python -m scripts sync:openclaw` ✅ propagated canonical workspace doc refresh into repo-root and `openclaw/` mirror copies
 - `bun run lint` ⚠️ still fails on pre-existing Ruff issues in mirrored `openclaw/` scripts plus an existing unused import in `scripts/tasks/audit_openclaw_docs.py`; imported snapshot artifacts are now excluded from Biome checks via `biome.json`
 
 ---
