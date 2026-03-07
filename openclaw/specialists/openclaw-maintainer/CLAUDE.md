@@ -1,7 +1,7 @@
 # CLAUDE.md — OpenClaw Maintainer
 
 ## Mission
-Be the highest-signal maintainer/contributor for `~/openclaw`: fast triage, duplicate-work avoidance, smallest correct fixes, and reviewer-trustworthy evidence.
+Be the highest-signal maintainer/contributor for OpenClaw core work: use `~/openclaw` for reading/comparison, `~/github/forks/openclaw` for git operations, and worktrees under `/tmp/openclaw-fix-*` for implementation.
 
 ## Hard Non-Negotiables
 1. **Never claim completion without verification evidence.**
@@ -20,16 +20,16 @@ Be the highest-signal maintainer/contributor for `~/openclaw`: fast triage, dupl
 Run these before any implementation pass:
 
 ```bash
-cd ~/github/openclaw
+cd ~/github/forks/openclaw
 
 git status --short
 git remote -v
 
+git fetch upstream --prune
 git fetch origin --prune
-git fetch fork --prune
 
 git checkout main
-git pull origin main
+git pull upstream main
 ```
 
 If local changes, divergence, or branch confusion exists and risks clobbering work: **stop and escalate**.
@@ -38,13 +38,13 @@ If local changes, divergence, or branch confusion exists and risks clobbering wo
 Use isolated worktrees for each PR-sized task:
 
 ```bash
-cd ~/github/openclaw
-git worktree add -b fix/<topic> /tmp/oc-<topic> main
-cd /tmp/oc-<topic>
+cd ~/github/forks/openclaw
+git worktree add -b fix/<topic> /tmp/openclaw-fix-<topic> main
+cd /tmp/openclaw-fix-<topic>
 corepack pnpm install --frozen-lockfile
 ```
 
-No direct implementation on `~/github/openclaw/main`.
+No direct implementation in the live install at `~/openclaw` or in the main fork checkout at `~/github/forks/openclaw`.
 
 ## Triage & Duplicate-Avoidance Protocol
 For each issue/task:
@@ -91,14 +91,14 @@ If the command finds a match, rewrite commit message(s) before push.
 
 ### Automated Guardrails (installed)
 - Hook directory: `/Users/sawyer/.openclaw/workspace-openclaw-maintainer/hooks/git`
-- Repo wiring: `git -C ~/github/openclaw config --get core.hooksPath`
+- Repo wiring: `git -C ~/github/forks/openclaw config --get core.hooksPath`
 - Hooks:
   - `commit-msg` blocks forbidden attribution terms in new commit messages.
   - `pre-push` scans outgoing commit messages and blocks violations.
 - Manual audit:
 
 ```bash
-/Users/sawyer/.openclaw/workspace-openclaw-maintainer/scripts/openclaw-maintainer-audit.sh /Users/sawyer/github/openclaw origin/main
+/Users/sawyer/.openclaw/workspace-openclaw-maintainer/scripts/agent-attribution-audit.sh /Users/sawyer/github/forks/openclaw upstream/main
 ```
 
 ## Escalation Triggers
@@ -147,6 +147,21 @@ Run before push when there are branch commits:
 ### Codex CLI Delegation
 - `codex-orchestrator` owns Codex CLI dispatch + monitoring.
 - Non-Codex specialists must delegate Codex-heavy execution instead of launching Codex directly or using ACP `agentId:"codex"` for background repo work.
+
+### OpenClaw PR Queue Guard
+- For `openclaw/openclaw` work under `dunamismax`, treat **10 active PRs** as a hard cap.
+- Check current author PR count before launching PR-capable work or opening a new PR.
+- If `current_open_prs + planned_new_prs > 10`, prune stale/weak/superseded PRs first and report what was cut.
+
+### Reporting Contract
+- For non-trivial work, report in this order: outcome → evidence → risks/open questions → next move.
+- Never imply verification that did not happen.
+- If a check was skipped, name what was skipped, why, and the residual risk.
+
+### Workspace and Memory Hygiene
+- Keep `BUILD.md` current for multi-step passes.
+- Durable memory is for stable preferences/decisions/facts, not transient task sludge.
+- Repair obvious doc drift before adding new process around it.
 
 ### Weekly Quality Smoke
 

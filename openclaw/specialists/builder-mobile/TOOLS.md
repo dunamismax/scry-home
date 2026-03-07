@@ -15,44 +15,18 @@
 - **Update method**: `cd ~/openclaw && git pull` then restart gateway
 - **Service**: LaunchAgent (`ai.openclaw.gateway.plist`), port 18789
 
-## Mobile Workbench
-
-### Fast Intake
-- Inspect: `package.json`, `app.json` / `app.config.*`, `eas.json`, `ios/`, `android/`, navigation/state/query/auth setup
-- Determine: Expo managed vs prebuild vs bare, SDK version, build profiles, and verification scripts
-
-### Core Commands
-- **Dev server**: `npx expo start`, `npx expo start --clear`
-- **Install Expo-compatible deps**: `npx expo install <pkg>`
-- **Lint**: repo command first, else `npx eslint .`
-- **Typecheck**: repo command first, else `npx tsc --noEmit`
-- **Tests**: repo command first, else `npm test -- <path-or-suite>`
-- **Expo health**: `npx expo-doctor`
-- **Native run**: `npx expo run:ios`, `npx expo run:android`
-- **Build/export**: `npx expo export`, `eas build --platform ios|android`
-
-### Debugging Defaults
-- Prefer smallest reproducible case before broad refactors.
-- Capture platform, OS version, device/emulator, app version, build profile, and auth/network state.
-- Distinguish JS/runtime issues from native/config/build issues early.
-- Clear caches only when the symptoms fit.
-- Re-test the original failing path and one adjacent regression path.
-
-### Platform Notes
-- **iOS**: safe areas, keyboard behavior, permission prompts, deep-link handling, gesture/back-swipe expectations
-- **Android**: back behavior, permission nuances, nav/status bar appearance, intent/deep-link differences, OEM-specific quirks
-- **Both**: auth/session restore, offline state, list performance, image sizing, accessibility, dark mode if supported
-
-### Verification Notes
-- Shared-flow changes should be checked on both iOS and Android when possible.
-- Config/plugin/dependency changes usually need `expo-doctor` plus build/export validation.
-- Expo Go validation is not equivalent to dev-build or production-binary validation.
-- Never claim device/build verification that did not actually happen.
-
 ## Reference Docs
 
-- **CONTRIBUTING_TO_OPENCLAW.md** (workspace + grimoire) — read before any work on the OpenClaw repo. Covers repo setup, build system, PR template, Signal plugin architecture, test patterns, reviewer expectations.
-- **MOBILE-RUNBOOK.md** — Builder Mobile's practical React Native + Expo execution guide.
+- **OpenClaw docs (local mirror)**: `/Users/sawyer/openclaw/docs`
+- **OpenClaw docs index**: `https://docs.openclaw.ai/llms.txt`
+- **CONTRIBUTING_TO_OPENCLAW.md**: `~/github/grimoire/reference/CONTRIBUTING_TO_OPENCLAW.md` — read before any work on the OpenClaw repo. Covers repo setup, build system, PR template, Signal plugin architecture, test patterns, reviewer expectations.
+
+## Grimoire CLI Commands
+
+- `uv run python -m scripts sync:openclaw` — sync workspace → grimoire (add `--commit` to auto-push); now mirrors all `.md` files dynamically
+- `uv run python -m scripts specialists:harden` — deploy hooks, templates, smoke scripts, USER.md, TOOLS.md, and reporting rules to specialist workspaces
+- `uv run python -m scripts openclaw:audit` — check workspace doc completeness, grimoire mirror consistency, and stale path references
+- `uv run python -m scripts cron:reconcile` — reconcile managed cron jobs against manifest (add `--apply` to converge; `--scope=all` for system + smoke jobs)
 
 ## SSH Remotes
 
@@ -71,15 +45,16 @@ All repos use dual SSH remotes with host aliases:
 
 - Stephen's MacBook Air (remote macOS node — use `nodes.run` for macOS-only tasks)
 
-## Enabled Integrations (2026-03-03)
+## Enabled Integrations (updated 2026-03-06)
 
 - **Browser**: Brave, profiles `openclaw` (port 18800) and `chrome` (port 18792)
 - **ACP**: acpx backend, default agent codex, allowed: pi/claude/codex/opencode/gemini
-- **Sub-agents**: depth 2, 8 concurrent, 5 concurrent children/agent, 2h archive
+- **Sub-agents**: depth 2, 8 concurrent, 5 children/agent, 2h archive
 - **Web search**: Brave provider, API key configured, functional
 - **Web fetch**: 50K chars, 30s timeout
 - **Notion**: "Scry" integration → "Stephen's Notion" workspace (share pages to grant access)
 - **Whisper**: Local speech-to-text (no API key, runs on Apple Silicon)
+- **Ollama**: Local LLM inference, `qwen2.5:14b` pulled (9GB)
 
 ## Declined Integrations
 
@@ -87,8 +62,23 @@ All repos use dual SSH remotes with host aliases:
 
 ## Installed CLIs
 
-- `gh`, `docker`, `ffmpeg`, `yt-dlp`, `codex`, `claude`, `jq`, `tmux`, `summarize`, `whisper`, `clawhub` — all available
+- **Core dev**: `gh`, `docker`, `neovim`, `tmux`, `lazygit`, `git-delta`, `direnv`, `mise`, `just`, `pre-commit`, `shellcheck`, `shfmt`, `biome`, `cmake`, `make`
+- **AI/ML agents**: `codex`, `claude`, `ollama`, `whisper`
+- **Search/fetch**: `ripgrep`, `fd`, `fzf`, `jq`, `yq`, `bat`, `eza`, `zoxide`
+- **Media**: `ffmpeg`, `yt-dlp`, `imagemagick`, `sox`, `summarize`
+- **Network**: `curl`, `wget`, `httpie`, `grpcurl`, `aria2`, `nmap`, `mosh`
+- **Infra**: `kubectl`, `k9s`, `helm`, `kubectx`, `terraform` (via mise), `protobuf`
+- **Utilities**: `parallel`, `entr`, `pv`, `hyperfine`, `tokei`, `dust`, `duf`, `procs`, `sd`, `difftastic`, `mkcert`, `watchman`, `pandoc`, `clawhub`
 - **Not installed**: acpx, mcporter, playwright
+- **ACP note**: ACP harness access is available through OpenClaw runtime/session tooling even though the standalone `acpx` CLI is not installed locally.
+
+## Python AI/ML Stack (uv-managed, Python 3.14)
+
+- **ML frameworks**: PyTorch 2.10 (MPS ✓), MLX 0.31, mlx-lm
+- **HuggingFace**: transformers, diffusers, datasets, accelerate, safetensors
+- **Tokenizers**: tiktoken, sentencepiece
+- **Imaging/data**: Pillow, scipy, matplotlib, numpy, einops
+- **UI**: gradio
 
 ## TTS
 

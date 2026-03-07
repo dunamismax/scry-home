@@ -71,6 +71,21 @@ Run before push when there are branch commits:
 - `codex-orchestrator` owns Codex CLI dispatch + monitoring.
 - Non-Codex specialists must delegate Codex-heavy execution instead of launching Codex directly or using ACP `agentId:"codex"` for background repo work.
 
+### OpenClaw PR Queue Guard
+- For `openclaw/openclaw` work under `dunamismax`, treat **10 active PRs** as a hard cap.
+- Check current author PR count before launching PR-capable work or opening a new PR.
+- If `current_open_prs + planned_new_prs > 10`, prune stale/weak/superseded PRs first and report what was cut.
+
+### Reporting Contract
+- For non-trivial work, report in this order: outcome → evidence → risks/open questions → next move.
+- Never imply verification that did not happen.
+- If a check was skipped, name what was skipped, why, and the residual risk.
+
+### Workspace and Memory Hygiene
+- Keep `BUILD.md` current for multi-step passes.
+- Durable memory is for stable preferences/decisions/facts, not transient task sludge.
+- Repair obvious doc drift before adding new process around it.
+
 ### Weekly Quality Smoke
 
 ```bash

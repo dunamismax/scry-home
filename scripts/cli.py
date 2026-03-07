@@ -16,6 +16,7 @@ _repo_root = str(Path(__file__).resolve().parent.parent)
 if _repo_root not in sys.path:
     sys.path.insert(0, _repo_root)
 
+from scripts.tasks.audit_openclaw_docs import audit_openclaw_docs  # noqa: E402
 from scripts.tasks.bootstrap import bootstrap  # noqa: E402
 from scripts.tasks.doctor import doctor  # noqa: E402
 from scripts.tasks.harden_specialists import harden_specialists  # noqa: E402
@@ -53,6 +54,9 @@ COMMANDS: dict[str, dict] = {
     "specialists:harden": {
         "fn": harden_specialists,
         "flags": "--discover | --agents=a,b | --include-maintainer  choose target specialist workspaces",
+    },
+    "openclaw:audit": {
+        "fn": audit_openclaw_docs,
     },
     "cron:reconcile": {
         "fn": reconcile_cron,

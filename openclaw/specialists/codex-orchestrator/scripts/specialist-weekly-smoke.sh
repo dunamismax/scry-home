@@ -6,17 +6,12 @@ WS="/Users/sawyer/.openclaw/workspace-codex-orchestrator"
 CLAUDE_MD="$WS/CLAUDE.md"
 BOOTSTRAP_MD="$WS/BOOTSTRAP.md"
 IDENTITY_MD="$WS/IDENTITY.md"
-RUNBOOK_MD="$WS/RUNBOOK.md"
-PROMPT_TEMPLATE="$WS/templates/codex-lane-prompt.md"
+USER_MD="$WS/USER.md"
+TOOLS_MD="$WS/TOOLS.md"
 HOOK_DIR="$WS/hooks/git"
 COMMIT_HOOK="$HOOK_DIR/commit-msg"
 PREPUSH_HOOK="$HOOK_DIR/pre-push"
 AUDIT_SCRIPT="$WS/scripts/agent-attribution-audit.sh"
-OVERVIEW_SCRIPT="$WS/scripts/codex-lanes-overview.py"
-STATUS_SCRIPT="$WS/scripts/codex-lane-status.py"
-BATCH_SCRIPT="$WS/scripts/codex-batch.py"
-PTY_SCRIPT="$WS/scripts/codex-pty-lane.py"
-WATCHDOG_SCRIPT="$WS/scripts/codex-watchdog.py"
 
 has_text() {
   local pattern="$1" file="$2"
@@ -35,6 +30,8 @@ if has_text "## Scope" "$CLAUDE_MD"; then protocol=$((protocol+2)); else notes+=
 if has_text "## Verification Expectations" "$CLAUDE_MD"; then protocol=$((protocol+2)); else notes+=("protocol: missing verification expectations section"); fi
 if has_text "## Escalation Triggers" "$CLAUDE_MD"; then protocol=$((protocol+2)); else notes+=("protocol: missing escalation triggers section"); fi
 if has_text "Universal Phase 2 Hardening" "$CLAUDE_MD"; then protocol=$((protocol+2)); else notes+=("protocol: missing phase 2 hardening section"); fi
+if [[ -f "$USER_MD" ]]; then :; else notes+=("protocol: missing USER.md"); hard_fail=1; fi
+if [[ -f "$TOOLS_MD" ]]; then :; else notes+=("protocol: missing TOOLS.md"); hard_fail=1; fi
 
 if [[ "$AGENT_ID" == "codex-orchestrator" || "$AGENT_ID" == "contributor" ]]; then
   if has_text "10 active PRs|10-active-PR cap" "$CLAUDE_MD" && has_text "10 active PRs as a hard cap|10-active-PR cap" "$BOOTSTRAP_MD"; then
@@ -45,19 +42,12 @@ if [[ "$AGENT_ID" == "codex-orchestrator" || "$AGENT_ID" == "contributor" ]]; th
   fi
 fi
 
-[[ -f "$RUNBOOK_MD" ]] || { notes+=("protocol: RUNBOOK.md missing"); hard_fail=1; }
-[[ -f "$PROMPT_TEMPLATE" ]] || { notes+=("protocol: codex lane prompt template missing"); hard_fail=1; }
-[[ -x "$OVERVIEW_SCRIPT" ]] || { notes+=("protocol: codex-lanes-overview.py missing/not executable"); hard_fail=1; }
-[[ -x "$STATUS_SCRIPT" ]] || { notes+=("protocol: codex-lane-status.py missing/not executable"); hard_fail=1; }
-[[ -x "$BATCH_SCRIPT" ]] || { notes+=("protocol: codex-batch.py missing/not executable"); hard_fail=1; }
-[[ -x "$PTY_SCRIPT" ]] || { notes+=("protocol: codex-pty-lane.py missing/not executable"); hard_fail=1; }
-[[ -x "$WATCHDOG_SCRIPT" ]] || { notes+=("protocol: codex-watchdog.py missing/not executable"); hard_fail=1; }
-
 # --- VERIFICATION DISCIPLINE (10) ---
 if has_text "verify before claiming completion|Verification Expectations" "$CLAUDE_MD"; then verification=$((verification+3)); else notes+=("verification: weak CLAUDE verification language"); fi
-if has_text "Read .*CLAUDE\\.md" "$BOOTSTRAP_MD"; then verification=$((verification+3)); else notes+=("verification: bootstrap missing CLAUDE read step"); fi
-if has_text "decision first, evidence second, next" "$BOOTSTRAP_MD"; then verification=$((verification+2)); else notes+=("verification: bootstrap missing reporting shape"); fi
-if has_text "Verify before claiming completion" "$IDENTITY_MD"; then verification=$((verification+2)); else notes+=("verification: identity missing verification anchor"); fi
+if has_text "Read `CLAUDE\\.md` when it exists|Read .*CLAUDE\\.md" "$BOOTSTRAP_MD"; then verification=$((verification+2)); else notes+=("verification: bootstrap missing CLAUDE read step"); fi
+if has_text "outcome, evidence, risks/open questions, next move|outcome → evidence → risks/open questions → next move" "$BOOTSTRAP_MD"; then verification=$((verification+3)); else notes+=("verification: bootstrap missing reporting shape"); fi
+if has_text "BUILD\\.md" "$BOOTSTRAP_MD"; then verification=$((verification+1)); else notes+=("verification: bootstrap missing BUILD.md discipline"); fi
+if has_text "Verify before claiming completion" "$IDENTITY_MD"; then verification=$((verification+1)); else notes+=("verification: identity missing verification anchor"); fi
 
 # --- ATTRIBUTION COMPLIANCE (10) ---
 if [[ -x "$COMMIT_HOOK" ]]; then attribution=$((attribution+1)); else notes+=("attribution: commit-msg hook missing/not executable"); fi

@@ -6,6 +6,8 @@ WS="/Users/sawyer/.openclaw/workspace-reviewer"
 CLAUDE_MD="$WS/CLAUDE.md"
 BOOTSTRAP_MD="$WS/BOOTSTRAP.md"
 IDENTITY_MD="$WS/IDENTITY.md"
+USER_MD="$WS/USER.md"
+TOOLS_MD="$WS/TOOLS.md"
 HOOK_DIR="$WS/hooks/git"
 COMMIT_HOOK="$HOOK_DIR/commit-msg"
 PREPUSH_HOOK="$HOOK_DIR/pre-push"
@@ -20,6 +22,7 @@ protocol=0
 verification=0
 attribution=0
 notes=()
+hard_fail=0
 
 # --- PROTOCOL QUALITY (10) ---
 if has_text "## Mission" "$CLAUDE_MD"; then protocol=$((protocol+2)); else notes+=("protocol: missing mission section"); fi
@@ -27,12 +30,24 @@ if has_text "## Scope" "$CLAUDE_MD"; then protocol=$((protocol+2)); else notes+=
 if has_text "## Verification Expectations" "$CLAUDE_MD"; then protocol=$((protocol+2)); else notes+=("protocol: missing verification expectations section"); fi
 if has_text "## Escalation Triggers" "$CLAUDE_MD"; then protocol=$((protocol+2)); else notes+=("protocol: missing escalation triggers section"); fi
 if has_text "Universal Phase 2 Hardening" "$CLAUDE_MD"; then protocol=$((protocol+2)); else notes+=("protocol: missing phase 2 hardening section"); fi
+if [[ -f "$USER_MD" ]]; then :; else notes+=("protocol: missing USER.md"); hard_fail=1; fi
+if [[ -f "$TOOLS_MD" ]]; then :; else notes+=("protocol: missing TOOLS.md"); hard_fail=1; fi
+
+if [[ "$AGENT_ID" == "codex-orchestrator" || "$AGENT_ID" == "contributor" ]]; then
+  if has_text "10 active PRs|10-active-PR cap" "$CLAUDE_MD" && has_text "10 active PRs as a hard cap|10-active-PR cap" "$BOOTSTRAP_MD"; then
+    :
+  else
+    notes+=("protocol: missing OpenClaw PR queue guard")
+    hard_fail=1
+  fi
+fi
 
 # --- VERIFICATION DISCIPLINE (10) ---
 if has_text "verify before claiming completion|Verification Expectations" "$CLAUDE_MD"; then verification=$((verification+3)); else notes+=("verification: weak CLAUDE verification language"); fi
-if has_text "Read .*CLAUDE\\.md" "$BOOTSTRAP_MD"; then verification=$((verification+3)); else notes+=("verification: bootstrap missing CLAUDE read step"); fi
-if has_text "decision first, evidence second, next" "$BOOTSTRAP_MD"; then verification=$((verification+2)); else notes+=("verification: bootstrap missing reporting shape"); fi
-if has_text "Verify before claiming completion" "$IDENTITY_MD"; then verification=$((verification+2)); else notes+=("verification: identity missing verification anchor"); fi
+if has_text "Read `CLAUDE\\.md` when it exists|Read .*CLAUDE\\.md" "$BOOTSTRAP_MD"; then verification=$((verification+2)); else notes+=("verification: bootstrap missing CLAUDE read step"); fi
+if has_text "outcome, evidence, risks/open questions, next move|outcome → evidence → risks/open questions → next move" "$BOOTSTRAP_MD"; then verification=$((verification+3)); else notes+=("verification: bootstrap missing reporting shape"); fi
+if has_text "BUILD\\.md" "$BOOTSTRAP_MD"; then verification=$((verification+1)); else notes+=("verification: bootstrap missing BUILD.md discipline"); fi
+if has_text "Verify before claiming completion" "$IDENTITY_MD"; then verification=$((verification+1)); else notes+=("verification: identity missing verification anchor"); fi
 
 # --- ATTRIBUTION COMPLIANCE (10) ---
 if [[ -x "$COMMIT_HOOK" ]]; then attribution=$((attribution+1)); else notes+=("attribution: commit-msg hook missing/not executable"); fi
@@ -52,7 +67,7 @@ rm -f "$tmp_ok" "$tmp_bad"
 
 overall=$(( (protocol + verification + attribution) / 3 ))
 status="PASS"
-if (( protocol < 8 || verification < 8 || attribution < 8 )); then
+if (( protocol < 8 || verification < 8 || attribution < 8 || hard_fail != 0 )); then
   status="FAIL"
 fi
 

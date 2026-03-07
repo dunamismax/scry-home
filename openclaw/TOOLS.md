@@ -17,13 +17,16 @@
 
 ## Reference Docs
 
-- **CONTRIBUTING_TO_OPENCLAW.md** (workspace + grimoire) — read before any work on the OpenClaw repo. Covers repo setup, build system, PR template, Signal plugin architecture, test patterns, reviewer expectations.
+- **OpenClaw docs (local mirror)**: `/Users/sawyer/openclaw/docs`
+- **OpenClaw docs index**: `https://docs.openclaw.ai/llms.txt`
+- **CONTRIBUTING_TO_OPENCLAW.md**: `~/github/grimoire/reference/CONTRIBUTING_TO_OPENCLAW.md` — read before any work on the OpenClaw repo. Covers repo setup, build system, PR template, Signal plugin architecture, test patterns, reviewer expectations.
 
 ## Grimoire CLI Commands
 
-- `uv run python -m scripts sync:openclaw` — sync workspace → grimoire (add `--commit` to auto-push)
-- `uv run python -m scripts specialists:harden` — apply Phase 2 hooks/templates/smoke to specialist workspaces
-- `uv run python -m scripts cron:reconcile` — reconcile managed cron jobs against manifest (add `--apply` to converge)
+- `uv run python -m scripts sync:openclaw` — sync workspace → grimoire (add `--commit` to auto-push); now mirrors all `.md` files dynamically
+- `uv run python -m scripts specialists:harden` — deploy hooks, templates, smoke scripts, USER.md, TOOLS.md, and reporting rules to specialist workspaces
+- `uv run python -m scripts openclaw:audit` — check workspace doc completeness, grimoire mirror consistency, and stale path references
+- `uv run python -m scripts cron:reconcile` — reconcile managed cron jobs against manifest (add `--apply` to converge; `--scope=all` for system + smoke jobs)
 
 ## SSH Remotes
 
@@ -67,6 +70,7 @@ All repos use dual SSH remotes with host aliases:
 - **Infra**: `kubectl`, `k9s`, `helm`, `kubectx`, `terraform` (via mise), `protobuf`
 - **Utilities**: `parallel`, `entr`, `pv`, `hyperfine`, `tokei`, `dust`, `duf`, `procs`, `sd`, `difftastic`, `mkcert`, `watchman`, `pandoc`, `clawhub`
 - **Not installed**: acpx, mcporter, playwright
+- **ACP note**: ACP harness access is available through OpenClaw runtime/session tooling even though the standalone `acpx` CLI is not installed locally.
 
 ## Python AI/ML Stack (uv-managed, Python 3.14)
 

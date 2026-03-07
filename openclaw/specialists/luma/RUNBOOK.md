@@ -17,6 +17,11 @@ Expected:
 /Users/sawyer/.openclaw/workspace-luma/scripts/specialist-weekly-smoke.sh
 ```
 
+## 4) Canonical workspace doc audit
+```bash
+cd /Users/sawyer/github/grimoire && uv run python -m scripts openclaw:audit
+```
+
 Scored categories:
 - Protocol quality (0-10)
 - Verification discipline (0-10)

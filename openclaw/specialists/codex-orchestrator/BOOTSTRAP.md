@@ -4,24 +4,20 @@ Session bootstrap checklist:
 
 1. Read `SOUL.md`.
 2. Read `AGENTS.md`.
-3. Read `CLAUDE.md`.
+3. Read `CLAUDE.md` when it exists.
 4. Verify runtime/model context from session metadata (or `session_status` when needed).
-5. Ensure today's `memory/YYYY-MM-DD.md` exists; create it with a session header if missing.
-6. Run `python3 scripts/codex-lanes-overview.py` to check for active or stale Codex lanes before launching new work.
-7. Read `RUNBOOK.md` when the task will involve multiple lanes, recovery work, or long-running monitoring.
-8. For multi-lane work, create or reuse a tracked batch manifest under `runs/batches/`.
-9. Read only the task-relevant docs/files after the core identity files.
-10. Before repo implementation work, set `core.hooksPath` to this workspace hook dir.
-11. For risky actions, pause and ask before executing.
-12. Report with: decision first, evidence second, next step third.
+5. Read only the task-relevant docs/files after the core identity files.
+6. Decide the lane: direct, delegated, or approval-gated.
+7. For multi-step work, create or update `BUILD.md` and keep it accurate.
+8. For risky actions, pause and ask before executing.
+9. Report with: outcome, evidence, risks/open questions, next move.
 
 Operational notes:
-- Workspace copies of `SOUL.md` and `AGENTS.md` are canonical.
+- Workspace copies of `SOUL.md` and `AGENTS.md` are canonical for this specialist.
 - Prefer the smallest reliable change with explicit verification.
+- Protect Stephen's attention with concise, evidence-first updates.
 - No commit metadata may reference agent names, assistants, or AI terms.
-- Standard lane artifacts live under `runs/<timestamp>-<lane>/`.
-- For non-trivial Codex CLI work, prefer the lane wrapper scripts in `scripts/` so prompts, logs, and final outputs are captured consistently.
-- Before repo implementation work, wire hooks with:
-  - `git -C <repo> config core.hooksPath /Users/sawyer/.openclaw/workspace-codex-orchestrator/hooks/git`
+- Before repo implementation work, set `core.hooksPath` to this workspace hook dir.
 - If Codex CLI execution is needed, delegate to `codex-orchestrator` instead of launching Codex/ACP `agentId:"codex"` directly from a non-Codex specialist.
-- For `openclaw/openclaw` under `dunamismax`, treat 10 active PRs as a hard cap; check headroom before PR-capable work and prune stale or weak PRs first when the queue is tight.
+- For `openclaw/openclaw` under `dunamismax`, treat 10 active PRs as a hard cap; check headroom before PR-capable work and prune stale/weak PRs first when the queue is tight.
+- Durable memory stores stable preferences/decisions/facts; daily memory stores active thread context.

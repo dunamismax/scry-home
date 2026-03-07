@@ -1,129 +1,85 @@
-# TOOLS.md — Codex Orchestrator
-
-## Primary Tool
-
-- **Codex CLI**: `/opt/homebrew/bin/codex` (v0.110.0+, default model GPT-5.4)
-- Auth: Local login (not OpenClaw OAuth)
-- Preferred build/review reasoning: `high`
-- Docs/pattern lookups: use local repo docs first; use Context7 first for current external docs; use web search only as fallback
-
-## Standard Lane Wrappers
-
-### Launch a tracked exec lane
-
-```bash
-/Users/sawyer/.openclaw/workspace-codex-orchestrator/scripts/codex-lane-launch.sh \
-  <lane-name> <repo-dir> <prompt-file> [reasoning] [sandbox]
-```
-
-Defaults:
-- reasoning: `high`
-- sandbox: `workspace-write`
-- model config comes from Codex CLI defaults unless explicitly overridden
-
-Artifacts written to:
-- `runs/<timestamp>-<lane>/prompt.md`
-- `runs/<timestamp>-<lane>/stdout.log`
-- `runs/<timestamp>-<lane>/final.md`
-- `runs/<timestamp>-<lane>/manifest.json`
-- `runs/<timestamp>-<lane>/exit-code.txt`
-
-### Summarize a tracked lane
-
-```bash
-python3 /Users/sawyer/.openclaw/workspace-codex-orchestrator/scripts/codex-lane-status.py \
-  /Users/sawyer/.openclaw/workspace-codex-orchestrator/runs/<run-dir>
-```
-
-### Overview all tracked lanes
-
-```bash
-python3 /Users/sawyer/.openclaw/workspace-codex-orchestrator/scripts/codex-lanes-overview.py
-```
-
-Flags:
-- `--json` for machine-readable output
-- `--stale-minutes=<N>` to tune stale detection
-
-### Swarm batch manifests
-
-```bash
-python3 /Users/sawyer/.openclaw/workspace-codex-orchestrator/scripts/codex-batch.py init <batch-name>
-python3 /Users/sawyer/.openclaw/workspace-codex-orchestrator/scripts/codex-batch.py add <batch-dir> <lane-run-dir>
-python3 /Users/sawyer/.openclaw/workspace-codex-orchestrator/scripts/codex-batch.py status <batch-dir>
-```
-
-If `CODEX_BATCH_DIR` is set when launching a tracked exec lane, the lane auto-attaches to that batch.
-
-### PTY lane tracking
-
-```bash
-python3 /Users/sawyer/.openclaw/workspace-codex-orchestrator/scripts/codex-pty-lane.py register <lane-name> <repo-dir> <session-id>
-python3 /Users/sawyer/.openclaw/workspace-codex-orchestrator/scripts/codex-pty-lane.py snapshot <run-dir> --tokens 12345 --note "planning done"
-python3 /Users/sawyer/.openclaw/workspace-codex-orchestrator/scripts/codex-pty-lane.py status <run-dir>
-```
-
-Use this when a Codex PTY session is being monitored through OpenClaw `process` tool calls and you want structured health snapshots.
-
-### Watchdog
-
-```bash
-python3 /Users/sawyer/.openclaw/workspace-codex-orchestrator/scripts/codex-watchdog.py --alerts-only
-```
-
-Useful flags:
-- `--stale-minutes=<N>`
-- `--json`
-- `--fail-on-alert`
-
-### Prompt template
-
-Start new lane prompts from:
-
-```bash
-/Users/sawyer/.openclaw/workspace-codex-orchestrator/templates/codex-lane-prompt.md
-```
-
-## Preferred Codex Exec Flags
-
-For most non-trivial lanes:
-
-```bash
-codex exec "<prompt>" \
-  --full-auto \
-  --cd <repo> \
-  --ephemeral \
-  --json \
-  -o <final-file> \
-  -c features.command_attribution=false \
-  -c model_reasoning_effort=high \
-  -c model_reasoning_summary=concise \
-  -c model_auto_compact_token_limit=180000
-```
-
-Use `-s read-only` for scouting/review lanes.
-Use `-s danger-full-access` only when justified by cross-repo or non-worktree writes.
+# TOOLS.md - Local Notes
 
 ## Projects
 
-- All active repos: `~/github/<name>`
-- OpenClaw workspace: `~/.openclaw/workspace-codex-orchestrator`
+- All active repos: `~/github/<name>` (see MEMORY.md for full list)
+- OpenClaw workspace (canonical): `~/.openclaw/workspace`
+- Scry config repo: `~/github/grimoire`
+- Sync script: `~/github/grimoire/scripts/tasks/sync_openclaw.py`
+
+## OpenClaw Install
+
+- **Git-based install**: `~/openclaw` (main branch, v2026.3.3+)
+- **Runtime symlink**: `~/.openclaw/lib/node_modules/openclaw` → `~/openclaw`
+- **Binary**: `~/.local/bin/openclaw` → `~/openclaw/openclaw.mjs`
+- **Update method**: `cd ~/openclaw && git pull` then restart gateway
+- **Service**: LaunchAgent (`ai.openclaw.gateway.plist`), port 18789
+
+## Reference Docs
+
+- **OpenClaw docs (local mirror)**: `/Users/sawyer/openclaw/docs`
+- **OpenClaw docs index**: `https://docs.openclaw.ai/llms.txt`
+- **CONTRIBUTING_TO_OPENCLAW.md**: `~/github/grimoire/reference/CONTRIBUTING_TO_OPENCLAW.md` — read before any work on the OpenClaw repo. Covers repo setup, build system, PR template, Signal plugin architecture, test patterns, reviewer expectations.
+
+## Grimoire CLI Commands
+
+- `uv run python -m scripts sync:openclaw` — sync workspace → grimoire (add `--commit` to auto-push); now mirrors all `.md` files dynamically
+- `uv run python -m scripts specialists:harden` — deploy hooks, templates, smoke scripts, USER.md, TOOLS.md, and reporting rules to specialist workspaces
+- `uv run python -m scripts openclaw:audit` — check workspace doc completeness, grimoire mirror consistency, and stale path references
+- `uv run python -m scripts cron:reconcile` — reconcile managed cron jobs against manifest (add `--apply` to converge; `--scope=all` for system + smoke jobs)
 
 ## SSH Remotes
 
-All repos use dual SSH remotes:
+All repos use dual SSH remotes with host aliases:
 - GitHub: `github.com-dunamismax`
 - Codeberg: `codeberg.org-dunamismax`
+- Push: `git push --force origin main` (hits both)
+
+## Signal
+
+- Scry's number: `+19414416722`
+- Stephen's number: `+19412897570`
+- CLI: `/opt/homebrew/bin/signal-cli`
+
+## Paired Nodes
+
+- Stephen's MacBook Air (remote macOS node — use `nodes.run` for macOS-only tasks)
+
+## Enabled Integrations (updated 2026-03-06)
+
+- **Browser**: Brave, profiles `openclaw` (port 18800) and `chrome` (port 18792)
+- **ACP**: acpx backend, default agent codex, allowed: pi/claude/codex/opencode/gemini
+- **Sub-agents**: depth 2, 8 concurrent, 5 children/agent, 2h archive
+- **Web search**: Brave provider, API key configured, functional
+- **Web fetch**: 50K chars, 30s timeout
+- **Notion**: "Scry" integration → "Stephen's Notion" workspace (share pages to grant access)
+- **Whisper**: Local speech-to-text (no API key, runs on Apple Silicon)
+- **Ollama**: Local LLM inference, `qwen2.5:14b` pulled (9GB)
+
+## Declined Integrations
+
+- Email / Himalaya — declined by Stephen (2026-03-03)
 
 ## Installed CLIs
 
-- **Core dev**: `gh`, `docker`, `neovim`, `tmux`, `git-delta`, `biome`, `just`
-- **AI agents**: `codex`, `claude`, `ollama`
-- **Search**: `ripgrep`, `fd`, `fzf`, `jq`, `bat`
-- **Build**: `bun`, `uv`, `ruff`, `cargo`, `go`
+- **Core dev**: `gh`, `docker`, `neovim`, `tmux`, `lazygit`, `git-delta`, `direnv`, `mise`, `just`, `pre-commit`, `shellcheck`, `shfmt`, `biome`, `cmake`, `make`
+- **AI/ML agents**: `codex`, `claude`, `ollama`, `whisper`
+- **Search/fetch**: `ripgrep`, `fd`, `fzf`, `jq`, `yq`, `bat`, `eza`, `zoxide`
+- **Media**: `ffmpeg`, `yt-dlp`, `imagemagick`, `sox`, `summarize`
+- **Network**: `curl`, `wget`, `httpie`, `grpcurl`, `aria2`, `nmap`, `mosh`
+- **Infra**: `kubectl`, `k9s`, `helm`, `kubectx`, `terraform` (via mise), `protobuf`
+- **Utilities**: `parallel`, `entr`, `pv`, `hyperfine`, `tokei`, `dust`, `duf`, `procs`, `sd`, `difftastic`, `mkcert`, `watchman`, `pandoc`, `clawhub`
+- **Not installed**: acpx, mcporter, playwright
+- **ACP note**: ACP harness access is available through OpenClaw runtime/session tooling even though the standalone `acpx` CLI is not installed locally.
 
-## Stack Defaults
+## Python AI/ML Stack (uv-managed, Python 3.14)
 
-- **TypeScript**: Bun + Vite + React Router + Tailwind + shadcn/ui + Drizzle + Biome
-- **Python**: uv + ruff
-- **Disallowed**: npm/pnpm/yarn, ESLint/Prettier, Next.js, Auth.js
+- **ML frameworks**: PyTorch 2.10 (MPS ✓), MLX 0.31, mlx-lm
+- **HuggingFace**: transformers, diffusers, datasets, accelerate, safetensors
+- **Tokenizers**: tiktoken, sentencepiece
+- **Imaging/data**: Pillow, scipy, matplotlib, numpy, einops
+- **UI**: gradio
+
+## TTS
+
+- Default voice: whatever's configured (no specific preference noted yet)

@@ -21,6 +21,7 @@ from scripts.common import log_step
 
 HOME = os.environ.get("HOME", str(Path.home()))
 OPENCLAW_ROOT = Path(HOME) / ".openclaw"
+MAIN_WORKSPACE = OPENCLAW_ROOT / "workspace"
 
 MANAGED_SPECIALISTS = [
     "codex-orchestrator",
@@ -43,20 +44,23 @@ Session bootstrap checklist:
 
 1. Read `SOUL.md`.
 2. Read `AGENTS.md`.
-3. Read `CLAUDE.md` (role mission + constraints).
-4. Read task-relevant docs/files only.
-5. Verify model/runtime context (`/status` or session metadata).
-6. For risky actions, pause and ask before executing.
-7. Report with: decision first, evidence second, next step third.
+3. Read `CLAUDE.md` when it exists.
+4. Verify runtime/model context from session metadata (or `session_status` when needed).
+5. Read only the task-relevant docs/files after the core identity files.
+6. Decide the lane: direct, delegated, or approval-gated.
+7. For multi-step work, create or update `BUILD.md` and keep it accurate.
+8. For risky actions, pause and ask before executing.
+9. Report with: outcome, evidence, risks/open questions, next move.
 
 Operational notes:
-- Workspace copy of `SOUL.md` and `AGENTS.md` is canonical.
-- Keep `grimoire` copies in sync after canonical edits.
-- Prefer smallest reliable change + explicit verification.
+- Workspace copies of `SOUL.md` and `AGENTS.md` are canonical for this specialist.
+- Prefer the smallest reliable change with explicit verification.
+- Protect Stephen's attention with concise, evidence-first updates.
 - No commit metadata may reference agent names, assistants, or AI terms.
 - Before repo implementation work, set `core.hooksPath` to this workspace hook dir.
 - If Codex CLI execution is needed, delegate to `codex-orchestrator` instead of launching Codex/ACP `agentId:"codex"` directly from a non-Codex specialist.
 - For `openclaw/openclaw` under `dunamismax`, treat 10 active PRs as a hard cap; check headroom before PR-capable work and prune stale/weak PRs first when the queue is tight.
+- Durable memory stores stable preferences/decisions/facts; daily memory stores active thread context.
 """
 
 
@@ -260,6 +264,8 @@ WS="/Users/sawyer/.openclaw/workspace-{agent_id}"
 CLAUDE_MD="$WS/CLAUDE.md"
 BOOTSTRAP_MD="$WS/BOOTSTRAP.md"
 IDENTITY_MD="$WS/IDENTITY.md"
+USER_MD="$WS/USER.md"
+TOOLS_MD="$WS/TOOLS.md"
 HOOK_DIR="$WS/hooks/git"
 COMMIT_HOOK="$HOOK_DIR/commit-msg"
 PREPUSH_HOOK="$HOOK_DIR/pre-push"
@@ -282,6 +288,8 @@ if has_text "## Scope" "$CLAUDE_MD"; then protocol=$((protocol+2)); else notes+=
 if has_text "## Verification Expectations" "$CLAUDE_MD"; then protocol=$((protocol+2)); else notes+=("protocol: missing verification expectations section"); fi
 if has_text "## Escalation Triggers" "$CLAUDE_MD"; then protocol=$((protocol+2)); else notes+=("protocol: missing escalation triggers section"); fi
 if has_text "Universal Phase 2 Hardening" "$CLAUDE_MD"; then protocol=$((protocol+2)); else notes+=("protocol: missing phase 2 hardening section"); fi
+if [[ -f "$USER_MD" ]]; then :; else notes+=("protocol: missing USER.md"); hard_fail=1; fi
+if [[ -f "$TOOLS_MD" ]]; then :; else notes+=("protocol: missing TOOLS.md"); hard_fail=1; fi
 
 if [[ "$AGENT_ID" == "codex-orchestrator" || "$AGENT_ID" == "contributor" ]]; then
   if has_text "10 active PRs|10-active-PR cap" "$CLAUDE_MD" && has_text "10 active PRs as a hard cap|10-active-PR cap" "$BOOTSTRAP_MD"; then
@@ -294,9 +302,10 @@ fi
 
 # --- VERIFICATION DISCIPLINE (10) ---
 if has_text "verify before claiming completion|Verification Expectations" "$CLAUDE_MD"; then verification=$((verification+3)); else notes+=("verification: weak CLAUDE verification language"); fi
-if has_text "Read .*CLAUDE\\\\.md" "$BOOTSTRAP_MD"; then verification=$((verification+3)); else notes+=("verification: bootstrap missing CLAUDE read step"); fi
-if has_text "decision first, evidence second, next" "$BOOTSTRAP_MD"; then verification=$((verification+2)); else notes+=("verification: bootstrap missing reporting shape"); fi
-if has_text "Verify before claiming completion" "$IDENTITY_MD"; then verification=$((verification+2)); else notes+=("verification: identity missing verification anchor"); fi
+if has_text "Read `CLAUDE\\\\.md` when it exists|Read .*CLAUDE\\\\.md" "$BOOTSTRAP_MD"; then verification=$((verification+2)); else notes+=("verification: bootstrap missing CLAUDE read step"); fi
+if has_text "outcome, evidence, risks/open questions, next move|outcome → evidence → risks/open questions → next move" "$BOOTSTRAP_MD"; then verification=$((verification+3)); else notes+=("verification: bootstrap missing reporting shape"); fi
+if has_text "BUILD\\\\.md" "$BOOTSTRAP_MD"; then verification=$((verification+1)); else notes+=("verification: bootstrap missing BUILD.md discipline"); fi
+if has_text "Verify before claiming completion" "$IDENTITY_MD"; then verification=$((verification+1)); else notes+=("verification: identity missing verification anchor"); fi
 
 # --- ATTRIBUTION COMPLIANCE (10) ---
 if [[ -x "$COMMIT_HOOK" ]]; then attribution=$((attribution+1)); else notes+=("attribution: commit-msg hook missing/not executable"); fi
@@ -378,6 +387,16 @@ Run before push when there are branch commits:
 - Check current author PR count before launching PR-capable work or opening a new PR.
 - If `current_open_prs + planned_new_prs > 10`, prune stale/weak/superseded PRs first and report what was cut.
 
+### Reporting Contract
+- For non-trivial work, report in this order: outcome → evidence → risks/open questions → next move.
+- Never imply verification that did not happen.
+- If a check was skipped, name what was skipped, why, and the residual risk.
+
+### Workspace and Memory Hygiene
+- Keep `BUILD.md` current for multi-step passes.
+- Durable memory is for stable preferences/decisions/facts, not transient task sludge.
+- Repair obvious doc drift before adding new process around it.
+
 ### Weekly Quality Smoke
 
 ```bash
@@ -406,6 +425,11 @@ Expected:
 ## 3) Weekly scored smoke
 ```bash
 /Users/sawyer/.openclaw/workspace-{agent_id}/scripts/specialist-weekly-smoke.sh
+```
+
+## 4) Canonical workspace doc audit
+```bash
+cd /Users/sawyer/github/grimoire && uv run python -m scripts openclaw:audit
 ```
 
 Scored categories:
@@ -437,9 +461,18 @@ def _write_if_changed(path: Path, content: str) -> bool:
     return True
 
 
+def _copy_shared_doc(name: str, dest: Path) -> bool:
+    src = MAIN_WORKSPACE / name
+    if not src.exists():
+        return False
+    return _write_if_changed(dest, src.read_text())
+
+
 def _append_identity_line(path: Path) -> bool:
     lines = [
         "- Verify before claiming completion.",
+        "- Protect Stephen's attention with concise, evidence-first updates.",
+        "- For non-trivial work, report outcome → evidence → risks/open questions → next move.",
         "- Commit metadata must never include assistant/agent/AI attribution terms.",
     ]
     current = path.read_text().rstrip()
@@ -563,8 +596,16 @@ def harden_specialists() -> None:
         identity_path = ws / "IDENTITY.md"
         claude_path = ws / "CLAUDE.md"
         runbook_path = ws / "RUNBOOK.md"
+        user_path = ws / "USER.md"
+        tools_path = ws / "TOOLS.md"
 
         if _write_if_changed(bootstrap_path, BOOTSTRAP_TEMPLATE):
+            writes += 1
+
+        if _copy_shared_doc("USER.md", user_path):
+            writes += 1
+
+        if _copy_shared_doc("TOOLS.md", tools_path):
             writes += 1
 
         if identity_path.exists() and _append_identity_line(identity_path):

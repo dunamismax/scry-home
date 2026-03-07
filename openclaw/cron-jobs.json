@@ -8,7 +8,7 @@
       "name": "healthcheck:backup-freshness",
       "enabled": true,
       "createdAtMs": 1772532367675,
-      "updatedAtMs": 1772795408623,
+      "updatedAtMs": 1772881832423,
       "schedule": {
         "kind": "cron",
         "expr": "10 6 * * *",
@@ -26,11 +26,11 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772881800000,
-        "lastRunAtMs": 1772795400010,
+        "nextRunAtMs": 1772964600000,
+        "lastRunAtMs": 1772881800011,
         "lastRunStatus": "ok",
         "lastStatus": "ok",
-        "lastDurationMs": 8613,
+        "lastDurationMs": 32412,
         "lastDelivered": false,
         "lastDeliveryStatus": "not-delivered",
         "consecutiveErrors": 0
@@ -66,7 +66,7 @@
       "name": "briefing:daily-repo-priority-summary",
       "enabled": true,
       "createdAtMs": 1772533964511,
-      "updatedAtMs": 1772804133929,
+      "updatedAtMs": 1772890579765,
       "schedule": {
         "kind": "cron",
         "expr": "35 8 * * *",
@@ -87,13 +87,12 @@
         "bestEffort": true
       },
       "state": {
-        "nextRunAtMs": 1772890500000,
-        "lastRunAtMs": 1772804100017,
+        "nextRunAtMs": 1772973300000,
+        "lastRunAtMs": 1772890500014,
         "lastRunStatus": "ok",
         "lastStatus": "ok",
-        "lastDurationMs": 33912,
-        "lastDelivered": true,
-        "lastDeliveryStatus": "delivered",
+        "lastDurationMs": 79751,
+        "lastDeliveryStatus": "unknown",
         "consecutiveErrors": 0
       }
     },
@@ -135,7 +134,7 @@
       "name": "healthcheck:agent-bench-daily",
       "enabled": true,
       "createdAtMs": 1772542721502,
-      "updatedAtMs": 1772785212003,
+      "updatedAtMs": 1772893159548,
       "schedule": {
         "kind": "cron",
         "expr": "20 3 * * *",
@@ -147,17 +146,17 @@
         "kind": "agentTurn",
         "model": "openai-codex/gpt-5.4",
         "timeoutSeconds": 1800,
-        "message": "Run the daily specialist-agent bench health check.\n\nExecute exactly:\nset -euo pipefail\nOUT=\"$(uv run python - <<'PY'\nimport json, subprocess, pathlib, sys\nexpected = ['main','codex-orchestrator','sentinel','reviewer','builder-mobile','openclaw-maintainer','contributor','luma']\nspecialists = [a for a in expected if a != 'main']\nissues=[]\n\nraw = subprocess.check_output(['openclaw','config','get','agents.list'], text=True)\nagents = json.loads(raw)\nby_id = {a.get('id'): a for a in agents}\n\nfor aid in expected:\n    if aid not in by_id:\n        issues.append(f'missing-agent:{aid}')\n\nfor aid in expected:\n    if aid not in by_id:\n        continue\n    a=by_id[aid]\n    ws = pathlib.Path(a.get('workspace') or '/Users/sawyer/.openclaw/workspace')\n    for f in ['SOUL.md','AGENTS.md','IDENTITY.md']:\n        if not (ws/f).exists():\n            issues.append(f'missing-file:{aid}:{f}')\n\nfor aid in specialists:\n    a = by_id.get(aid)\n    if not a:\n        continue\n    m = a.get('model', {})\n    if m.get('primary') != 'openai-codex/gpt-5.4':\n        issues.append(f'model-mismatch:{aid}:primary')\n    fb = m.get('fallbacks') or []\n    if 'anthropic/claude-opus-4-6' not in fb:\n        issues.append(f'model-mismatch:{aid}:fallback')\n\nif issues:\n    print('FAIL')\n    for i in issues:\n        print(i)\n    sys.exit(2)\n\nprint('OK: agent bench config + workspace files validated')\nPY\n)\" || RC=$?\nRC=${RC:-0}\n\nif [ \"$RC\" -ne 0 ]; then\n  MSG=\"$(printf '%s' \"$OUT\" | tail -n 30 | tr '\\n' '; ' | sed 's/\"//g')\"\n  openclaw system event --text \"Reminder: daily agent bench health check found issues. ${MSG}\" --mode now\n  exit 1\nfi\n\nopenclaw agents list --bindings >/tmp/agent-bench-list.txt\nexit 0"
+        "message": "Run the daily specialist-agent bench health check.\n\nExecute exactly:\nset -euo pipefail\nOUT=\"$(uv run python - <<'PY'\nimport json, subprocess, pathlib, sys\nexpected = ['main','codex-orchestrator','sentinel','reviewer','builder-mobile','openclaw-maintainer','contributor','luma']\nspecialists = [a for a in expected if a != 'main']\nissues=[]\n\nraw = subprocess.check_output(['openclaw','config','get','agents.list'], text=True)\nagents = json.loads(raw)\nby_id = {a.get('id'): a for a in agents}\n\nfor aid in expected:\n    if aid not in by_id:\n        issues.append(f'missing-agent:{aid}')\n\nfor aid in expected:\n    if aid not in by_id:\n        continue\n    a=by_id[aid]\n    ws = pathlib.Path(a.get('workspace') or '/Users/sawyer/.openclaw/workspace')\n    required = ['SOUL.md','AGENTS.md','IDENTITY.md','USER.md','TOOLS.md','BOOTSTRAP.md']\n    optional = ['CLAUDE.md','RUNBOOK.md','HEARTBEAT.md','MEMORY.md']\n    for f in required:\n        if not (ws/f).exists():\n            issues.append(f'missing-required:{aid}:{f}')\n    missing_optional = [f for f in optional if not (ws/f).exists()]\n    if missing_optional:\n        print(f'note:optional-missing:{aid}:{\",\".join(missing_optional)}')\n\nfor aid in specialists:\n    a = by_id.get(aid)\n    if not a:\n        continue\n    m = a.get('model', {})\n    if m.get('primary') != 'openai-codex/gpt-5.4':\n        issues.append(f'model-mismatch:{aid}:primary')\n    fb = m.get('fallbacks') or []\n    if 'anthropic/claude-opus-4-6' not in fb:\n        issues.append(f'model-mismatch:{aid}:fallback')\n\nif issues:\n    print('FAIL')\n    for i in issues:\n        print(i)\n    sys.exit(2)\n\nprint('OK: agent bench config + workspace files validated')\nPY\n)\" || RC=$?\nRC=${RC:-0}\n\nif [ \"$RC\" -ne 0 ]; then\n  MSG=\"$(printf '%s' \"$OUT\" | tail -n 30 | tr '\\n' '; ' | sed 's/\"//g')\"\n  openclaw system event --text \"Reminder: daily agent bench health check found issues. ${MSG}\" --mode now\n  exit 1\nfi\n\nopenclaw agents list --bindings >/tmp/agent-bench-list.txt\nexit 0"
       },
       "delivery": {
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772871600000,
-        "lastRunAtMs": 1772785200011,
+        "nextRunAtMs": 1772954400000,
+        "lastRunAtMs": 1772871600013,
         "lastRunStatus": "ok",
         "lastStatus": "ok",
-        "lastDurationMs": 11992,
+        "lastDurationMs": 25726,
         "lastDelivered": false,
         "lastDeliveryStatus": "not-delivered",
         "consecutiveErrors": 0
@@ -170,7 +169,7 @@
       "name": "sync-and-validate-daily",
       "enabled": true,
       "createdAtMs": 1772542733941,
-      "updatedAtMs": 1772785809954,
+      "updatedAtMs": 1772872224400,
       "schedule": {
         "kind": "cron",
         "expr": "30 3 * * *",
@@ -188,11 +187,11 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772872200000,
-        "lastRunAtMs": 1772785800011,
+        "nextRunAtMs": 1772955000000,
+        "lastRunAtMs": 1772872200012,
         "lastRunStatus": "ok",
         "lastStatus": "ok",
-        "lastDurationMs": 9943,
+        "lastDurationMs": 24388,
         "lastDelivered": false,
         "lastDeliveryStatus": "not-delivered",
         "consecutiveErrors": 0
@@ -205,7 +204,7 @@
       "name": "daily-lock-in",
       "enabled": true,
       "createdAtMs": 1772585596763,
-      "updatedAtMs": 1772805606231,
+      "updatedAtMs": 1772892120220,
       "schedule": {
         "kind": "cron",
         "expr": "0 9 * * *",
@@ -218,11 +217,11 @@
         "text": "Reminder: Lock the fuck in. Build something. Break something. Learn to code. No excuses, no ceremony — just ship."
       },
       "state": {
-        "nextRunAtMs": 1772892000000,
-        "lastRunAtMs": 1772805600010,
+        "nextRunAtMs": 1772974800000,
+        "lastRunAtMs": 1772892000006,
         "lastRunStatus": "ok",
         "lastStatus": "ok",
-        "lastDurationMs": 6221,
+        "lastDurationMs": 120214,
         "lastDeliveryStatus": "not-requested",
         "consecutiveErrors": 0
       }
@@ -234,7 +233,7 @@
       "name": "healthcheck:sessions-autocleanup",
       "enabled": true,
       "createdAtMs": 1772636458182,
-      "updatedAtMs": 1772835324740,
+      "updatedAtMs": 1772870427562,
       "schedule": {
         "kind": "cron",
         "expr": "0 3 * * *",
@@ -252,11 +251,11 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772870400000,
-        "lastRunAtMs": 1772835301998,
+        "nextRunAtMs": 1772953200000,
+        "lastRunAtMs": 1772870400013,
         "lastRunStatus": "ok",
         "lastStatus": "ok",
-        "lastDurationMs": 22742,
+        "lastDurationMs": 27549,
         "lastDeliveryStatus": "not-delivered",
         "consecutiveErrors": 0,
         "lastDelivered": false
@@ -356,6 +355,35 @@
         "lastDelivered": false,
         "lastDeliveryStatus": "not-delivered",
         "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "43da9cb3-a005-40b7-894f-15a75f2cc33f",
+      "agentId": "main",
+      "sessionKey": "agent:main:discord:channel:1479614742866825247",
+      "name": "healthcheck:workspace-doc-drift",
+      "enabled": true,
+      "createdAtMs": 1772893167048,
+      "updatedAtMs": 1772893167048,
+      "schedule": {
+        "kind": "cron",
+        "expr": "40 3 * * *",
+        "tz": "America/New_York"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "model": "openai-codex/gpt-5.4",
+        "thinking": "low",
+        "timeoutSeconds": 1800,
+        "message": "Run the daily OpenClaw workspace doc drift audit.\n\nExecute exactly:\nset -euo pipefail\ncd /Users/sawyer/github/grimoire\nOUT=\"$(uv run python -m scripts openclaw:audit 2>&1)\" || RC=$?\nRC=${RC:-0}\nprintf '%s\\n' \"$OUT\"\nif [ \"$RC\" -ne 0 ]; then\n  MSG=\"$(printf '%s' \"$OUT\" | tail -n 40 | tr '\\n' '; ' | sed 's/\\\"//g')\"\n  openclaw system event --text \"Reminder: workspace doc drift audit found issues. ${MSG}\" --mode now\n  exit 1\nfi\nexit 0"
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1772955600000
       }
     }
   ]

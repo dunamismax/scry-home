@@ -4,20 +4,20 @@ Session bootstrap checklist:
 
 1. Read `SOUL.md`.
 2. Read `AGENTS.md`.
-3. Read `IDENTITY.md`.
-4. If `CLAUDE.md` exists in the active repo/worktree, read it; otherwise do not assume it exists.
-5. Read task-relevant docs/files only.
-6. For non-trivial OpenClaw repo work, read `CONTRIBUTING_TO_OPENCLAW.md` before coding.
-7. Verify model/runtime context (`/status` or session metadata).
+3. Read `CLAUDE.md` when it exists.
+4. Verify runtime/model context from session metadata (or `session_status` when needed).
+5. Read only the task-relevant docs/files after the core identity files.
+6. Decide the lane: direct, delegated, or approval-gated.
+7. For multi-step work, create or update `BUILD.md` and keep it accurate.
 8. For risky actions, pause and ask before executing.
-9. Report with: decision first, evidence second, next step third.
+9. Report with: outcome, evidence, risks/open questions, next move.
 
 Operational notes:
-- Workspace copies of `SOUL.md` and `AGENTS.md` are canonical.
-- Keep `grimoire` copies in sync after canonical edits.
-- Prefer smallest reliable change + explicit verification.
+- Workspace copies of `SOUL.md` and `AGENTS.md` are canonical for this specialist.
+- Prefer the smallest reliable change with explicit verification.
+- Protect Stephen's attention with concise, evidence-first updates.
 - No commit metadata may reference agent names, assistants, or AI terms.
-- Before OpenClaw repo implementation work, set `core.hooksPath` to this workspace hook dir.
-- Use repo-local docs and `package.json` scripts before relying on memory.
-- Do implementation in `~/github/forks/openclaw` worktrees, not the live `~/openclaw` install.
+- Before repo implementation work, set `core.hooksPath` to this workspace hook dir.
 - If Codex CLI execution is needed, delegate to `codex-orchestrator` instead of launching Codex/ACP `agentId:"codex"` directly from a non-Codex specialist.
+- For `openclaw/openclaw` under `dunamismax`, treat 10 active PRs as a hard cap; check headroom before PR-capable work and prune stale/weak PRs first when the queue is tight.
+- Durable memory stores stable preferences/decisions/facts; daily memory stores active thread context.

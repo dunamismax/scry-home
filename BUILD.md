@@ -61,9 +61,14 @@ grimoire/
 
 ### Phase 2 — Reliability and hygiene
 
+- [x] Extend sync script to mirror all `.md` files (root + subdirs) from main and specialist workspaces
+- [x] Add `openclaw:audit` CLI command for doc drift / stale path detection
+- [x] Extend `specialists:harden` to propagate `USER.md`, `TOOLS.md`, updated `BOOTSTRAP.md`, and broader identity/reporting rules
+- [x] Update smoke scripts to check broader required file set (`USER.md`, `TOOLS.md`, `BOOTSTRAP.md`)
+- [x] Create live `healthcheck:workspace-doc-drift` cron job (daily, 3:40 AM)
+- [x] Update `healthcheck:agent-bench-daily` to check expanded file set
+- [x] Add drift job to `reconcile_cron.py` manifest for future reconciliation
 - [ ] Add clearer per-command CLI help / flag docs
-- [ ] Reconcile any stale workspace-mirror docs via canonical workspace sync
-- [ ] Add deterministic verification for cron / backup flows
 - [ ] Expand tests if Python task complexity grows enough to justify them
 
 ---
@@ -87,6 +92,7 @@ Current cleanup pass verified on 2026-03-06:
 
 ## Immediate Next Pass Priorities
 
-1. Scan for any remaining dangling references to removed prompt/project-idea docs.
-2. Decide whether any additional historical/archive docs deserve pruning.
-3. Keep the Python-first repo contract consistent in docs and command shortcuts.
+1. Re-run `openclaw:audit` after the trailing-whitespace path-fix patch.
+2. Scan for any remaining dangling references to removed prompt/project-idea docs.
+3. Consider whether `cron:reconcile --scope=all --apply` should converge the new drift audit job from manifest instead of the manually-created live copy.
+4. Optionally run weekly specialist smokes after the hardening refresh.

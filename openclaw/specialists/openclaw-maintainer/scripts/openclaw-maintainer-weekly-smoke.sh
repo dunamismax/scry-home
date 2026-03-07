@@ -2,13 +2,13 @@
 set -euo pipefail
 
 WS="/Users/sawyer/.openclaw/workspace-openclaw-maintainer"
-REPO="/Users/sawyer/github/openclaw"
+REPO="/Users/sawyer/github/forks/openclaw"
 CLAUDE_MD="$WS/CLAUDE.md"
 BOOTSTRAP_MD="$WS/BOOTSTRAP.md"
 HOOK_DIR="$WS/hooks/git"
 COMMIT_HOOK="$HOOK_DIR/commit-msg"
 PREPUSH_HOOK="$HOOK_DIR/pre-push"
-AUDIT_SCRIPT="$WS/scripts/openclaw-maintainer-audit.sh"
+AUDIT_SCRIPT="$WS/scripts/agent-attribution-audit.sh"
 
 has_text() {
   local pattern="$1" file="$2"
@@ -58,7 +58,7 @@ if "$COMMIT_HOOK" "$tmp_bad" >/dev/null 2>&1; then notes+=("attribution: commit-
 rm -f "$tmp_ok" "$tmp_bad"
 
 # Repo audit pass
-if "$AUDIT_SCRIPT" "$REPO" "origin/main" >/dev/null 2>&1; then
+if "$AUDIT_SCRIPT" "$REPO" "upstream/main" >/dev/null 2>&1; then
   attribution=$((attribution+1))
 else
   notes+=("attribution: audit script reported violation")

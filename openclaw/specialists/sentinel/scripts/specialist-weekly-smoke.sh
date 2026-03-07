@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+AGENT_ID="sentinel"
 WS="/Users/sawyer/.openclaw/workspace-sentinel"
-AGENTS_MD="$WS/AGENTS.md"
 CLAUDE_MD="$WS/CLAUDE.md"
-SOUL_MD="$WS/SOUL.md"
 BOOTSTRAP_MD="$WS/BOOTSTRAP.md"
 IDENTITY_MD="$WS/IDENTITY.md"
-BUILD_MD="$WS/BUILD.md"
+USER_MD="$WS/USER.md"
+TOOLS_MD="$WS/TOOLS.md"
 HOOK_DIR="$WS/hooks/git"
 COMMIT_HOOK="$HOOK_DIR/commit-msg"
 PREPUSH_HOOK="$HOOK_DIR/pre-push"
@@ -18,24 +18,36 @@ has_text() {
   LC_ALL=C grep -Eiq "$pattern" "$file"
 }
 
-contract=0
+protocol=0
 verification=0
 attribution=0
 notes=()
+hard_fail=0
 
-# --- CONTRACT INTEGRITY (10) ---
-if has_text "## Mission" "$AGENTS_MD" && has_text "## Scope" "$AGENTS_MD"; then contract=$((contract+2)); else notes+=("contract: missing mission/scope in AGENTS"); fi
-if has_text "## Severity Rubric" "$AGENTS_MD"; then contract=$((contract+2)); else notes+=("contract: missing severity rubric"); fi
-if has_text "## False-Positive Control" "$AGENTS_MD"; then contract=$((contract+2)); else notes+=("contract: missing false-positive control"); fi
-if has_text "## Reporting Contract" "$AGENTS_MD" && has_text "## Verification Gates" "$AGENTS_MD"; then contract=$((contract+2)); else notes+=("contract: weak reporting or verification sections"); fi
-if cmp -s "$AGENTS_MD" "$CLAUDE_MD"; then contract=$((contract+2)); else notes+=("contract: AGENTS.md and CLAUDE.md drift detected"); fi
+# --- PROTOCOL QUALITY (10) ---
+if has_text "## Mission" "$CLAUDE_MD"; then protocol=$((protocol+2)); else notes+=("protocol: missing mission section"); fi
+if has_text "## Scope" "$CLAUDE_MD"; then protocol=$((protocol+2)); else notes+=("protocol: missing scope section"); fi
+if has_text "## Verification Expectations" "$CLAUDE_MD"; then protocol=$((protocol+2)); else notes+=("protocol: missing verification expectations section"); fi
+if has_text "## Escalation Triggers" "$CLAUDE_MD"; then protocol=$((protocol+2)); else notes+=("protocol: missing escalation triggers section"); fi
+if has_text "Universal Phase 2 Hardening" "$CLAUDE_MD"; then protocol=$((protocol+2)); else notes+=("protocol: missing phase 2 hardening section"); fi
+if [[ -f "$USER_MD" ]]; then :; else notes+=("protocol: missing USER.md"); hard_fail=1; fi
+if [[ -f "$TOOLS_MD" ]]; then :; else notes+=("protocol: missing TOOLS.md"); hard_fail=1; fi
+
+if [[ "$AGENT_ID" == "codex-orchestrator" || "$AGENT_ID" == "contributor" ]]; then
+  if has_text "10 active PRs|10-active-PR cap" "$CLAUDE_MD" && has_text "10 active PRs as a hard cap|10-active-PR cap" "$BOOTSTRAP_MD"; then
+    :
+  else
+    notes+=("protocol: missing OpenClaw PR queue guard")
+    hard_fail=1
+  fi
+fi
 
 # --- VERIFICATION DISCIPLINE (10) ---
-if has_text "Verification over confidence|prove claims with evidence" "$SOUL_MD"; then verification=$((verification+2)); else notes+=("verification: weak SOUL verification language"); fi
-if has_text "trust boundaries|blast radius|verification plan" "$BOOTSTRAP_MD"; then verification=$((verification+2)); else notes+=("verification: bootstrap missing triage requirements"); fi
-if has_text "BUILD\.md" "$BOOTSTRAP_MD" && [[ -f "$BUILD_MD" ]]; then verification=$((verification+2)); else notes+=("verification: BUILD ledger missing or bootstrap does not require it"); fi
-if has_text "decision, evidence, risks/blockers, next action" "$BOOTSTRAP_MD" && has_text "Risks/Blockers" "$SOUL_MD"; then verification=$((verification+2)); else notes+=("verification: reporting shape drift detected"); fi
-if has_text "Avoid security theater|evidence-backed|blast radius" "$IDENTITY_MD"; then verification=$((verification+2)); else notes+=("verification: identity anchor missing operator-signal language"); fi
+if has_text "verify before claiming completion|Verification Expectations" "$CLAUDE_MD"; then verification=$((verification+3)); else notes+=("verification: weak CLAUDE verification language"); fi
+if has_text "Read `CLAUDE\\.md` when it exists|Read .*CLAUDE\\.md" "$BOOTSTRAP_MD"; then verification=$((verification+2)); else notes+=("verification: bootstrap missing CLAUDE read step"); fi
+if has_text "outcome, evidence, risks/open questions, next move|outcome → evidence → risks/open questions → next move" "$BOOTSTRAP_MD"; then verification=$((verification+3)); else notes+=("verification: bootstrap missing reporting shape"); fi
+if has_text "BUILD\\.md" "$BOOTSTRAP_MD"; then verification=$((verification+1)); else notes+=("verification: bootstrap missing BUILD.md discipline"); fi
+if has_text "Verify before claiming completion" "$IDENTITY_MD"; then verification=$((verification+1)); else notes+=("verification: identity missing verification anchor"); fi
 
 # --- ATTRIBUTION COMPLIANCE (10) ---
 if [[ -x "$COMMIT_HOOK" ]]; then attribution=$((attribution+1)); else notes+=("attribution: commit-msg hook missing/not executable"); fi
@@ -44,23 +56,18 @@ if [[ -x "$AUDIT_SCRIPT" ]]; then attribution=$((attribution+1)); else notes+=("
 if has_text "No commit metadata may reference agent names, assistants, or AI terms" "$BOOTSTRAP_MD"; then attribution=$((attribution+1)); else notes+=("attribution: bootstrap policy missing"); fi
 
 # Synthetic commit message tests
-if [[ -x "$COMMIT_HOOK" ]]; then
-  tmp_ok="$(mktemp)"
-  tmp_bad="$(mktemp)"
-  printf 'fix(contract): tighten sentinel reporting rules\n' > "$tmp_ok"
-  printf 'fix: generated by Claude\n\nCo-Authored-By: Bot <bot@example.com>\n' > "$tmp_bad"
+tmp_ok="$(mktemp)"
+tmp_bad="$(mktemp)"
+printf 'fix(core): tighten validation path\n' > "$tmp_ok"
+printf 'fix: generated by Claude\n\nCo-Authored-By: Bot <bot@example.com>\n' > "$tmp_bad"
 
-  if "$COMMIT_HOOK" "$tmp_ok" >/dev/null 2>&1; then attribution=$((attribution+3)); else notes+=("attribution: commit-msg hook failed valid message"); fi
-  if "$COMMIT_HOOK" "$tmp_bad" >/dev/null 2>&1; then notes+=("attribution: commit-msg hook failed to block invalid message"); else attribution=$((attribution+3)); fi
+if "$COMMIT_HOOK" "$tmp_ok" >/dev/null 2>&1; then attribution=$((attribution+3)); else notes+=("attribution: commit-msg hook failed valid message"); fi
+if "$COMMIT_HOOK" "$tmp_bad" >/dev/null 2>&1; then notes+=("attribution: commit-msg hook failed to block invalid message"); else attribution=$((attribution+3)); fi
+rm -f "$tmp_ok" "$tmp_bad"
 
-  rm -f "$tmp_ok" "$tmp_bad"
-else
-  notes+=("attribution: synthetic commit message tests skipped because commit hook is not executable")
-fi
-
-overall=$(( (contract + verification + attribution) / 3 ))
+overall=$(( (protocol + verification + attribution) / 3 ))
 status="PASS"
-if (( contract < 8 || verification < 8 || attribution < 8 )); then
+if (( protocol < 8 || verification < 8 || attribution < 8 || hard_fail != 0 )); then
   status="FAIL"
 fi
 
@@ -69,7 +76,7 @@ cat <<REPORT
 
 | Category | Score (0-10) | Status |
 |---|---:|---|
-| Contract integrity | $contract | $( ((contract>=8)) && echo PASS || echo FAIL ) |
+| Protocol quality | $protocol | $( ((protocol>=8)) && echo PASS || echo FAIL ) |
 | Verification discipline | $verification | $( ((verification>=8)) && echo PASS || echo FAIL ) |
 | Attribution compliance | $attribution | $( ((attribution>=8)) && echo PASS || echo FAIL ) |
 | Overall | $overall | $status |

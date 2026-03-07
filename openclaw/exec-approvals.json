@@ -80,6 +80,16 @@
           "id": "a73dfbc9-26b5-4efd-9b3a-de477c6e2acf",
           "pattern": "/bin/pwd",
           "lastUsedAt": 1772842137094
+        },
+        {
+          "id": "8b70c9de-dc72-4c2c-af17-ea512bb7cdd7",
+          "pattern": "/Users/sawyer/.local/bin/openclaw",
+          "lastUsedAt": 1772891829434
+        },
+        {
+          "id": "17af8e6f-9d51-4a2b-a92a-a22844065e67",
+          "pattern": "/usr/bin/cd",
+          "lastUsedAt": 1772893836161
         }
       ]
     }
