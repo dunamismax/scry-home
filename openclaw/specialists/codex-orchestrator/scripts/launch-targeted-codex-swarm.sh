@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT=/Users/sawyer/github
-OUT=$ROOT/REPO_REVIEWS/FINAL_REVIEWS
+OUT=$ROOT/scry-home/reference/reviews/final-reviews
 TS=$(date +%Y%m%d-%H%M%S)
 RUNROOT=/Users/sawyer/.openclaw/workspace-codex-orchestrator/runs/${TS}-targeted-codex-swarm
 LEDGER=$RUNROOT/ledger.tsv
@@ -20,64 +20,40 @@ launch_task() {
   local log_file="$lane_dir/stdout.log"
   mkdir -p "$lane_dir"
 
+  if [[ ! -d "$workdir/.git" ]]; then
+    print -r -- "$task"$'\t-\t'"$mode"$'\t'"$workdir"$'\t'"$output_file"$'\t'"$log_file"$'\t'"$prompt_file"$'\tskipped-missing-repo' >> "$LEDGER"
+    return
+  fi
+
   cat > "$prompt_file"
 
   rm -f "$output_file"
 
   script -q /dev/null zsh -lc "cd '$workdir' && codex exec $mode --ephemeral -o '$output_file' -c features.command_attribution=false -c model_reasoning_effort=high -c model_reasoning_summary=concise \"\$(cat '$prompt_file')\"" > "$log_file" 2>&1 < /dev/null &
   local pid=$!
-  print -r -- "$task"$'\t'"$pid"$'\t'"$mode"$'\t'"$workdir"$'\t'"$output_file"$'\t'"$log_file"$'\t'"$prompt_file"$'\t'running >> "$LEDGER"
+  print -r -- "$task"$'\t'"$pid"$'\t'"$mode"$'\t'"$workdir"$'\t'"$output_file"$'\t'"$log_file"$'\t'"$prompt_file"$'\trunning' >> "$LEDGER"
 }
 
-launch_task images-migration --yolo /Users/sawyer/github/images /Users/sawyer/github/REPO_REVIEWS/FINAL_REVIEWS/images-migration-and-deletion-readiness.md <<'EOF'
-You are handling a multi-repo asset consolidation task.
-
-Goal: make it possible to delete the `/Users/sawyer/github/images` repo safely later.
-
-Working set:
-- Source repo: `/Users/sawyer/github/images`
-- Candidate consumer repos: the immediate child git repos under `/Users/sawyer/github`
-- Output report: `/Users/sawyer/github/REPO_REVIEWS/FINAL_REVIEWS/images-migration-and-deletion-readiness.md`
-
-Tasks:
-1. Scan the other repos under `/Users/sawyer/github` for README/docs/markdown/HTML files that reference assets from the `images` repo.
-   - Check GitHub raw/blob links, Codeberg raw/blob links, and any other obvious references to that repo.
-2. Build an inventory of which assets are still actually referenced.
-3. For each actively referenced asset, copy it into the most appropriate consuming repo so that repo becomes self-contained.
-   - Prefer an existing images/assets/public/docs-media folder if one exists.
-   - Otherwise create a small, sensible local asset folder.
-4. Rewrite the referencing files in the consuming repo to use the new local path.
-5. Do not do unnecessary churn. If an asset looks stale/unneeded, note it in the report instead of copying it blindly.
-6. Do not rename any repo directories. Do not delete the `images` repo. Do not touch remotes.
-7. Do not commit.
-
-Report requirements:
-- repos/files that referenced `images`
-- assets copied and where they were placed
-- links rewritten
-- stale/unreferenced assets worth ignoring
-- whether the `images` repo is now safe to delete, and any blockers still remaining
-EOF
-
-launch_task grimoire-review --full-auto /Users/sawyer/github/grimoire /Users/sawyer/github/REPO_REVIEWS/FINAL_REVIEWS/grimoire-final-review-and-renaming.md <<'EOF'
-You are doing a second-pass high-context review of the `grimoire` repo.
+launch_task scry-home-review --full-auto /Users/sawyer/github/scry-home /Users/sawyer/github/scry-home/reference/reviews/final-reviews/scry-home-final-review-and-renaming.md <<'EOF'
+You are doing a second-pass high-context review of the `scry-home` repo.
 
 Important context from Stephen:
-- `grimoire` is his most important repo.
-- It is effectively the backup/home for his Scry AI + OpenClaw identity, ops, automation, and supporting materials.
-- He hates the name and wants better rename options.
+- `scry-home` is his most important repo.
+- It is effectively the home for his Scry AI + OpenClaw identity, ops, automation, mirrors, and supporting materials.
+- It was previously named `grimoire`.
+- He cares a lot about whether the current name, structure, and boundaries are actually right.
 
 Working set:
-- Primary repo: `/Users/sawyer/github/grimoire`
-- Also inspect nearby OpenClaw/config context as needed, including local OpenClaw docs/config/workspace files if they materially help you understand what `grimoire` is for.
-- Output report: `/Users/sawyer/github/REPO_REVIEWS/FINAL_REVIEWS/grimoire-final-review-and-renaming.md`
+- Primary repo: `/Users/sawyer/github/scry-home`
+- Also inspect nearby OpenClaw/config context as needed, including local OpenClaw docs/config/workspace files if they materially help you understand what `scry-home` is for.
+- Output report: `/Users/sawyer/github/scry-home/reference/reviews/final-reviews/scry-home-final-review-and-renaming.md`
 
 Tasks:
 1. Re-review the repo with the above purpose in mind.
 2. Inspect the repo structure, automation, docs, backup flows, and Scry/OpenClaw relationship.
 3. Read relevant OpenClaw config/files around the local environment as needed to ground the review.
 4. Produce a deeper judgment about what the repo really is, what should live there, what should not, and how it should evolve.
-5. Generate strong replacement names — literal, operational, memorable, and brand-aligned variants.
+5. Generate strong replacement names only if the current name still seems wrong; otherwise say so clearly.
 6. Do not rename directories or remotes.
 7. Do not commit.
 
@@ -86,128 +62,93 @@ Report requirements:
 - what should remain inside it
 - what should be split/moved elsewhere
 - architecture/ops review
-- rename candidates, ranked
-- your recommended final name
+- rename candidates, ranked if needed
+- your recommended final direction
 - immediate next steps
 EOF
 
-launch_task dotfiles-into-grimoire --yolo /Users/sawyer/github/grimoire /Users/sawyer/github/REPO_REVIEWS/FINAL_REVIEWS/dotfiles-into-grimoire-migration.md <<'EOF'
-You are handling a repo consolidation task.
-
-Goal: incorporate the contents/purpose of `/Users/sawyer/github/dotfiles` into `/Users/sawyer/github/grimoire` so `dotfiles` no longer needs to stand alone later.
-
-Constraints from Stephen:
-- Do not rename any repo directories.
-- Leave the original `dotfiles` repo directory in place for now.
-- Stephen will handle repo/directory deletion later.
-
-Tasks:
-1. Inspect `/Users/sawyer/github/dotfiles` and `/Users/sawyer/github/grimoire`.
-2. Determine the best destination location inside `grimoire` for the dotfiles/config-backup material.
-3. Copy/incorporate the relevant `dotfiles` content into `grimoire` in a clean, understandable structure.
-4. Update the relevant docs/scripts inside `grimoire` so the imported material becomes part of the grimoire backup/config story.
-5. Avoid destructive edits to the original `dotfiles` repo.
-6. Do not rename directories or remotes.
-7. Do not commit.
-
-Output report: `/Users/sawyer/github/REPO_REVIEWS/FINAL_REVIEWS/dotfiles-into-grimoire-migration.md`
-
-Report requirements:
-- destination structure chosen inside grimoire
-- files/docs/scripts changed
-- what from dotfiles was incorporated
-- what still needs manual follow-up before the standalone `dotfiles` repo can be deleted
-EOF
-
-launch_task scripts-review --full-auto /Users/sawyer/github/scripts /Users/sawyer/github/REPO_REVIEWS/FINAL_REVIEWS/scripts-second-pass-review.md <<'EOF'
-You are doing a second-pass high-context review of the `scripts` repo.
+launch_task pyforge-review --full-auto /Users/sawyer/github/pyforge /Users/sawyer/github/scry-home/reference/reviews/final-reviews/pyforge-second-pass-review.md <<'EOF'
+You are doing a second-pass high-context review of the `pyforge` repo.
 
 Important context from Stephen:
-- He wants this to become his master Python repo where he does all of his Python work.
-- He thinks it needs a much better name.
-- He is open to expanding its scope or merging other Python-y things into it.
+- He wants this to be his main Python repo for scripts, utilities, automation, and reusable Python work.
+- It was previously named `scripts`.
+- He cares about scope creep, structure, and whether the current name is strong enough.
 
 Tasks:
-1. Re-review `/Users/sawyer/github/scripts` with that context in mind.
-2. Judge whether it should become the main Python repo, and if so what its scope should be.
-3. Suggest better names, structure, and merge boundaries.
+1. Re-review `/Users/sawyer/github/pyforge` with that context in mind.
+2. Judge whether it should remain the main Python repo, and if so what its scope should be.
+3. Suggest better names only if they are genuinely stronger than `pyforge`.
 4. Identify what should stay narrow vs what could be absorbed.
 5. Do not rename directories or remotes.
 6. Do not commit.
 
-Output report: `/Users/sawyer/github/REPO_REVIEWS/FINAL_REVIEWS/scripts-second-pass-review.md`
+Output report: `/Users/sawyer/github/scry-home/reference/reviews/final-reviews/pyforge-second-pass-review.md`
 
 Report requirements:
 - what the repo is now
 - what it should become
-- rename candidates, ranked
+- rename candidates, ranked if needed
 - what other work/repo types could belong here
 - risks of making it too broad
 - recommended final direction
 EOF
 
-launch_task oracle-rename-review --full-auto /Users/sawyer/github/oracle /Users/sawyer/github/REPO_REVIEWS/FINAL_REVIEWS/scryfall-discord-bot-rename-review.md <<'EOF'
-You are doing a rename-oriented second-pass review of the `oracle` repo.
+launch_task scryfall-discord-bot-review --full-auto /Users/sawyer/github/scryfall-discord-bot /Users/sawyer/github/scry-home/reference/reviews/final-reviews/scryfall-discord-bot-review.md <<'EOF'
+You are doing a rename-oriented second-pass review of the `scryfall-discord-bot` repo.
 
 Important context from Stephen:
-- He hates the current name `oracle`.
-- He wants the direction to be `scryfall-discord-bot`.
-- He thinks the repo used to be named something else and wants that history clarified.
-- He will rename the local directory and remote repos later himself.
+- This repo was previously named `oracle`.
+- The current direction is already `scryfall-discord-bot`.
+- He wants a grounded judgment about whether that rename direction was correct and whether the repo boundary still makes sense.
 
 Tasks:
-1. Inspect `/Users/sawyer/github/oracle`.
-2. Check local git history and repo files to determine prior naming/identity if possible.
-3. Re-review the repo with the new intended naming direction in mind.
-4. Treat `scryfall-discord-bot` as the target naming direction unless history strongly suggests a better variant.
+1. Inspect `/Users/sawyer/github/scryfall-discord-bot`.
+2. Check local git history and repo files to determine prior naming/identity if useful.
+3. Re-review the repo with the current naming direction in mind.
+4. Recommend a better final name only if one clearly beats `scryfall-discord-bot`.
 5. Do not rename the repo directory or remotes.
 6. Do not commit.
 
-Output report: `/Users/sawyer/github/REPO_REVIEWS/FINAL_REVIEWS/scryfall-discord-bot-rename-review.md`
+Output report: `/Users/sawyer/github/scry-home/reference/reviews/final-reviews/scryfall-discord-bot-review.md`
 
 Report requirements:
 - previous/older naming evidence found
 - what the repo actually is
 - whether `scryfall-discord-bot` is the right final name
 - any better variants if they exist
-- internal rename checklist for docs/package/module naming
-- immediate next steps before Stephen renames the repo locally/remotely
+- internal rename checklist for docs/package/module naming if still needed
+- immediate next steps
 EOF
 
-launch_task imagingservices-consolidation --yolo /Users/sawyer/github/imagingservices /Users/sawyer/github/REPO_REVIEWS/FINAL_REVIEWS/imaging-services-consolidation.md <<'EOF'
-You are handling a company-repo consolidation task.
-
-Goal: fold `/Users/sawyer/github/imaging-services-website` into `/Users/sawyer/github/imagingservices` so the company/job material can live in one main repo later.
+launch_task imaging-services-ops-review --full-auto /Users/sawyer/github/imaging-services-ops /Users/sawyer/github/scry-home/reference/reviews/final-reviews/imaging-services-ops-review.md <<'EOF'
+You are doing a second-pass structure review of the `imaging-services-ops` repo.
 
 Important context from Stephen:
-- `imagingservices` is the main/only repo he wants for company/job material.
-- The future rename direction is `imaging-services-ops`.
-- He will rename the repo directory/remotes later.
-
-Constraints:
-- Do not rename any local repo directories.
-- Do not delete the old `imaging-services-website` repo directory.
-- Do not touch remotes.
-- Do not commit.
+- This repo is now the main/only repo he wants for company/job material in this lane.
+- It was previously tied to older naming like `imagingservices` and `imaging-services-website`.
+- He wants a grounded judgment about whether the current consolidation and naming direction make sense.
 
 Tasks:
-1. Inspect both repos.
-2. Decide on the cleanest place inside `imagingservices` for the website code/content.
-3. Copy or merge the relevant website repo contents into `imagingservices` in a clean, understandable way.
-4. Update docs in `imagingservices` so it is clearly the single main repo for company/job material going forward.
-5. Preserve useful history/context in documentation even though the repo dirs themselves are not being renamed/deleted yet.
+1. Inspect `/Users/sawyer/github/imaging-services-ops`.
+2. Re-review the repo with its current consolidated purpose in mind.
+3. Judge whether the structure is now coherent for company/job material.
+4. Recommend cleaner internal boundaries if they are still muddy.
+5. Do not rename directories or remotes.
+6. Do not commit.
 
-Output report: `/Users/sawyer/github/REPO_REVIEWS/FINAL_REVIEWS/imaging-services-consolidation.md`
+Output report: `/Users/sawyer/github/scry-home/reference/reviews/final-reviews/imaging-services-ops-review.md`
 
 Report requirements:
-- structure chosen inside imagingservices
-- website content/code moved or copied
-- docs updated
-- what remains to do before the old standalone website repo can be deleted
-- how the future `imaging-services-ops` rename should be reflected internally
+- what the repo is now
+- whether the current consolidation is coherent
+- what should remain inside it
+- what should be split or archived
+- naming/structure judgment
+- immediate next steps
 EOF
 
 print -r -- "$RUNROOT" > /Users/sawyer/.openclaw/workspace-codex-orchestrator/runs/latest-targeted-codex-swarm.txt
-print -r -- "Launched 6 targeted Codex sessions."
+print -r -- "Launched 4 targeted Codex sessions."
 print -r -- "Run root: $RUNROOT"
 print -r -- "Ledger: $LEDGER"

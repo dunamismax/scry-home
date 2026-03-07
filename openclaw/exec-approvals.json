@@ -97,15 +97,15 @@
         {
           "id": "17af8e6f-9d51-4a2b-a92a-a22844065e67",
           "pattern": "/usr/bin/cd",
-          "lastUsedAt": 1772921221095,
+          "lastUsedAt": 1772921490739,
           "lastUsedCommand": "cd /Users/sawyer/github/scry-home && uv run python -m scripts sync:openclaw && uv run python -m scripts openclaw:audit && git status --short && echo '\\n--- diffstat ---' && git diff --stat | sed -n '1,240p'",
           "lastResolvedPath": "/usr/bin/cd"
         },
         {
           "id": "a2840be7-5bce-4e4e-9c2e-c5a32a1c040d",
           "pattern": "/opt/homebrew/bin/rg",
-          "lastUsedAt": 1772921176591,
-          "lastUsedCommand": "rg -n \"/Users/sawyer/.openclaw/workspace/reviews|workspace/reviews|REPO_REVIEWS|reference/reviews\" /Users/sawyer/.openclaw/workspace-codex-orchestrator /Users/sawyer/github/scry-home/openclaw/specialists/codex-orchestrator -g '*.md' -g '*.sh' | sed -n '1,200p'",
+          "lastUsedAt": 1772921353804,
+          "lastUsedCommand": "rg -n \"/Users/sawyer/github/REPO_REVIEWS|REPO_REVIEWS|workspace/reviews\" /Users/sawyer/.openclaw/workspace-codex-orchestrator -g '*.sh' -g '*.md' | sed -n '1,240p'",
           "lastResolvedPath": "/opt/homebrew/bin/rg"
         },
         {
@@ -118,9 +118,9 @@
         {
           "id": "68793acf-b0f0-42e2-a723-424a6c624a27",
           "pattern": "/usr/bin/find",
-          "lastUsedAt": 1772919506063,
-          "lastUsedCommand": "printf 'workspace memory files:\\n'; find /Users/sawyer/.openclaw/workspace/memory -maxdepth 1 -type f | sort | sed 's#^/Users/sawyer/.openclaw/workspace/##'; printf '\\nroot mirror memory files:\\n'; find /Users/sawyer/github/scry-home/openclaw/memory -maxdepth 1 -type f 2>/dev/null | sort | sed 's#^/Users/sawyer/github/scry-home/openclaw/##'",
-          "lastResolvedPath": "/usr/bin/printf"
+          "lastUsedAt": 1772921369789,
+          "lastUsedCommand": "find /Users/sawyer/github -mindepth 1 -maxdepth 1 -type d -print | sed 's#^/Users/sawyer/github/##' | sort | sed -n '1,200p'",
+          "lastResolvedPath": "/usr/bin/find"
         },
         {
           "id": "2cf41f73-a333-41b3-95cb-6ee050149809",
@@ -132,9 +132,9 @@
         {
           "id": "7e009642-08c3-4a10-9d1e-732add3a15e8",
           "pattern": "/usr/bin/sed",
-          "lastUsedAt": 1772921176591,
-          "lastUsedCommand": "rg -n \"/Users/sawyer/.openclaw/workspace/reviews|workspace/reviews|REPO_REVIEWS|reference/reviews\" /Users/sawyer/.openclaw/workspace-codex-orchestrator /Users/sawyer/github/scry-home/openclaw/specialists/codex-orchestrator -g '*.md' -g '*.sh' | sed -n '1,200p'",
-          "lastResolvedPath": "/opt/homebrew/bin/rg"
+          "lastUsedAt": 1772921369789,
+          "lastUsedCommand": "find /Users/sawyer/github -mindepth 1 -maxdepth 1 -type d -print | sed 's#^/Users/sawyer/github/##' | sort | sed -n '1,200p'",
+          "lastResolvedPath": "/usr/bin/find"
         },
         {
           "id": "170b4476-99bc-49b4-9e78-375f88faf802",
@@ -154,8 +154,8 @@
         {
           "id": "31cdf770-7330-4059-a8f5-926bfb9547a7",
           "pattern": "/usr/bin/git",
-          "lastUsedAt": 1772921207039,
-          "lastUsedCommand": "cd /Users/sawyer/github/scry-home && git status --short && echo '\\n--- diffstat ---' && git diff --stat | sed -n '1,240p'",
+          "lastUsedAt": 1772921236989,
+          "lastUsedCommand": "cd /Users/sawyer/github/scry-home && git push origin main",
           "lastResolvedPath": "/usr/bin/cd"
         },
         {

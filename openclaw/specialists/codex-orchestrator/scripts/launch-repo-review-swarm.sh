@@ -2,37 +2,24 @@
 set -euo pipefail
 
 ROOT=/Users/sawyer/github
-OUT=$ROOT/REPO_REVIEWS
+OUT=$ROOT/scry-home/reference/reviews/repo-review-swarm
 TS=$(date +%Y%m%d-%H%M%S)
 RUNROOT=/Users/sawyer/.openclaw/workspace-codex-orchestrator/runs/${TS}-repo-review-swarm
 LEDGER=$RUNROOT/ledger.tsv
 mkdir -p "$OUT" "$RUNROOT"
 
-typeset -a DEFAULT_REPOS=(
-  augur
-  c-from-the-ground-up
-  CallRift
-  dotfiles
-  dunamismax
-  elchess
-  go-web-server
-  grimoire
-  hello-world-from-hell
-  homepage
-  images
-  imaging-services-website
-  imagingservices
-  openclaw
-  oracle
-  podwatch
-  pr-firefighter
-  questlog
-  rip
-  Sawyer-Visual-Media
-  scripts
-  sentinel
-  xray-chrome
-)
+typeset -a DEFAULT_REPOS=()
+for candidate in "$ROOT"/*; do
+  [[ -d "$candidate" ]] || continue
+  repo="${candidate:t}"
+  case "$repo" in
+    __pycache__|forks|worktrees)
+      continue
+      ;;
+  esac
+  [[ -d "$candidate/.git" ]] || continue
+  DEFAULT_REPOS+=("$repo")
+done
 
 typeset -a REPOS
 if (( $# > 0 )); then
@@ -50,6 +37,11 @@ for repo in $REPOS; do
   prompt_file="$lane_dir/prompt.md"
   log_file="$lane_dir/stdout.log"
   mkdir -p "$lane_dir"
+
+  if [[ ! -d "$repo_dir/.git" ]]; then
+    print -r -- "$repo	-	$review_file	$log_file	$prompt_file	skipped-missing-repo" >> "$LEDGER"
+    continue
+  fi
 
   cat > "$prompt_file" <<EOF
 You are reviewing the repository in the current working directory.
