@@ -18,6 +18,7 @@ if _repo_root not in sys.path:
 
 from scripts.tasks.audit_openclaw_docs import audit_openclaw_docs  # noqa: E402
 from scripts.tasks.bootstrap import bootstrap  # noqa: E402
+from scripts.tasks.cab import cab_new  # noqa: E402
 from scripts.tasks.doctor import doctor  # noqa: E402
 from scripts.tasks.harden_specialists import harden_specialists  # noqa: E402
 from scripts.tasks.projects import (  # noqa: E402
@@ -37,6 +38,13 @@ from scripts.tasks.verify_config_backup import verify_config_backup  # noqa: E40
 
 COMMANDS: dict[str, dict] = {
     "bootstrap": {"fn": bootstrap},
+    "cab:new": {
+        "fn": cab_new,
+        "flags": (
+            "--project=<managed-project> --packet=<packet-name> "
+            "[--output=<path>] [--dry-run]"
+        ),
+    },
     "doctor": {"fn": doctor},
     "setup:workstation": {"fn": setup_workstation},
     "setup:config_backup": {"fn": setup_config_backup},
@@ -73,16 +81,25 @@ COMMANDS: dict[str, dict] = {
 }
 
 
+def _print_available_commands() -> None:
+    print("Available commands:", file=sys.stderr)
+    for key, cmd in COMMANDS.items():
+        flags = cmd.get("flags", "")
+        suffix = f"  {flags}" if flags else ""
+        print(f"  {key}{suffix}", file=sys.stderr)
+
+
 def main() -> None:
     command = sys.argv[1] if len(sys.argv) > 1 else None
 
+    if command in {"-h", "--help"}:
+        print("Usage: uv run python -m scripts <command> [flags]", file=sys.stderr)
+        _print_available_commands()
+        sys.exit(0)
+
     if not command or command not in COMMANDS:
         print(f"Unknown or missing command: {command or '(none)'}", file=sys.stderr)
-        print("Available commands:", file=sys.stderr)
-        for key, cmd in COMMANDS.items():
-            flags = cmd.get("flags", "")
-            suffix = f"  [{flags.split()[0]}]" if flags else ""
-            print(f"  {key}{suffix}", file=sys.stderr)
+        _print_available_commands()
         sys.exit(1)
 
     if "--help" in sys.argv:

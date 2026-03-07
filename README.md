@@ -11,6 +11,7 @@ This repo is the versioned home for:
 - local backup and restore automation
 - workstation bootstrap and config snapshots
 - small repo-management and audit scripts
+- CAB / Change Factory packets for repo work
 
 The live OpenClaw workspace is canonical for synced identity files. This repo is the durable export and operations repo around that workspace.
 
@@ -49,11 +50,26 @@ uv run python -m scripts doctor
 ## Core Commands
 
 ```bash
+uv run python -m scripts cab:new --project=scry-home --packet=repo-control-plane-slice
 uv run python -m scripts doctor           # Verify prerequisites and project health
 uv run python -m scripts projects:doctor  # Check active keeper repos tracked by this repo
 uv run python -m scripts sync:remotes     # Configure dual push remotes
 uv run python -m scripts sync:openclaw    # Sync OpenClaw workspace → this repo
 uv run python -m scripts setup:config_backup  # Create/update encrypted critical config backup
+```
+
+## CAB / Change Factory
+
+- Workflow doc: `reference/cab/WORKFLOW.md`
+- Template pack: `reference/cab/templates/`
+- Default packet output: `artifacts/cab/`
+- Research Forge is folded into each packet via `09-research-memo.md` and `research/source-log.md`
+
+Example:
+
+```bash
+uv run python -m scripts cab:new --project=scry-home --packet=repo-control-plane-slice
+uv run python -m scripts cab:new --project=openclaw --packet=weekly-review --dry-run
 ```
 
 ## Workstation Snapshots

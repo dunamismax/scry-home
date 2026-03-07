@@ -8,6 +8,7 @@
     "lint:ruff": "UV_CACHE_DIR=${UV_CACHE_DIR:-/tmp/uv-cache-scry-home} uv run ruff check .",
     "format": "bunx @biomejs/biome format --write . && UV_CACHE_DIR=${UV_CACHE_DIR:-/tmp/uv-cache-scry-home} uv run ruff format .",
     "scry:bootstrap": "uv run python -m scripts bootstrap",
+    "scry:cab:new": "uv run python -m scripts cab:new",
     "scry:doctor": "uv run python -m scripts doctor",
     "scry:setup:workstation": "uv run python -m scripts setup:workstation",
     "scry:setup:config_backup": "uv run python -m scripts setup:config_backup",
