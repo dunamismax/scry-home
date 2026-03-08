@@ -8,7 +8,8 @@ Reusable starter prompts for the current Discord workflow:
 
 This pack is meant to be used daily. The point is not prompt volume. The point is clean starts, better routing, and less thread drift.
 
-Need the short pinned version? Use `DISCORD_PINNED_QUICKSTART.md`.
+Need the Discord home-channel pinned note sources? Use `discord-pins/README.md`.
+Need the global overview? Use `DISCORD_PINNED_QUICKSTART.md`.
 
 ## Thread-first operating model
 
@@ -19,6 +20,20 @@ Need the short pinned version? Use `DISCORD_PINNED_QUICKSTART.md`.
 5. If the task changes shape, start a new thread instead of stuffing a second ask into the first one.
 
 These prompts assume threads are the task surface. They do **not** assume durable workspace channels.
+
+## Discord home-channel pins
+
+The live pinned note copy for each agent home channel now lives in `discord-pins/`:
+
+- `discord-pins/scry.md`
+- `discord-pins/codex.md`
+- `discord-pins/research.md`
+- `discord-pins/scribe.md`
+- `discord-pins/operator.md`
+- `discord-pins/sentinel.md`
+- `discord-pins/luma.md`
+
+Use those files for live Discord pinned messages. `DISCORD_PINNED_QUICKSTART.md` is a global overview, not the verbatim source for every channel.
 
 ## Quick chooser
 

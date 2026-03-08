@@ -28,8 +28,8 @@
 
 - Use this workspace for canonical edits to Scry core docs, memory, and the shared prompt library.
 - The canonical Discord prompt pack lives at `prompts/openclaw/` in this workspace.
-- `prompts/openclaw/README.md` is the full chooser; `prompts/openclaw/DISCORD_PINNED_QUICKSTART.md` is the pin-ready short version.
-- When agent home channels, prompt selection, or the OpenClaw upstream flow changes, update the README and the pinned quick-start together.
+- `prompts/openclaw/README.md` is the full chooser; `prompts/openclaw/discord-pins/` holds the live per-channel pinned-note source files; `prompts/openclaw/DISCORD_PINNED_QUICKSTART.md` is the global overview.
+- When agent home channels, prompt selection, or the OpenClaw upstream flow changes, update the README plus the affected `discord-pins/*.md` files; update `DISCORD_PINNED_QUICKSTART.md` too if the global overview changed.
 - When a task becomes multi-step or phase-based, maintain root `BUILD.md` per `AGENTS.md`.
 - If a change alters future behavior in a durable way and that change is not obvious from the docs alone, record it in `MEMORY.md` or daily memory as appropriate.
 - Keep diffs narrow and intentional; repair drift instead of layering workaround prose on top of stale instructions.
@@ -67,7 +67,7 @@ Run this when the mirrored repo contents changed and lint is relevant to the tou
 ## Verification Rules for This Workspace
 
 - **Core doc edits (`SOUL.md`, `AGENTS.md`, `CLAUDE.md`):** re-read changed files for consistency, then run `sync:openclaw` so downstream copies are updated.
-- **Prompt-pack edits (`prompts/openclaw/`):** re-read the changed prompt files plus `README.md` and `DISCORD_PINNED_QUICKSTART.md` together when either chooser changes.
+- **Prompt-pack edits (`prompts/openclaw/`):** re-read the changed prompt files plus `README.md` and the affected `discord-pins/*.md` files together when home-channel routing or chooser copy changes; include `DISCORD_PINNED_QUICKSTART.md` when the global overview changes.
 - **Mirror-affecting changes:** run `bun run lint` in `~/github/scry-home` if it covers the changed files; otherwise do a manual consistency pass and say so.
 - **Specialist propagation changes:** run `specialists:harden` when the task changes shared specialist templates, hooks, or propagated workspace docs.
 

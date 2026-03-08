@@ -1,6 +1,6 @@
 # BUILD.md
 
-**Current status:** phase = Discord prompt pin + canonical doc final pass in progress · last updated = 2026-03-07 21:55 America/New_York · latest relevant focus = adding a pin-ready Discord prompt chooser, folding it into the canonical thread-first prompt pack, and making the final MEMORY/CLAUDE/AGENTS review pass so prompt guidance and sync expectations stay durable
+**Current status:** phase = Discord home-channel pinned note split complete · last updated = 2026-03-07 22:36 America/New_York · latest relevant focus = canonical per-channel Discord pinned-note sources now exist under the prompt pack, and all seven agent home channels have matching customized live pins
 
 ## Phase plan
 
@@ -211,6 +211,21 @@
 - `MEMORY.md` now records the durable rule that prompt-pack routing changes require updating both chooser files together and re-running sync/hardening.
 - `AGENTS.md` was reviewed and the existing clarity edits remain current; `SOUL.md` was reviewed and left unchanged.
 - Verification: re-read the changed chooser/docs manually, then ran `uv run python -m scripts specialists:harden` ✅, `uv run python -m scripts sync:openclaw` ✅, `bun run lint` ✅, and `uv run python -m scripts openclaw:audit` ✅.
+
+### Phase 18 — Discord home-channel pinned note split
+- [x] Inspect the live Discord home-channel pins and confirm the generic note drift
+- [x] Create canonical per-channel pinned-note source files under the prompt pack
+- [x] Update chooser/docs so the global overview is no longer treated as the live pin source
+- [x] Sync / harden the updated prompt pack and re-run verification
+- [x] Replace or add the live pinned note in each agent home channel so each one matches its own prompt set
+- [x] Commit the canonical workspace changes and mirrored `scry-home` changes cleanly
+
+### Phase 18 snapshot — 2026-03-07 22:36 ET
+- Added canonical per-channel pinned-note source files under `prompts/openclaw/discord-pins/` for `#scry`, `#codex`, `#research`, `#scribe`, `#operator`, `#sentinel`, and `#luma`.
+- Reframed `prompts/openclaw/DISCORD_PINNED_QUICKSTART.md` as a global overview only, and updated `prompts/openclaw/README.md`, `CLAUDE.md`, and `MEMORY.md` so live home-channel pins now point at the per-channel source files instead of one shared generic note.
+- Updated the live Discord home-channel pinned notes: edited existing pins in `#scry` (`1480033679408627762`), `#codex` (`1480037066267168911`), and `#research` (`1480037069207240846`); created and pinned new customized notes in `#scribe` (`1480046027896651888`), `#operator` (`1480046029750407300`), `#sentinel` (`1480046031356952779`), and `#luma` (`1480046033177284678`).
+- Verification: re-read the changed chooser / overview / per-channel pin files manually; `uv run python -m scripts specialists:harden` ✅, `uv run python -m scripts sync:openclaw` ✅, `bun run lint` ✅, `uv run python -m scripts openclaw:audit` ✅; `message list-pins` confirmed the final live pin state across all seven home channels.
+- Commits: workspace and `scry-home` were both committed cleanly with message `Split Discord home-channel pinned notes`.
 
 ## Immediate next pass priorities
 

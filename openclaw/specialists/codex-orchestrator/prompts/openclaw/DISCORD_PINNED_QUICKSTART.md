@@ -1,5 +1,8 @@
 # OpenClaw Prompt Quick Start
 
+**Global overview only.** Do **not** pin this verbatim into every Discord home channel.
+For the live per-channel pinned note sources, use `discord-pins/README.md`.
+
 **One ask = one new thread** under the right home channel.
 If the work changes shape, start a new thread instead of stuffing two jobs into one.
 
