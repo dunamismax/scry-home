@@ -78,7 +78,7 @@ All primary repos under `~/github` are cloned locally and use dual SSH remotes w
 
 ### File Sync Model
 
-Workspace is canonical → synced to `scry-home` root + `openclaw/` dir via `sync-openclaw` script. Shared OpenClaw skills under `~/.openclaw/skills` are also mirrored into `scry-home/openclaw/shared-skills/` for backup. CLAUDE.md in other repos points to `scry-home`. Edit workspace, sync outward.
+Workspace is canonical → synced to `scry-home` root + `openclaw/` dir via `sync-openclaw` script. CLAUDE.md in other repos points to `scry-home`. Edit workspace, sync outward.
 
 ## Open-Source Contributions
 
@@ -112,6 +112,6 @@ Workspace is canonical → synced to `scry-home` root + `openclaw/` dir via `syn
 - Memory search fix (2026-03-07): local memory indexing now uses Ollama embeddings with `nomic-embed-text` plus a local placeholder API key (`ollama-local`). Codex OAuth does not satisfy memory embeddings.
 - Discord trust posture (2026-03-07): the Discord deployment is a private single-user server for Stephen only. `openclaw status` may still emit a generic multi-user warning because the heuristic only sees allowlisted group targets.
 - Discord architecture decision (2026-03-07): durable Discord organization now uses **channels for agent homes and long-lived workspaces; threads only for temporary task branches**. The server layout is split into `Agents` and `Workspaces`, and all workspace channels are explicitly allowlisted + bound in OpenClaw config.
-- Skills workflow decision (2026-03-07): reusable prompt-like workflows should be promoted into OpenClaw skills when they are likely to be reused across agents. Use `~/.openclaw/workspace/prompts/` for raw copy/paste prompts, and `~/.openclaw/skills/` for shared agent-native skills. Shared skills should be mirrored into `scry-home/openclaw/shared-skills/` for backup.
+- Prompt-storage decision (2026-03-07): reusable raw prompts live under `~/.openclaw/workspace/prompts/` and are mirrored into `scry-home/openclaw/prompts/`. Do not pursue a custom shared-skills rollout for these Discord workspace modes right now.
 - OpenClaw backup posture (2026-03-07): `scry-home` now carries an encrypted off-machine backup of high-value OpenClaw runtime state, not just docs/config. Current encrypted scope includes `.openclaw/agents`, `.openclaw/memory`, `.openclaw/subagents`, `.openclaw/cron`, and `.openclaw/delivery-queue` in addition to the prior critical-config set.
 - Backup architecture note (2026-03-07): the current encrypted OpenClaw runtime artifact is large (~96 MB) and successfully pushes to private GitHub + Codeberg, but long-term the cleaner destination for rotating runtime blobs is a dedicated backup target (restic/B2/S3/NAS) rather than normal git history.

@@ -10,7 +10,6 @@ Sync map:
   ~/.openclaw/workspace/memory/**/*.md     → <repo>/openclaw/memory/
   ~/.openclaw/workspace/docs/**/*.md       → <repo>/openclaw/docs/
   ~/.openclaw/workspace/prompts/**/*.md    → <repo>/openclaw/prompts/
-  ~/.openclaw/skills/**/*                  → <repo>/openclaw/shared-skills/
   ~/.openclaw/workspace-*/**/*.md          → <repo>/openclaw/specialists/<agentId>/
   ~/.openclaw/workspace-*/scripts/         → <repo>/openclaw/specialists/<agentId>/scripts/
   ~/.openclaw/workspace-*/templates/       → <repo>/openclaw/specialists/<agentId>/templates/
@@ -52,9 +51,6 @@ SPECIALIST_DIRS = ["scripts", "templates", "hooks"]
 EXTRA_FILES = [
     ("cron/jobs.json", "cron-jobs.json"),
     ("exec-approvals.json", "exec-approvals.json"),
-]
-SHARED_TREES = [
-    ("skills", "shared-skills"),
 ]
 
 
@@ -325,17 +321,6 @@ def sync_openclaw() -> None:
     log_step("OpenClaw config files → openclaw/")
     for src, dest in EXTRA_FILES:
         _sync_file(OPENCLAW_ROOT / src, REPO_ROOT / "openclaw" / dest, result)
-
-    log_step("Shared OpenClaw trees → openclaw/")
-    for src, dest in SHARED_TREES:
-        src_dir = OPENCLAW_ROOT / src
-        dest_dir = REPO_ROOT / "openclaw" / dest
-        if src_dir.exists():
-            _sync_tree(src_dir, dest_dir, result)
-        elif dest_dir.exists():
-            shutil.rmtree(dest_dir)
-            print(f"  [DELETE] {dest_dir}")
-            result.deleted += 1
 
     log_step("Specialist workspace mirrors → openclaw/specialists/")
     _sync_specialists(result)

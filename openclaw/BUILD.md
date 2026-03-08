@@ -118,6 +118,19 @@
 - `launchctl print gui/$(id -u)/com.scry.openclaw.backup` now reports `last exit code = 0` after reload.
 - Off-machine publication succeeded to both private remotes; current artifact size is ~96 MB, so future migration to a dedicated blob backup target is still the cleaner long-term path.
 
+### Phase 12 — Discord workspaces vs custom skills rollback
+- [x] Restore Discord workspace channel bindings/allowlist after the temporary home-only cutover
+- [x] Confirm no workspace channels were deleted during the reversal
+- [x] Remove the custom shared skills that were created during the experiment
+- [x] Keep the reusable OpenClaw bug prompt as markdown under `workspace/prompts/`
+- [x] Revert workspace/sync-memory drift that implied a shared-skills rollout was the new default
+
+### Rollback snapshot — 2026-03-07 19:59 ET
+- The Discord server remains on the channel-plus-workspaces architecture; no workspace channels were deleted.
+- The temporary config cutover to home-channels-only was reverted and full workspace bindings were restored.
+- Custom shared skills created during the experiment were removed.
+- The OpenClaw mergeable bug scout prompt remains as a plain markdown prompt in `~/.openclaw/workspace/prompts/openclaw/bug-hunt-mergeable-fix-scout.md`.
+
 ## Immediate next pass priorities
 
 1. If desired, move rotating encrypted runtime backup blobs out of normal git history and onto a dedicated backup target (restic/B2/S3/NAS) while keeping `scry-home` as the control plane/manifest.
