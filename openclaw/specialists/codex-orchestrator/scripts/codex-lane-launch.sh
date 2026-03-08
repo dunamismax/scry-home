@@ -28,12 +28,31 @@ fi
 
 WS="/Users/sawyer/.openclaw/workspace-codex-orchestrator"
 RUNS_DIR="$WS/runs"
+STATE_HELPER="$WS/scripts/codex-state.py"
 CODEX_BATCH_DIR="${CODEX_BATCH_DIR:-}"
+CODEX_STATE_FILE="${CODEX_STATE_FILE:-}"
+CODEX_STATE_TASK_ID="${CODEX_STATE_TASK_ID:-}"
+CODEX_STATE_TASK_TITLE="${CODEX_STATE_TASK_TITLE:-$LANE_NAME}"
+CODEX_STATE_OWNER="${CODEX_STATE_OWNER:-$LANE_NAME}"
 mkdir -p "$RUNS_DIR"
 
 slug=$(printf '%s' "$LANE_NAME" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9._-]+/-/g; s/^-+//; s/-+$//')
 if [[ -z "$slug" ]]; then
   slug="lane"
+fi
+
+if [[ -n "$CODEX_BATCH_DIR" && -f "$CODEX_BATCH_DIR/manifest.json" && -z "$CODEX_STATE_FILE" ]]; then
+  CODEX_STATE_FILE=$(python3 - "$CODEX_BATCH_DIR/manifest.json" <<'PY'
+import json, sys
+with open(sys.argv[1], 'r', encoding='utf-8') as f:
+    data = json.load(f)
+print(data.get('stateFile', ''))
+PY
+)
+fi
+
+if [[ -n "$CODEX_STATE_FILE" && -z "$CODEX_STATE_TASK_ID" ]]; then
+  CODEX_STATE_TASK_ID="$slug"
 fi
 
 ts=$(date -u +%Y%m%dT%H%M%SZ)
@@ -55,8 +74,10 @@ REPO_HEAD=""
 REPO_DIRTY="unknown"
 if git -C "$REPO_DIR" rev-parse --show-toplevel >/dev/null 2>&1; then
   REPO_TOPLEVEL=$(git -C "$REPO_DIR" rev-parse --show-toplevel)
-  REPO_BRANCH=$(git -C "$REPO_DIR" rev-parse --abbrev-ref HEAD)
-  REPO_HEAD=$(git -C "$REPO_DIR" rev-parse HEAD)
+  REPO_BRANCH=$(git -C "$REPO_DIR" symbolic-ref --quiet --short HEAD 2>/dev/null || true)
+  if git -C "$REPO_DIR" rev-parse --verify HEAD >/dev/null 2>&1; then
+    REPO_HEAD=$(git -C "$REPO_DIR" rev-parse HEAD)
+  fi
   if [[ -n "$(git -C "$REPO_DIR" status --short 2>/dev/null)" ]]; then
     REPO_DIRTY="true"
   else
@@ -95,7 +116,10 @@ cat > "$MANIFEST" <<JSON
   "repoHead": "$REPO_HEAD",
   "repoDirty": "$REPO_DIRTY",
   "mode": "exec",
-  "batchDir": "$CODEX_BATCH_DIR"
+  "batchDir": "$CODEX_BATCH_DIR",
+  "stateFile": "$CODEX_STATE_FILE",
+  "stateTaskId": "$CODEX_STATE_TASK_ID",
+  "stateOwner": "$CODEX_STATE_OWNER"
 }
 JSON
 
@@ -136,6 +160,17 @@ with open(path, 'w', encoding='utf-8') as f:
 PY
 fi
 
+if [[ -n "$CODEX_STATE_FILE" && -n "$CODEX_STATE_TASK_ID" ]]; then
+  python3 "$STATE_HELPER" task-upsert "$CODEX_STATE_FILE" \
+    --id "$CODEX_STATE_TASK_ID" \
+    --title "$CODEX_STATE_TASK_TITLE" \
+    --owner "$CODEX_STATE_OWNER" \
+    --status in_progress \
+    --repo "$REPO_DIR" \
+    --run-dir "$RUN_DIR" \
+    --append-note "lane started at $(date -u +%Y-%m-%dT%H:%M:%SZ)" >/dev/null
+fi
+
 {
   echo "RUN_DIR=$RUN_DIR"
   echo "REPO_DIR=$REPO_DIR"
@@ -143,6 +178,9 @@ fi
   echo "REASONING=$REASONING"
   echo "SANDBOX=$SANDBOX"
   echo "BATCH_DIR=$CODEX_BATCH_DIR"
+  echo "STATE_FILE=$CODEX_STATE_FILE"
+  echo "STATE_TASK_ID=$CODEX_STATE_TASK_ID"
+  echo "STATE_OWNER=$CODEX_STATE_OWNER"
   echo "STARTED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
   echo "COMMAND=${cmd[*]}"
 } | tee "$STDOUT_LOG"
@@ -167,6 +205,22 @@ with open(path, 'w', encoding='utf-8') as f:
     json.dump(data, f, indent=2)
     f.write('\n')
 PY
+
+if [[ -n "$CODEX_STATE_FILE" && -n "$CODEX_STATE_TASK_ID" ]]; then
+  final_state="failed"
+  if [[ "$status" == "0" ]]; then
+    final_state="done"
+  fi
+  python3 "$STATE_HELPER" task-upsert "$CODEX_STATE_FILE" \
+    --id "$CODEX_STATE_TASK_ID" \
+    --title "$CODEX_STATE_TASK_TITLE" \
+    --owner "$CODEX_STATE_OWNER" \
+    --status "$final_state" \
+    --repo "$REPO_DIR" \
+    --run-dir "$RUN_DIR" \
+    --output "$FINAL_FILE" \
+    --append-note "lane exited with code $status at $(date -u +%Y-%m-%dT%H:%M:%SZ)" >/dev/null
+fi
 
 echo "EXIT_CODE=$status" | tee -a "$STDOUT_LOG"
 echo "$RUN_DIR"

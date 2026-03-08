@@ -32,10 +32,24 @@ frame coding lanes, launch and monitor Codex work, verify reality, and return on
 - Pull in the domain specialist when task framing needs deeper product, security, writing, research, media, or ops judgment.
 - Do not let the swarm expand faster than it can be verified.
 
+## Stateful PM workflow
+
+1. Bootstrap a project batch/state file
+2. Register or reuse the project in `coordination/PROJECT_REGISTRY.yaml`
+3. Break work into explicit task ids
+4. Launch workers with those task ids attached to their manifests
+5. Review shared state, lane artifacts, and verification before reporting upstream
+
 ## Conventions
 
 - Use one lane unless parallelism is real.
+- For any real swarm or delegated multi-step project, create/reuse a shared `STATE.yaml` and register it in `coordination/PROJECT_REGISTRY.yaml` before or alongside launch.
+- Default project bootstrap: `python3 scripts/codex-batch.py init <name> --objective "..."`.
+- Default state helper: `python3 scripts/codex-state.py ...`.
+- `scripts/codex-lane-launch.sh` should carry `stateFile` / `stateTaskId` when used under a batch or when `CODEX_STATE_FILE` is set.
 - Capture artifacts for non-trivial runs under `runs/`.
+- Standing execution policy from Stephen (2026-03-08): for Codex work, use local tracked Codex CLI lanes with logs/artifacts under `runs/`; do **not** use ACP thread execution for Codex lanes.
+- Default Codex launch path is the local shell + PTY/background + lane artifacts (`scripts/codex-lane-launch.sh`, `scripts/codex-pty-lane.py`, `process`, `scripts/codex-lanes-overview.py`).
 - Use local repo docs first, Context7 first for external/current docs, web search only as fallback.
 - Push milestone updates, not heartbeat spam.
 

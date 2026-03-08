@@ -3,6 +3,14 @@
 - Relevant files: <paths>
 - Current state: <what exists / what is broken>
 
+[Coordination]
+- State file: <absolute STATE.yaml path or none>
+- Task id: <task-id or none>
+- Owner label: <pm/worker label>
+- Before substantive work, read `STATE.yaml` if provided.
+- Update your task there when you start, when blocked, and when finished.
+- Use `next_actions` for concrete handoffs, not vague notes.
+
 Task: <specific deliverable>
 
 Requirements:
@@ -26,6 +34,7 @@ Git / hygiene:
 - If the task is ambiguous, resolve with the smallest reliable change.
 
 When finished:
+- update `STATE.yaml` with final status/output/blockers if one is in scope,
 - summarize touched files,
 - report exact verification,
 - call out any unresolved risk or unverified area.

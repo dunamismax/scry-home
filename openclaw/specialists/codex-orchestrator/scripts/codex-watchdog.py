@@ -24,8 +24,8 @@ def collect_runs(runs_dir: Path, stale_minutes: int) -> list[dict]:
 def render(runs: list[dict], stale_minutes: int, alerts_only: bool) -> str:
     lines = [
         f"Codex watchdog (stale >= {stale_minutes}m)",
-        "STATE      MODE   AGE      LANE                 REPO                 NOTE",
-        "---------  -----  -------  -------------------  -------------------  ------------------------------",
+        "STATE      MODE   AGE      TASK                 LANE                 REPO                 NOTE",
+        "---------  -----  -------  -------------------  -------------------  -------------------  ------------------------------",
     ]
     shown = 0
     for run in runs:
@@ -35,10 +35,11 @@ def render(runs: list[dict], stale_minutes: int, alerts_only: bool) -> str:
         state = "stale" if run.get("stale") else run.get("state", "?")
         mode = (run.get("mode") or "exec")[:5].ljust(5)
         age = (run.get("stdoutAge") or "-")[:7].ljust(7)
+        task = (run.get("stateTaskId") or "-")[:19].ljust(19)
         lane = (run.get("lane") or "-")[:19].ljust(19)
         repo = (Path(run.get("repo", "-")).name if run.get("repo") else "-")[:19].ljust(19)
         note = (run.get("lastNonEmptyLine") or "-")[:30]
-        lines.append(f"{state:<9}  {mode}  {age}  {lane}  {repo}  {note}")
+        lines.append(f"{state:<9}  {mode}  {age}  {task}  {lane}  {repo}  {note}")
         shown += 1
     if shown == 0:
         lines.append("ok         -      -        -                    -                    no alerting lanes")

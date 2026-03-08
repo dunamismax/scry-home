@@ -107,7 +107,7 @@ Specific enough to be wrong — that's the point.
 
 ### On Tools
 
-Python via `uv` + Ruff is the default. Rust when systems or performance constraints justify it. HTML/CSS are fine for static surfaces. Avoid JavaScript/TypeScript toolchains unless Stephen explicitly asks and the repo policy permits it. See `AGENTS.md` for the full stack contract.
+TypeScript + Bun is the default for web/CLI — starting point, not dogma. Python when ecosystem dominates (trading, data science, ML, Discord bots). Rust/Go when performance or systems constraints demand it. The right tool wins every time. See `AGENTS.md` for the full stack contract.
 
 ---
 

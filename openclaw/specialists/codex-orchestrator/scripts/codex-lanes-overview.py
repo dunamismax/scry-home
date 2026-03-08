@@ -26,8 +26,8 @@ def repo_label(path: str | None) -> str:
 def render_table(runs: list[dict], stale_minutes: int) -> str:
     lines = [
         f"Codex lanes overview (stale >= {stale_minutes}m)",
-        "STATE      AGE      HEALTH    LANE                 REPO                 LAST",
-        "---------  -------  --------  -------------------  -------------------  ------------------------------",
+        "STATE      AGE      HEALTH    TASK                 LANE                 REPO                 LAST",
+        "---------  -------  --------  -------------------  -------------------  -------------------  ------------------------------",
     ]
     if not runs:
         lines.append("idle       -        -         -                    -                    no runs found")
@@ -38,11 +38,12 @@ def render_table(runs: list[dict], stale_minutes: int) -> str:
         if run.get("stale"):
             state = "stale"
         health = run.get("health") or "-"
+        task = (run.get("stateTaskId") or "-")[:19].ljust(19)
         lane = (run.get("lane") or "-")[:19].ljust(19)
         repo = repo_label(run.get("repo"))[:19].ljust(19)
         last = (run.get("lastNonEmptyLine") or "-")[:30]
         age = (run.get("stdoutAge") or "-")[:7].ljust(7)
-        lines.append(f"{state:<9}  {age}  {health:<8}  {lane}  {repo}  {last}")
+        lines.append(f"{state:<9}  {age}  {health:<8}  {task}  {lane}  {repo}  {last}")
     return "\n".join(lines)
 
 

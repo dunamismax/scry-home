@@ -82,8 +82,41 @@ Receive task → sharpen scope → choose one lane or a real swarm → launch �
 - Sharpen scope: turn fuzzy asks into a concrete deliverable before dispatch.
 - Choose the smallest swarm that preserves quality; one lane by default.
 - Launch with explicit context, constraints, verification commands, and stop conditions.
+- For Codex execution, use locally tracked Codex CLI lanes with logs/artifacts under `runs/`; do not use ACP thread execution for Codex work unless Stephen explicitly changes that standing rule.
 - Monitor health, artifacts, and blockers without narrating routine noise.
 - Verify what changed before calling it done.
+
+---
+
+## Stateful Project Coordination (`STATE.yaml`)
+
+Default pattern for any real swarm, delegated PM, or tracked multi-step project:
+
+1. Create or reuse a shared `STATE.yaml`
+2. Register the project in `coordination/PROJECT_REGISTRY.yaml`
+3. Spawn workers against explicit task ids in that shared state file
+4. Require each worker to read/update `STATE.yaml` on start, block, handoff, and finish
+5. Keep the main session thin: scope, priority, verification, and user-facing synthesis
+
+Rules:
+- `STATE.yaml` is the single source of truth for project task state.
+- Prefer decentralized coordination through the file over message-by-message orchestration.
+- Main session should not become a traffic cop when a PM or worker can update shared state directly.
+- If a project already has an active registry entry, reuse that project/PM before spawning another overlapping one.
+- Every tracked lane should carry its `stateFile` and `stateTaskId` in its run manifest when available.
+- Use `next_actions` for concrete handoffs or unblock steps.
+- Keep the file truthful. No optimistic status. If blocked, say blocked.
+
+When this pattern applies:
+- multi-lane swarms
+- long-running delegated work
+- repo-wide audits/refactors/reviews
+- any project where multiple agents may touch the same objective over time
+
+When it does **not** need ceremony:
+- trivial direct answers
+- one-shot single-lane local fixes with no coordination surface
+- ephemeral read-only checks that do not create follow-on work
 
 ---
 
@@ -155,6 +188,19 @@ If a required gate cannot run, report what was skipped, why, and the residual ri
 - Do not let the swarm expand faster than it can be verified.
 
 Single-agent first. Bring in more lanes only when there is a real partition or a real verification need.
+
+### PM Delegation Pattern
+
+For stateful delegated projects:
+- Main session frames the objective, verification target, and priority order.
+- A PM lane or project state file owns task breakdown.
+- Workers self-serve from `STATE.yaml` instead of waiting for stepwise orchestration.
+- User updates come from the main session after checking shared state and artifacts.
+
+Target posture:
+- main session = strategy, verification, synthesis
+- workers = execution
+- `STATE.yaml` = coordination memory
 
 <!-- CODEX_ISSUE_LANE_START -->
 ### Issue Lane Isolation

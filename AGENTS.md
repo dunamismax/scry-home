@@ -60,28 +60,31 @@ Tie-breaker: prefer the safer path with lower blast radius, then the more revers
 
 ## Stack Contract
 
-The default stack for repos in this environment. Use it unless something else is genuinely better for the task.
+The default stack for web and CLI projects. Use it unless something else is genuinely better for the task.
 
 | Layer | Default |
 |---|---|
-| Runtime / package manager | uv |
-| Primary language | Python |
-| Web / API | FastAPI |
-| CLI | Python stdlib or Typer when it earns its keep |
-| Database | Postgres or SQLite |
-| Validation | Pydantic |
-| Formatting / linting | Ruff |
-| Systems language | Rust |
+| Runtime / package manager | Bun |
+| App framework | Vite + React Router (framework mode, SPA-first `ssr: false`) |
+| UI | React + TypeScript |
+| Mobile | React Native + Expo |
+| Styling / components | Tailwind CSS + shadcn/ui |
+| Database | Postgres |
+| ORM / migrations | Drizzle ORM + drizzle-kit |
+| Server state | TanStack Query |
+| Auth | Better Auth (no Auth.js) |
+| Validation | Zod |
+| Formatting / linting | Biome (no ESLint/Prettier) |
 
-**Disallowed by default:** Bun, npm, pnpm, yarn, TypeScript/JavaScript build stacks, ESLint, Prettier, Next.js, Auth.js.
+**Disallowed by default:** npm / pnpm / yarn, ESLint / Prettier, Next.js, Auth.js.
 
 ### Language Policy
 
-- **Python** — the default for applications, services, CLIs, scripting, automation, data pipelines, trading, ML, Discord bots, and standalone utilities. Toolchain: **uv** for project management/execution and **Ruff** for linting/formatting. Use `uv run` to execute and `uv add` for deps.
-- **Rust** — when performance, distribution, or systems constraints justify it.
-- **HTML/CSS** — allowed for static surfaces without introducing a JS/TS build toolchain.
+- **TypeScript + Bun** — applications, websites, CLIs with rich UI, and libraries.
+- **Python** — all scripting, automation, data pipelines, trading, ML, Discord bots, and any standalone tool/utility. Scripts live in `~/github/pyforge`. Python toolchain: **uv** (package/project/venv management), **ruff** (linting/formatting). Use `uv run` to execute, `uv add` for deps, `uv pip` for global installs. No raw `pip3` or `python3` invocations.
+- **Rust / Go** — when performance or systems constraints demand it.
 
-Default to Python. Reach for Rust only when there is a concrete systems or performance reason. If a task seems to require JavaScript or TypeScript, stop and justify it explicitly.
+TypeScript is for products. Python is for scripts. Don't use TypeScript for scripting; don't use Python for web apps. If the line is blurry, ask.
 
 ### Right Tool for the Job
 
@@ -310,10 +313,9 @@ Run the smallest set that proves correctness for the change type:
 
 | Change type | Required checks |
 |---|---|
-| Docs only | Manual consistency check; run repo-owned lint if the touched files participate in it |
-| Python / app logic | `uv run ruff check .` → relevant tests or command-path execution |
-| Rust / systems logic | relevant `cargo` checks/tests for the touched crate or module |
-| Database / migrations | Generate / validate migration → run affected service checks → sanity-check SQL |
+| Docs only | Lint if configured; manual consistency check otherwise |
+| TypeScript / app logic | `bun run lint` → `bun run typecheck` → relevant tests |
+| Database / Drizzle | Generate / validate migration → typecheck → sanity-check SQL |
 | Scripts / CLI | Execute modified path with safe inputs → capture evidence |
 
 If any gate cannot run, report what was skipped, why, and residual risk.

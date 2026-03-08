@@ -15,29 +15,29 @@
         {
           "id": "ce01102e-c53a-4267-bc3b-0aae898156a4",
           "pattern": "/bin/chmod",
-          "lastUsedAt": 1772932317444,
-          "lastUsedCommand": "chmod +x /Users/sawyer/.openclaw/workspace-codex-orchestrator/scripts/prepare-issue-worktree.sh /Users/sawyer/.openclaw/workspace-codex-orchestrator/scripts/launch-issue-lane.sh",
+          "lastUsedAt": 1772981543734,
+          "lastUsedCommand": "chmod +x scripts/codex-state.py scripts/codex-batch.py scripts/codex-lane-launch.sh && python3 -m py_compile scripts/codex-state.py scripts/codex-batch.py scripts/codex_lane_lib.py scripts/codex-lanes-overview.py scripts/codex-watchdog.py && python3 scripts/codex-state.py --help && echo '---' && python3 scripts/codex-batch.py init stateful-test --objective \"smoke\" --note \"bootstrap smoke note\" && echo '---BATCHS---' && ls -1dt runs/batches/* | head -n 1",
           "lastResolvedPath": "/bin/chmod"
         },
         {
           "id": "9519889d-4acf-4af6-a47a-792430b8f68d",
           "pattern": "/bin/ls",
-          "lastUsedAt": 1772943501574,
-          "lastUsedCommand": "pwd && ls -la && echo '---' && fd -HI -td . ~/github/changeledger -d 2 | sed 's#^#/##' | head -200",
+          "lastUsedAt": 1773003983640,
+          "lastUsedCommand": "pwd && ls -la && printf '\\n--- github root ---\\n' && ls -la ~/github && printf '\\n--- workspace scripts ---\\n' && ls -la scripts | sed -n '1,160p' && printf '\\n--- coding-agent skill ---\\n' && cat ~/.openclaw/lib/node_modules/openclaw/extensions/acpx/skills/coding-agent/SKILL.md",
           "lastResolvedPath": "/bin/pwd"
         },
         {
           "id": "bfa8b5da-e7a3-4c88-aa15-ad85c058d89e",
           "pattern": "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
-          "lastUsedAt": 1772979625742,
-          "lastUsedCommand": "python3 - <<'PY'\nfrom pathlib import Path\npaths = [\n    Path('/Users/sawyer/github/changeledger/.env.example'),\n    Path('/Users/sawyer/github/changeledger/README.md'),\n    Path('/Users/sawyer/github/changeledger/packages/core/alembic.ini'),\n    Path('/Users/sawyer/github/changeledger/packages/core/migrations/env.py'),\n    Path('/Users/sawyer/github/changeledger/packages/core/src/changeledger_core/settings.py'),\n    Path('/Users/sawyer/github/changeledger/tests/test_api.py'),\n]\nfor path in paths:\n    text = path.read_text()\n    text = text.replace('postgresql://changeledger:changeledger@127.0.0.1:5432/changeledger', 'postgresql+psycopg://changeledger:changeledger@127.0.0.1:5432/changeledger')\n    text = text.replace('postgresql://changeledger:changeledger@127.0.0.1:1/changeledger', 'postgresql+psycopg://changeledger:changeledger@127.0.0.1:1/changeledger')\n    path.write_text(text)\nPY",
+          "lastUsedAt": 1773006051337,
+          "lastUsedCommand": "python3 scripts/codex-state.py task-upsert runs/batches/20260308T210740Z-game-dev-pivot/STATE.yaml --id godot-csharp-lab --title 'Scaffold godot-csharp-lab' --owner 'codex:godot-csharp-lab' --status done --repo /Users/sawyer/github/godot-csharp-lab --run-dir /Users/sawyer/.openclaw/workspace-codex-orchestrator/runs/20260308T212130Z-godot-csharp-lab --append-note 'follow-up docs link fix committed and pushed to origin/main' && for r in godot-csharp-lab blender-game-assets game-dev-tools-py courier-of-the-weird dunamismax; do echo \"===== $r =====\"; git -C \"$HOME/github/$r\" status --short --branch; git -C \"$HOME/github/$r\" log --oneline -1; echo; done",
           "lastResolvedPath": "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3"
         },
         {
           "id": "da7c0235-c67f-4853-acfa-ec491c995b82",
           "pattern": "/bin/pwd",
-          "lastUsedAt": 1772943501573,
-          "lastUsedCommand": "pwd && ls -la && echo '---' && fd -HI -td . ~/github/changeledger -d 2 | sed 's#^#/##' | head -200",
+          "lastUsedAt": 1773003983640,
+          "lastUsedCommand": "pwd && ls -la && printf '\\n--- github root ---\\n' && ls -la ~/github && printf '\\n--- workspace scripts ---\\n' && ls -la scripts | sed -n '1,160p' && printf '\\n--- coding-agent skill ---\\n' && cat ~/.openclaw/lib/node_modules/openclaw/extensions/acpx/skills/coding-agent/SKILL.md",
           "lastResolvedPath": "/bin/pwd"
         },
         {
@@ -158,8 +158,8 @@
         {
           "id": "31cdf770-7330-4059-a8f5-926bfb9547a7",
           "pattern": "/usr/bin/git",
-          "lastUsedAt": 1772979631247,
-          "lastUsedCommand": "git add BUILD.md MEMORY.md TOOLS.md && git commit -m \"Clean up OpenClaw doc drift and heartbeat config notes\"",
+          "lastUsedAt": 1772979639847,
+          "lastUsedCommand": "git add openclaw/BUILD.md openclaw/exec-approvals.json && git add -f vault/config/critical-configs.meta.json vault/config/critical-configs.tar.enc && git commit -m \"Refresh OpenClaw backup and cleanup checkpoint\" && git push origin main",
           "lastResolvedPath": "/usr/bin/git"
         },
         {

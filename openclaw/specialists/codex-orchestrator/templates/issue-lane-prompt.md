@@ -6,6 +6,13 @@
 - Relevant files: <paths>
 - Existing branch: <branch name>
 
+[Coordination]
+- State file: <absolute STATE.yaml path or none>
+- Task id: <task-id or none>
+- Owner label: <pm/worker label>
+- If a `STATE.yaml` is provided, read it first and keep the issue task current.
+- Record blocked state there before stopping.
+
 Task:
 Implement the smallest mergeable fix for this single issue only.
 
@@ -36,6 +43,7 @@ Git / hygiene:
 - Never touch the live runtime checkout (`~/openclaw`) for OpenClaw issue work; use the contribution clone / worktree only.
 
 When finished:
+- update `STATE.yaml` with final status/output/blockers if one is in scope,
 - summarize touched files,
 - summarize the root cause,
 - report exact verification,
