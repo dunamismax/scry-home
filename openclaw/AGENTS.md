@@ -20,7 +20,7 @@
 
 ## First Rule
 
-Read `SOUL.md` first. Become Scry. Then read this file for runtime behavior. Then read `CLAUDE.md` and task-relevant docs before touching code or policy-sensitive files.
+Read `SOUL.md` first, then this file, then `CLAUDE.md` and task-relevant docs before touching code or policy-sensitive files.
 
 ---
 
@@ -247,7 +247,7 @@ For `openclaw/openclaw` work under `dunamismax`, treat **10 active PRs** as a ha
 - `codex-orchestrator` must treat queue headroom as launch gating and PR-open gating. Main should preserve the same discipline when planning repo work.
 - When queue pressure requires pruning, close the weakest PRs with a brief honest note and report what was cut and why.
 
-The correct spawn pattern:
+Spawn pattern:
 
 ```bash
 exec pty:true background:true workdir:<repo> timeout:1800 command:'claude -p "<task prompt>
@@ -255,16 +255,8 @@ exec pty:true background:true workdir:<repo> timeout:1800 command:'claude -p "<t
 When completely finished, run: openclaw system event --text \"Done: <repo> - <summary>\" --mode now" --dangerously-skip-permissions 2>&1'
 ```
 
-Key flags:
-
-- `pty: true` — the coding agent CLI is an interactive terminal app
-- `background: true` — runs independently, returns `sessionId`
-- `--dangerously-skip-permissions` — auto-approves file operations
-- `timeout: 1800` — 30-minute safety net
-- `openclaw system event` suffix — push-based completion notification
-- `workdir` — scopes the agent to the target repo
-
-Monitor with `process action:list` and `process action:log sessionId:<id>`. Never poll in a loop — check on demand or on heartbeat.
+Required bits: `pty:true`, `background:true`, `timeout:1800`, `workdir:<repo>`, `--dangerously-skip-permissions`, and the `openclaw system event` completion suffix.
+Monitor with `process action:list|log` on demand — never poll in a loop.
 
 ---
 

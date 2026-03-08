@@ -8,6 +8,8 @@ Reusable starter prompts for the current Discord workflow:
 
 This pack is meant to be used daily. The point is not prompt volume. The point is clean starts, better routing, and less thread drift.
 
+Need the short pinned version? Use `DISCORD_PINNED_QUICKSTART.md`.
+
 ## Thread-first operating model
 
 1. Pick the right home channel: `#scry`, `#codex`, `#research`, `#scribe`, `#operator`, `#sentinel`, or `#luma`.

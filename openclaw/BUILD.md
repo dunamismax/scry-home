@@ -1,6 +1,6 @@
 # BUILD.md
 
-**Current status:** phase = prompt-library refinement + OpenClaw upstream prompt pass done · last updated = 2026-03-07 21:45 America/New_York · latest relevant focus = the canonical thread-first prompt pack now has a stronger chooser/index, sharper thread-first wording, and a dedicated `openclaw/openclaw` upstream contribution slice for Scry, Codex, and Research; mirror sync and required verification completed
+**Current status:** phase = Discord prompt pin + canonical doc final pass in progress · last updated = 2026-03-07 21:55 America/New_York · latest relevant focus = adding a pin-ready Discord prompt chooser, folding it into the canonical thread-first prompt pack, and making the final MEMORY/CLAUDE/AGENTS review pass so prompt guidance and sync expectations stay durable
 
 ## Phase plan
 
@@ -194,6 +194,23 @@
 - Manual consistency pass: re-read the changed README plus the changed prompt files after the rewrite.
 - Verification: `uv run python -m scripts specialists:harden` ✅, `uv run python -m scripts sync:openclaw` ✅, `bun run lint` ✅, `uv run python -m scripts openclaw:audit` ✅.
 - Sync cleaned up two stale mirror-only Codex upstream prompt filenames in `scry-home` (`thread-openclaw-upstream-bug-hunt.md`, `thread-openclaw-upstream-issue-executor.md`) so the mirror now matches the canonical pack.
+
+### Phase 17 — Discord prompt pin + canonical doc final pass
+- [x] Re-read the current prompt README and canonical workspace docs before changing anything
+- [x] Add a pin-ready Discord chooser for the thread-first prompt workflow
+- [x] Wire that chooser into the canonical prompt pack so it is easy to find and keep current
+- [x] Make the final pass on `MEMORY.md`, `CLAUDE.md`, `AGENTS.md`, and `SOUL.md`; update only what truly changed
+- [x] Re-run propagation + verification for the affected docs/prompts
+- [x] Post the pin-ready chooser into Discord and pin it
+- [x] Commit the canonical workspace changes and mirrored `scry-home` changes cleanly
+
+### Phase 17 snapshot — 2026-03-07 22:02 ET
+- Added a pin-ready chooser at `prompts/openclaw/DISCORD_PINNED_QUICKSTART.md` and linked it from `prompts/openclaw/README.md` so the short Discord version and full chooser are both first-class.
+- Posted that chooser into `#scry` and pinned it as message `1480033679408627762`.
+- `CLAUDE.md` now treats the shared prompt library as canonical workspace material and explicitly says to keep `README.md` + `DISCORD_PINNED_QUICKSTART.md` aligned.
+- `MEMORY.md` now records the durable rule that prompt-pack routing changes require updating both chooser files together and re-running sync/hardening.
+- `AGENTS.md` was reviewed and the existing clarity edits remain current; `SOUL.md` was reviewed and left unchanged.
+- Verification: re-read the changed chooser/docs manually, then ran `uv run python -m scripts specialists:harden` ✅, `uv run python -m scripts sync:openclaw` ✅, `bun run lint` ✅, and `uv run python -m scripts openclaw:audit` ✅.
 
 ## Immediate next pass priorities
 
