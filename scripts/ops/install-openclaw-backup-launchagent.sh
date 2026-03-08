@@ -3,7 +3,7 @@ set -euo pipefail
 
 LABEL="com.scry.openclaw.backup"
 PLIST_PATH="${HOME}/Library/LaunchAgents/${LABEL}.plist"
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 SCRIPT_PATH="${REPO_ROOT}/scripts/ops/daily-openclaw-backup.sh"
 LOG_DIR="${HOME}/Library/Logs/scry"
 

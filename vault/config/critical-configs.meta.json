@@ -1,5 +1,5 @@
 {
-  "createdAt": "2026-03-07T07:20:04.743138+00:00",
+  "createdAt": "2026-03-08T00:11:12.088022+00:00",
   "host": "Stephens-MacBook-Air.local",
   "sourceHome": "~",
   "encryptedBackupFile": "vault/config/critical-configs.tar.enc",
@@ -7,9 +7,9 @@
   "kdf": "pbkdf2",
   "kdfDigest": "sha256",
   "kdfIterations": 250000,
-  "sourceFingerprint": "8d33488fc27ebc404778e1ab56afd716ccdc3edb6e1c629f227893c1bbec3e72",
-  "sourceFileCount": 43,
-  "sourceTotalBytes": 48367533,
+  "sourceFingerprint": "f32e85b8dcf6b0ff89d7f628965475e4c37ce1f493db83feb04a2def9f79cf4a",
+  "sourceFileCount": 155,
+  "sourceTotalBytes": 100423387,
   "requestedPaths": [
     ".ssh",
     ".gitconfig",
@@ -37,7 +37,12 @@
     "Library/LaunchAgents",
     "Library/Application Support/OpenClaw/identity",
     "Library/Application Support/Code - Insiders/User/mcp.json",
-    "Library/Application Support/Code/User/mcp.json"
+    "Library/Application Support/Code/User/mcp.json",
+    ".openclaw/agents",
+    ".openclaw/memory",
+    ".openclaw/subagents",
+    ".openclaw/cron",
+    ".openclaw/delivery-queue"
   ],
   "includedPaths": [
     ".ssh",
@@ -65,10 +70,15 @@
     ".openclaw/identity",
     "Library/LaunchAgents",
     "Library/Application Support/OpenClaw/identity",
-    "Library/Application Support/Code - Insiders/User/mcp.json"
+    "Library/Application Support/Code - Insiders/User/mcp.json",
+    ".openclaw/agents",
+    ".openclaw/memory",
+    ".openclaw/subagents",
+    ".openclaw/cron",
+    ".openclaw/delivery-queue"
   ],
   "missingPaths": [
     "Library/Application Support/Code/User/mcp.json"
   ],
-  "encryptedBackupSha256": "b13b9654f7a343e498b0f08575d8b6860d5fde42f9277544cd3c054c429eff5f"
+  "encryptedBackupSha256": "e04f77bb85ad11d53d9b39cc871510d639acfd2ac3616626664fe9f3e72d0a39"
 }

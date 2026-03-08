@@ -17,6 +17,9 @@ REQUIRED_RESTORE_PATHS = [
     ".openclaw/credentials",
     ".openclaw/cron/jobs.json",
     ".openclaw/identity",
+    ".openclaw/agents/main/sessions",
+    ".openclaw/memory",
+    ".openclaw/subagents",
 ]
 
 

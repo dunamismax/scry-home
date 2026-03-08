@@ -3,7 +3,7 @@ set -euo pipefail
 
 SERVICE_NAME="scry.openclaw.config-backup.passphrase"
 ACCOUNT_NAME="${USER}"
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 LOG_DIR="${HOME}/Library/Logs/scry"
 LOG_FILE="${LOG_DIR}/openclaw-critical-backup.log"
@@ -32,9 +32,21 @@ fi
 cd "${REPO_ROOT}"
 
 export SCRY_CONFIG_BACKUP_PASSPHRASE="${PASSPHRASE}"
-uv run python -m scripts setup:config_backup
-uv run python -m scripts verify:config_backup
-uv run python -m scripts sync:openclaw --commit
+export SCRY_CONFIG_EXTRA_PATHS=".openclaw/agents
+.openclaw/memory
+.openclaw/subagents
+.openclaw/cron
+.openclaw/delivery-queue"
+
+run_repo_task() {
+  local command="$1"
+  shift || true
+  uv run --project "${REPO_ROOT}" python "${REPO_ROOT}/scripts/cli.py" "${command}" "$@"
+}
+
+run_repo_task setup:config_backup
+run_repo_task verify:config_backup
+run_repo_task sync:openclaw --commit
 
 META_FILE="${REPO_ROOT}/vault/config/critical-configs.meta.json"
 if [[ -f "${META_FILE}" ]]; then

@@ -1,8 +1,8 @@
 # scry-home — Build Tracker
 
-**Status:** CAB / Change Factory operational slice complete in working tree  
+**Status:** CAB slice complete + OpenClaw runtime backup hardening in progress  
 **Last Updated:** 2026-03-07  
-**Latest Relevant Commit:** uncommitted local CAB slice for `cab:new` scaffold + workflow/templates
+**Latest Relevant Commit:** uncommitted local backup-hardening patch for `scry-home` encrypted OpenClaw backups
 
 ---
 
@@ -64,6 +64,16 @@ The live OpenClaw workspace is canonical. The local `openclaw/` tree is a mirror
 - [x] Update repo docs so the new CAB loop is discoverable and runnable
 - [x] Keep the CAB slice narrow enough to land as one atomic local commit
 
+### Phase 6 — OpenClaw runtime backup hardening
+
+- [x] Audit what `scry-home` sync covers versus what live `~/.openclaw` state it misses
+- [x] Identify the live backup-runner failure cause after the repo rename/tooling drift
+- [x] Expand encrypted backup scope to include OpenClaw runtime state (`agents`, `memory`, `subagents`, `cron`, `delivery-queue`)
+- [x] Make the backup runner invoke the repo CLI in a launchd-safe way
+- [ ] Generate and verify a fresh encrypted artifact with the expanded scope
+- [ ] Reload the LaunchAgent and confirm the backup runner exits cleanly
+- [ ] Commit and push the repaired backup flow + fresh encrypted artifact off-machine
+
 ---
 
 ## Acceptance Checks
@@ -96,6 +106,7 @@ The live OpenClaw workspace is canonical. The local `openclaw/` tree is a mirror
 - `cd ~/github/scry-home && uv run python -m scripts sync:openclaw` ✅
 - `cd ~/github/scry-home && uv run python -m scripts openclaw:audit` ✅ after fixing canonical stale paths, excluding historical `runs/` from mirror/path checks, and skipping stale-path validation for `memory/` history logs
 - `launchctl bootstrap gui/$(id -u) /Users/sawyer/Library/LaunchAgents/com.scry.openclaw.backup.plist` ✅ reloaded live backup LaunchAgent with `scry-home` paths
+- 2026-03-07 backup hardening: `./scripts/ops/daily-openclaw-backup.sh` ✅ now succeeds with expanded OpenClaw runtime coverage (`.openclaw/agents`, `.openclaw/memory`, `.openclaw/subagents`, `.openclaw/cron`, `.openclaw/delivery-queue`), `verify_config_backup.py` now checks restore preview for sessions + memory, and `launchctl print gui/$(id -u)/com.scry.openclaw.backup` shows `last exit code = 0` after reload.
 - `bun run lint` ✅ (`bunx @biomejs/biome check .` + `uv run ruff check .`)
 - `uv run python -m scripts doctor` ✅ all nine keeper repos reported present; `openclaw` still shows upstream `origin` plus PR-target `fork`
 - `uv run python -m scripts cab:new --project=scry-home --packet=repo-control-plane-slice --dry-run` ✅ would scaffold 13 packet files under `artifacts/cab/2026-03-07-scry-home-repo-control-plane-slice/`
