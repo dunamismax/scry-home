@@ -3,7 +3,7 @@
 
 Usage:
   uv run python -m scripts <command> [flags]
-  python3 scripts/cli.py <command> [flags]
+  uv run python scripts/cli.py <command> [flags]
 """
 
 from __future__ import annotations

@@ -1,8 +1,8 @@
 # scry-home — Build Tracker
 
-**Status:** CAB slice complete + OpenClaw runtime backup hardening in progress  
-**Last Updated:** 2026-03-07  
-**Latest Relevant Commit:** uncommitted local backup-hardening patch for `scry-home` encrypted OpenClaw backups
+**Status:** Python-only repo cleanup verified; local commit blocked by sandbox
+**Last Updated:** 2026-03-08
+**Latest Relevant Commit:** pending local checkpoint commit for Python-only cleanup
 
 ---
 
@@ -21,110 +21,65 @@ The live OpenClaw workspace is canonical. The local `openclaw/` tree is a mirror
 
 ## Phase Plan
 
-### Phase 1 — Repo honesty and path cleanup
+### Phase 1 — Inventory and migration plan
 
-- [x] Rename local package/project metadata from `grimoire` to `scry-home`
-- [x] Rewrite README to describe the repo literally as control plane / ops / backups / bootstrap
-- [x] Replace hardcoded `~/github/grimoire` script defaults with path derivation from the checked-out repo
-- [x] Update workstation docs and manual notes to point at `scry-home`
-- [x] Replace stale managed-project entries with the expected keeper repos
-- [x] Remove the fake `typecheck` assumption for this repo's managed verification
-- [x] Propagate remaining operational `grimoire` references from the canonical OpenClaw workspace, cron jobs, and launchagent paths; re-sync mirrors
+- [x] Read repo control docs and current implementation before editing
+- [x] Inventory repo-owned Bun/Biome/TypeScript references and obsolete manifests
+- [x] Record a truthful Python-only migration plan in this tracker
 
-### Phase 2 — Verification
+### Phase 2 — Repo-owned tooling realignment
 
-- [x] Run repo lint on repo-owned files
-- [x] Run repo doctor
-- [x] Syntax-check the updated shell scripts
-- [x] Refresh generated workstation inventory metadata
-- [x] Re-run `openclaw:audit` after canonical workspace docs are updated upstream
+- [x] Remove root Bun/Biome manifests and lockfiles that are no longer part of the implementation
+- [x] Update repo bootstrap, doctor, and managed-project metadata to use Python-native checks for `scry-home`
+- [x] Replace repo lint/verification guidance with `uv` + Ruff commands
+- [x] Keep mirrored `openclaw/` files untouched
 
-### Phase 3 — Canonical doc + specialist bench refresh
+### Phase 3 — Docs and helper cleanup
 
-- [x] Merge upgraded canonical `SOUL.md` / `AGENTS.md` / `CLAUDE.md` guidance from reviewed proposals into the live OpenClaw workspace
-- [x] Replace repo-root `CLAUDE.md` with a proper repo-local contract
-- [x] Rebuild `scripts/tasks/harden_specialists.py` so specialist hardening writes upgraded `SOUL.md`, `AGENTS.md`, and `CLAUDE.md` baselines
-- [x] Reapply hardening across all six active specialists
-- [x] Re-run every specialist weekly smoke; all six passed 10/10 across protocol, verification, and attribution
-- [x] Sync refreshed canonical and specialist docs back into the repo-root and `openclaw/` mirror
+- [x] Rewrite repo-owned docs to describe a Python-first ops repo without Bun/Biome defaults
+- [x] Remove or trim stale review/helper material that still prescribes the old JS stack for this repo
+- [x] Update generated specialist hardening templates so future synced policy output no longer reintroduces Bun defaults
 
-### Phase 4 — Keeper-set widening after portfolio decision
+### Phase 4 — Verification and checkpoint
 
-- [x] Restore `trade-desk-cli`, `Sawyer-Visual-Media`, and `openclaw` to the managed project inventory
-- [x] Update repo-owned docs so the final keeper set is explicit and current again
-- [x] Correct OpenClaw contribution guidance so `~/github/openclaw` is the contribution clone while `~/openclaw` remains the live install
-- [x] Keep synced `openclaw/` mirror boundaries intact; do not hand-edit mirrored daily/history files here
-
-### Phase 5 — CAB / Change Factory operational slice
-
-- [x] Add a repo-native CAB scaffold command to the existing `uv run python -m scripts ...` surface
-- [x] Tie packet scaffolding to managed projects already tracked by `scripts/projects_config.py`
-- [x] Ship a reusable CAB template pack for morning brief, weekly review, focus sprint, repo dossier, decision memo, kill memo, adversarial review, build-vs-buy, architecture review packet, and research memo
-- [x] Fold Research Forge into CAB packet artifacts instead of creating a separate product surface
-- [x] Update repo docs so the new CAB loop is discoverable and runnable
-- [x] Keep the CAB slice narrow enough to land as one atomic local commit
-
-### Phase 6 — OpenClaw runtime backup hardening
-
-- [x] Audit what `scry-home` sync covers versus what live `~/.openclaw` state it misses
-- [x] Identify the live backup-runner failure cause after the repo rename/tooling drift
-- [x] Expand encrypted backup scope to include OpenClaw runtime state (`agents`, `memory`, `subagents`, `cron`, `delivery-queue`)
-- [x] Make the backup runner invoke the repo CLI in a launchd-safe way
-- [ ] Generate and verify a fresh encrypted artifact with the expanded scope
-- [ ] Reload the LaunchAgent and confirm the backup runner exits cleanly
-- [ ] Commit and push the repaired backup flow + fresh encrypted artifact off-machine
+- [x] Run Ruff across the repo-owned Python surface
+- [x] Run the repo doctor and managed-project doctor
+- [x] Syntax-check the modified Python entrypoints/modules
+- [x] Reconcile this tracker with the final state
+- [ ] Create a local commit if the checkpoint verifies cleanly
 
 ---
 
 ## Acceptance Checks
 
-- `bun run lint`
+- `uv run ruff check .`
+- `UV_CACHE_DIR=/tmp/uv-cache-scry-home uv run python -m scripts bootstrap`
 - `uv run python -m scripts doctor`
-- `uv run python -m scripts cab:new --project=scry-home --packet=repo-control-plane-slice --dry-run`
 - `uv run python -m scripts projects:doctor`
-- `UV_CACHE_DIR=${UV_CACHE_DIR:-/tmp/uv-cache-scry-home} uv run python -m py_compile scripts/common.py scripts/projects_config.py scripts/tasks/cab.py scripts/tasks/doctor.py scripts/tasks/projects.py`
-- `bash -n scripts/ops/run-automated-backups.sh`
-- `bash -n scripts/ops/install-backup-launchagent.sh`
-- `bash -n scripts/ops/daily-openclaw-backup.sh`
-- `bash -n scripts/ops/install-openclaw-backup-launchagent.sh`
-- `bash scripts/ops/backup-macos-configs.sh`
+- `uv run python -m py_compile scripts/cli.py scripts/projects_config.py scripts/tasks/bootstrap.py scripts/tasks/doctor.py scripts/tasks/harden_specialists.py scripts/tasks/projects.py`
 
 ---
 
 ## Verification Snapshot
 
-- `bun run lint` ✅ Biome checked repo files cleanly and Ruff passed with the new `scripts/tasks/cab.py` task included
-- `uv run python -m scripts doctor` ✅ all nine keeper repos reported present
-- `bash -n scripts/ops/run-automated-backups.sh` ✅
-- `bash -n scripts/ops/install-backup-launchagent.sh` ✅
-- `bash -n scripts/ops/daily-openclaw-backup.sh` ✅
-- `bash -n scripts/ops/install-openclaw-backup-launchagent.sh` ✅
-- `bash scripts/ops/backup-macos-configs.sh` ✅ refreshed `workstation/macOS/metadata/backup-inventory.txt` with `repo_root=/Users/sawyer/github/scry-home`
-- `cd ~/github/scry-home && uv run ruff check scripts/tasks/harden_specialists.py` ✅
-- `cd ~/github/scry-home && uv run python -m scripts specialists:harden` ✅
-- bench smoke verification ✅ all six active specialists passed their regenerated `scripts/specialist-weekly-smoke.sh`
-- `cd ~/github/scry-home && uv run python -m scripts sync:openclaw` ✅
-- `cd ~/github/scry-home && uv run python -m scripts openclaw:audit` ✅ after fixing canonical stale paths, excluding historical `runs/` from mirror/path checks, and skipping stale-path validation for `memory/` history logs
-- `launchctl bootstrap gui/$(id -u) /Users/sawyer/Library/LaunchAgents/com.scry.openclaw.backup.plist` ✅ reloaded live backup LaunchAgent with `scry-home` paths
-- 2026-03-07 backup hardening: `./scripts/ops/daily-openclaw-backup.sh` ✅ now succeeds with expanded OpenClaw runtime coverage (`.openclaw/agents`, `.openclaw/memory`, `.openclaw/subagents`, `.openclaw/cron`, `.openclaw/delivery-queue`), `verify_config_backup.py` now checks restore preview for sessions + memory, and `launchctl print gui/$(id -u)/com.scry.openclaw.backup` shows `last exit code = 0` after reload.
-- `bun run lint` ✅ (`bunx @biomejs/biome check .` + `uv run ruff check .`)
-- `uv run python -m scripts doctor` ✅ all nine keeper repos reported present; `openclaw` still shows upstream `origin` plus PR-target `fork`
-- `uv run python -m scripts cab:new --project=scry-home --packet=repo-control-plane-slice --dry-run` ✅ would scaffold 13 packet files under `artifacts/cab/2026-03-07-scry-home-repo-control-plane-slice/`
-- `uv run python -m scripts projects:doctor` ✅ all nine keeper repos reported present
-- `UV_CACHE_DIR=${UV_CACHE_DIR:-/tmp/uv-cache-scry-home} uv run python -m py_compile scripts/common.py scripts/projects_config.py scripts/tasks/cab.py scripts/tasks/doctor.py scripts/tasks/projects.py` ✅
+- `UV_CACHE_DIR=/tmp/uv-cache-scry-home uv run ruff check .` ✅
+- `UV_CACHE_DIR=/tmp/uv-cache-scry-home uv run python -m scripts bootstrap` ✅ prerequisite check passed; local repo env synced; managed project installs now remain explicit
+- `uv run python -m scripts doctor` ✅ toolchain/core-file check passed; managed-project inventory still reports missing local clones for `boring-go-web`, `c-from-the-ground-up`, and `hello-world-from-hell`
+- `uv run python -m scripts projects:doctor` ✅ managed-project inventory ran; same three local clones are absent
+- `UV_CACHE_DIR=/tmp/uv-cache-scry-home uv run python -m py_compile scripts/cli.py scripts/projects_config.py scripts/tasks/bootstrap.py scripts/tasks/doctor.py scripts/tasks/harden_specialists.py scripts/tasks/projects.py` ✅
+- Note: `uv` cache writes to `~/.cache/uv` are blocked by this sandbox, so cache-backed checks were rerun with `UV_CACHE_DIR=/tmp/uv-cache-scry-home`
 
 ---
 
 ## Immediate Next Pass Priorities
 
-1. Run the CAB packet scaffold against a live repo initiative and keep the generated packet honest as it accumulates real decisions.
-2. If desired, run `uv run python -m scripts cron:reconcile --scope=all --apply` to converge any managed-cron manifest drift.
-3. Delete non-keeper repos locally only after any remaining useful content has been migrated elsewhere and they are confirmed outside the final nine-repo keeper set.
+1. Create the local commit for this verified Python-only cleanup checkpoint.
+2. If the synced root `SOUL.md` / `AGENTS.md` changes should persist beyond this repo, propagate them upstream in the canonical OpenClaw workspace and re-sync.
+3. Revisit keeper-set policy separately if Stephen wants the managed project inventory itself narrowed to Python/Rust-only repos.
 
 ---
 
 ## Blockers / Human Decisions
 
-- No blockers on the CAB slice inside `scry-home`.
-- Current Codex sandbox cannot create `.git/index.lock`, so the verified CAB slice is ready but the local commit must be created outside this lane.
-- Synced `openclaw/cron-jobs.json` still references a non-mirrored `openclaw/BACKUPS.md` restore checklist; fix that in the canonical OpenClaw workspace and re-sync if Stephen wants the reminder text repaired here too.
+- Root `SOUL.md` and `AGENTS.md` are sync-governed copies, so their Python/Rust stack-policy edits in this repo can be overwritten by the next upstream sync unless the canonical workspace is updated separately.
+- This sandbox cannot create `/Users/sawyer/github/scry-home/.git/worktrees/stack-realign-20260308-105446/index.lock`, so the local commit must be created outside this lane even though the checkpoint verified cleanly.

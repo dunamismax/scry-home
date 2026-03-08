@@ -20,9 +20,9 @@ MANAGED_PROJECTS: list[ManagedProject] = [
     ManagedProject(
         name="scry-home",
         path=GITHUB / "scry-home",
-        install_command=["bun", "install"],
+        install_command=["uv", "sync"],
         verify_commands=[
-            ["bun", "run", "lint"],
+            ["uv", "run", "ruff", "check", "."],
             ["uv", "run", "python", "-m", "scripts", "doctor"],
         ],
     ),
@@ -78,7 +78,7 @@ MANAGED_PROJECTS: list[ManagedProject] = [
     ManagedProject(
         name="openclaw",
         path=GITHUB / "openclaw",
-        install_command=["corepack", "pnpm", "install", "--frozen-lockfile"],
-        verify_commands=[["corepack", "pnpm", "check"]],
+        install_command=["echo", "managed in openclaw repo"],
+        verify_commands=[],
     ),
 ]

@@ -6,6 +6,8 @@
 
 Personal control plane for Scry and the local OpenClaw workspace.
 
+Python-only ops repo. No Bun, Biome, or Node-based toolchain is required here.
+
 This repo is the versioned home for:
 - operator docs copied out of the live OpenClaw workspace
 - local backup and restore automation
@@ -32,7 +34,7 @@ The live OpenClaw workspace is canonical for synced identity files. This repo is
 ## What This Repo Is
 
 - `SOUL.md` / `AGENTS.md` — synced copies of canonical workspace docs
-- `reference/CONTRIBUTING_TO_OPENCLAW.md` — field guide for OpenClaw contributions
+- `reference/` — CAB templates and dated historical review notes
 - `scripts/` — CLI tasks for sync, bootstrap, backup, remotes, and audits
 - `workstation/` — tracked workstation config snapshots folded in from the former `dotfiles` repo
 - `openclaw/` — auto-synced from OpenClaw workspace (do not edit directly)
@@ -43,13 +45,14 @@ The live OpenClaw workspace is canonical for synced identity files. This repo is
 ```bash
 git clone git@github.com-dunamismax:dunamismax/scry-home.git
 cd scry-home
-bun install
+uv sync
 uv run python -m scripts doctor
 ```
 
 ## Core Commands
 
 ```bash
+uv run ruff check .                     # Repo lint
 uv run python -m scripts cab:new --project=scry-home --packet=repo-control-plane-slice
 uv run python -m scripts doctor           # Verify prerequisites and project health
 uv run python -m scripts projects:doctor  # Check active keeper repos tracked by this repo

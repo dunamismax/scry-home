@@ -1,6 +1,6 @@
 """AES-256-GCM encryption/decryption with PBKDF2 key derivation.
 
-Format-compatible with the original TypeScript implementation.
+Format-compatible with the legacy encrypted payload layout.
 Requires the `cryptography` package: uv add cryptography
 """
 

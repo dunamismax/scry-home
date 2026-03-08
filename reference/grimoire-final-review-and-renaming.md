@@ -1,4 +1,4 @@
-# grimoire Final Review and Renaming
+# Historical Note: grimoire Final Review and Renaming
 
 Date: 2026-03-07
 

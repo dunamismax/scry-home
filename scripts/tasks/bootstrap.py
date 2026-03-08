@@ -1,10 +1,10 @@
-"""Bootstrap scry-home: check prerequisites, install deps."""
+"""Bootstrap scry-home: check prerequisites and sync the local Python env."""
 
 from __future__ import annotations
 
 from scripts.common import command_exists, log_step, run_or_throw
 
-REQUIRED_TOOLS = ["bun", "git", "curl"]
+REQUIRED_TOOLS = ["git", "uv"]
 
 
 def bootstrap() -> None:
@@ -14,12 +14,10 @@ def bootstrap() -> None:
             raise RuntimeError(f"Missing required tool: {tool}")
         print(f"ok: {tool}")
 
-    log_step("Installing dependencies with Bun")
-    run_or_throw(["bun", "install"])
-
-    log_step("Installing managed project dependencies")
-    run_or_throw(["uv", "run", "python", "-m", "scripts", "projects:install"])
+    log_step("Syncing local project environment")
+    run_or_throw(["uv", "sync"])
 
     log_step("Bootstrap complete")
-    bun_version = run_or_throw(["bun", "--version"], quiet=True)
-    print(f"bun: {bun_version}")
+    uv_version = run_or_throw(["uv", "--version"], quiet=True)
+    print(f"uv: {uv_version}")
+    print("managed project installs remain explicit: uv run python -m scripts projects:install")

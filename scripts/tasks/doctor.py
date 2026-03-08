@@ -15,7 +15,7 @@ from scripts.projects_config import MANAGED_PROJECTS
 
 def doctor() -> None:
     log_step("Toolchain status")
-    for tool in ["bun", "git", "docker", "python3", "ruff", "uv"]:
+    for tool in ["git", "docker", "python3", "ruff", "uv"]:
         if not command_exists(tool):
             print(f"missing: {tool}")
             continue

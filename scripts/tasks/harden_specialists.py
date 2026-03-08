@@ -629,21 +629,18 @@ Default stack unless something else is genuinely better for the task:
 
 | Layer | Default |
 |---|---|
-| Runtime / package manager | Bun |
-| App framework | Vite + React Router (framework mode, SPA-first `ssr: false`) |
-| UI | React + TypeScript |
-| Mobile | React Native + Expo |
-| Styling / components | Tailwind CSS + shadcn/ui |
-| Database | Postgres |
-| ORM / migrations | Drizzle ORM + drizzle-kit |
-| Server state | TanStack Query |
-| Auth | Better Auth (no Auth.js) |
-| Validation | Zod |
-| Formatting / linting | Biome (no ESLint/Prettier) |
+| Runtime / package manager | uv |
+| Primary language | Python |
+| Web / API | FastAPI |
+| CLI | Python stdlib or Typer when helpful |
+| Database | Postgres or SQLite |
+| Validation | Pydantic |
+| Formatting / linting | Ruff |
+| Systems language | Rust |
 
-**Language policy:** TypeScript + Bun for products. Python for scripting/automation/data/ML/utilities via `uv` + `ruff`. Rust/Go when systems constraints justify them.
+**Language policy:** Python by default via `uv` + Ruff. Rust when systems or performance constraints justify it. HTML/CSS are fine for static surfaces without a JS/TS toolchain.
 
-**Disallowed by default:** npm/pnpm/yarn, ESLint/Prettier, Next.js, Auth.js.
+**Disallowed by default:** Bun, npm, pnpm, yarn, TypeScript/JavaScript build stacks, ESLint/Prettier, Next.js, Auth.js.
 
 Always prefer latest stable and verify version claims against primary sources when the date or version matters.
 """

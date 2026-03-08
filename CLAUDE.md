@@ -48,7 +48,7 @@ Use this for a functional repo health check and prerequisite validation.
 ### Lint
 
 ```bash
-bun run lint
+uv run ruff check .
 ```
 
 Run before handoff or commit. If lint is unavailable or fails for unrelated existing reasons, say so explicitly.
@@ -65,8 +65,8 @@ Use this when setting up or repairing dual-push remotes on a new or drifted clon
 
 ## Verification Rules for This Repo
 
-- **Docs/config only:** run `bun run lint` if it covers the changed files; otherwise do a manual consistency pass.
-- **CLI/task behavior changes:** run `uv run python -m scripts doctor` after changes, plus any narrower command path that exercises the modified flow safely.
+- **Docs/config only:** do a manual consistency pass; if repo-owned Python or shell entrypoints changed, run the relevant narrow check as well.
+- **Python / CLI changes:** run `uv run ruff check .`, then `uv run python -m scripts doctor`, plus any narrower command path that exercises the modified flow safely.
 - **Repo setup / git remote changes:** run `uv run python -m scripts sync:remotes --fix` only when the task actually touches remote configuration, and report what it changed.
 
 Always report what was run, what was not run, and any residual risk.

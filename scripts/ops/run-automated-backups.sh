@@ -8,7 +8,7 @@ repo_root="${SCRY_REPO:-$repo_root_default}"
 config_service="${SCRY_CONFIG_BACKUP_KEYCHAIN_SERVICE:-scry-config-backup-passphrase}"
 ssh_service="${SCRY_SSH_BACKUP_KEYCHAIN_SERVICE:-scry-ssh-backup-passphrase}"
 
-path_default="$home_dir/.bun/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+path_default="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 export PATH="$path_default:${PATH:-}"
 export UV_CACHE_DIR="${UV_CACHE_DIR:-${TMPDIR:-/tmp}/uv-cache-scry-home}"
 
