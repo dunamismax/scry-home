@@ -20,8 +20,8 @@
         {
           "id": "9519889d-4acf-4af6-a47a-792430b8f68d",
           "pattern": "/bin/ls",
-          "lastUsedAt": 1772927422954,
-          "lastUsedCommand": "ls -R /Users/sawyer/.openclaw/lib/node_modules/openclaw | sed -n '1,200p'",
+          "lastUsedAt": 1772931609430,
+          "lastUsedCommand": "ls -la /Users/sawyer/.openclaw && echo '---' && find /Users/sawyer/.openclaw -maxdepth 3 -type f -name SKILL.md | sed 's#^#/##' | head -200",
           "lastResolvedPath": "/bin/ls"
         },
         {
@@ -34,8 +34,8 @@
         {
           "id": "da7c0235-c67f-4853-acfa-ec491c995b82",
           "pattern": "/bin/pwd",
-          "lastUsedAt": 1772919247314,
-          "lastUsedCommand": "pwd; git status --short | sed -n '1,120p'; echo RC:$?",
+          "lastUsedAt": 1772931516757,
+          "lastUsedCommand": "pwd && ls -1 /Users/sawyer/github | sed -n '1,20p' && if [ -d /Users/sawyer/github/openclaw ]; then echo REPO=/Users/sawyer/github/openclaw; elif [ -d /Users/sawyer/openclaw ]; then echo REPO=/Users/sawyer/openclaw; fi",
           "lastResolvedPath": "/bin/pwd"
         },
         {
@@ -83,15 +83,15 @@
         {
           "id": "a73dfbc9-26b5-4efd-9b3a-de477c6e2acf",
           "pattern": "/bin/pwd",
-          "lastUsedAt": 1772921878229,
-          "lastUsedCommand": "pwd && ls -1 /Users/sawyer/github/openclaw | sed -n '1,120p'",
+          "lastUsedAt": 1772929901076,
+          "lastUsedCommand": "pwd && echo '--- workspace ---' && fd -HI 'prompt|prompts|skill|skills' /Users/sawyer/.openclaw/workspace /Users/sawyer/github/scry-home /Users/sawyer/openclaw 2>/dev/null | sed 's#^#/##' | head -n 300",
           "lastResolvedPath": "/bin/pwd"
         },
         {
           "id": "8b70c9de-dc72-4c2c-af17-ea512bb7cdd7",
           "pattern": "/Users/sawyer/.local/bin/openclaw",
-          "lastUsedAt": 1772928225792,
-          "lastUsedCommand": "openclaw status",
+          "lastUsedAt": 1772930897615,
+          "lastUsedCommand": "openclaw skills list | sed -n '1,240p'",
           "lastResolvedPath": "/Users/sawyer/.local/bin/openclaw"
         },
         {
@@ -104,9 +104,9 @@
         {
           "id": "a2840be7-5bce-4e4e-9c2e-c5a32a1c040d",
           "pattern": "/opt/homebrew/bin/rg",
-          "lastUsedAt": 1772928523525,
-          "lastUsedCommand": "rg -n \"git add|git commit|git push|vault/config|critical-configs\" /Users/sawyer/github/scry-home/scripts/tasks/sync_openclaw.py /Users/sawyer/github/scry-home/scripts/ops/daily-openclaw-backup.sh",
-          "lastResolvedPath": "/opt/homebrew/bin/rg"
+          "lastUsedAt": 1772930866601,
+          "lastUsedCommand": "openclaw skills list | rg 'codex-lab|codex-shipyard|codex-bug-hunt|codex-review-desk|research-deep-dive|research-market-radar|research-kill-or-pursue|scribe-draft-room|scribe-docs-distillery|operator-openclaw-ops|operator-automation-yard|operator-ops-watch|sentinel-security-audit|luma-shot-lab|openclaw-bug-scout'",
+          "lastResolvedPath": "/Users/sawyer/.local/bin/openclaw"
         },
         {
           "id": "e51df518-3eac-45be-8dec-729f978eca01",
@@ -132,9 +132,9 @@
         {
           "id": "7e009642-08c3-4a10-9d1e-732add3a15e8",
           "pattern": "/usr/bin/sed",
-          "lastUsedAt": 1772928283402,
-          "lastUsedCommand": "cd ~/github/scry-home && git ls-files vault/config openclaw | sed -n '1,200p'",
-          "lastResolvedPath": "/usr/bin/cd"
+          "lastUsedAt": 1772930897615,
+          "lastUsedCommand": "openclaw skills list | sed -n '1,240p'",
+          "lastResolvedPath": "/Users/sawyer/.local/bin/openclaw"
         },
         {
           "id": "170b4476-99bc-49b4-9e78-375f88faf802",
@@ -154,8 +154,8 @@
         {
           "id": "31cdf770-7330-4059-a8f5-926bfb9547a7",
           "pattern": "/usr/bin/git",
-          "lastUsedAt": 1772928938209,
-          "lastUsedCommand": "git -C /Users/sawyer/.openclaw/workspace add BUILD.md MEMORY.md memory/2026-03-07.md && git -C /Users/sawyer/.openclaw/workspace commit -m \"Record Discord and backup hardening state\"",
+          "lastUsedAt": 1772930016139,
+          "lastUsedCommand": "git -C /Users/sawyer/.openclaw/workspace add prompts/openclaw/bug-hunt-mergeable-fix-scout.md && git -C /Users/sawyer/.openclaw/workspace commit -m \"Add OpenClaw mergeable bug scout prompt\"",
           "lastResolvedPath": "/usr/bin/git"
         },
         {

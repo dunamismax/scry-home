@@ -1,43 +1,35 @@
 # BUILD.md
 
-Status: `~/github` inspected, dirty repos verified, stale Codex runs terminated, and the one behind repo fast-forwarded.
+Status: **in progress** — fix issue #39268 in `openclaw/openclaw`, verify, and open a PR.
 
 ## Phase plan
-- [x] Inventory all git repos under `~/github`
-- [x] Identify repos with local changes or sync issues
-- [x] Inspect `podwatch` changes for completeness and correctness
-- [x] Inspect `questlog` changes for completeness and correctness
-- [x] Check whether any Codex/agent processes are still running for those repos
-- [x] Run relevant verification in each dirty repo
-- [x] Commit and push only the repos that pass verification or have explicitly scoped residual risk
-- [x] Summarize final repo state across `~/github`
+- [x] Read core workspace instructions and bug-hunt brief
+- [x] Check OpenClaw PR queue headroom
+- [ ] Create a clean worktree/branch from current `main`
+- [ ] Reproduce or otherwise prove the agents-page dirty-state bug on current source
+- [ ] Patch the smallest safe UI fix
+- [ ] Add or update the nearest useful test
+- [ ] Run targeted verification
+- [ ] Commit, push, and open PR
 
 ## Acceptance checks / validation commands
-- `git status --short`
-- `git rev-list --left-right --count HEAD...@{u}`
-- `git fetch --all --prune --quiet`
-- `uv run --with-requirements requirements.txt python manage.py check`
-- `uv run --with-requirements requirements.txt python manage.py test`
-- `uv run --with-requirements requirements.txt python -m compileall ...`
-- `git pull --ff-only origin main` (for clean-behind repos when safe)
+- `corepack pnpm install --frozen-lockfile`
+- `corepack pnpm vitest run ui/src/ui/controllers/config.test.ts`
+- `corepack pnpm vitest run ui/src/ui/views/agents-panels-tools-skills.browser.test.ts`
+- `corepack pnpm check`
+- `corepack pnpm build`
+- Manual/code-path proof that changing an agent setting flips `configFormDirty` and enables Save
 
 ## Verification snapshot
-- Repo inventory after fetch: 15 repos under `~/github`.
-- `podwatch`: clean, synced, HEAD `b2681c8 rewrite podwatch as a Django app`.
-  - checks passed
-  - tests passed (4/4)
-  - compileall passed
-- `questlog`: clean, synced, HEAD `715577e rewrite questlog as a Django app`.
-  - checks passed
-  - tests passed (4/4)
-  - compileall passed
-- Stale live Codex processes for both rewrites were terminated after verifying the repos were already clean and synced.
-- `openclaw`: was behind `origin/main`; fast-forwarded safely to `e20f44509` and is now clean/synced.
-- All other repos in `~/github`: clean and synced with upstream tracking branches.
+- Skill selected: `codex-bug-hunt`
+- Open PR headroom checked: **2** open PRs by `dunamismax` on `openclaw/openclaw` (under cap of 10)
+- Contribution repo: `/Users/sawyer/github/openclaw`
+- Live install repo intentionally not used: `/Users/sawyer/openclaw`
 
 ## Immediate next-pass priorities
-1. Optional deeper code review of the Django rewrites if Stephen wants quality beyond green checks.
-2. Optional cleanup of ignored/local leftovers inside rewritten repos if they become distracting.
+1. Create fresh worktree from updated `main`
+2. Inspect agents/config UI state flow
+3. Patch and verify with focused tests
 
-## Blockers / pending decisions
-- None.
+## Blockers / pending human decisions
+- None currently
