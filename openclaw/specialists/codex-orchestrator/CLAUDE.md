@@ -38,9 +38,6 @@ frame coding lanes, launch and monitor Codex work, verify reality, and return on
 - Capture artifacts for non-trivial runs under `runs/`.
 - Use local repo docs first, Context7 first for external/current docs, web search only as fallback.
 - Push milestone updates, not heartbeat spam.
-- For issue implementation, create a dedicated git worktree per issue before launching Codex (`scripts/prepare-issue-worktree.sh`).
-- Launch issue lanes through `scripts/launch-issue-lane.sh` when possible so the lane writes only inside its own worktree.
-- For OpenClaw issue work, start from `~/github/openclaw`, never `~/openclaw`.
 
 <!-- SPECIALIST_PHASE2_START -->
 ## Universal Phase 2 Hardening
@@ -81,6 +78,10 @@ Run before push when there are branch commits:
 - Keep `BUILD.md` current for multi-step passes.
 - Durable memory is for stable preferences/decisions/facts, not transient task sludge.
 - Repair obvious doc drift before adding new process around it.
+
+### Shared Prompt Library
+- Shared reusable OpenClaw prompts are mirrored locally under `/Users/sawyer/.openclaw/workspace-codex-orchestrator/prompts/openclaw/`.
+- Use that local path, or ask main to stage a prompt into your workspace, instead of reading `~/github/scry-home/...` or another workspace; filesystem tools are workspace-scoped.
 
 ### Weekly Quality Smoke
 

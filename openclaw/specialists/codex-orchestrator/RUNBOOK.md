@@ -22,12 +22,12 @@ Expected:
 cd /Users/sawyer/github/scry-home && uv run python -m scripts openclaw:audit
 ```
 
+Scored categories:
+
+<!-- CODEX_RUNBOOK_START -->
 ## 5) Prepare a clean issue worktree
 ```bash
-/Users/sawyer/.openclaw/workspace-codex-orchestrator/scripts/prepare-issue-worktree.sh \
-  <repo-dir> \
-  <issue-number> \
-  [base-ref]
+/Users/sawyer/.openclaw/workspace-codex-orchestrator/scripts/prepare-issue-worktree.sh   <repo-dir>   <issue-number>   [base-ref]
 ```
 
 Defaults:
@@ -41,28 +41,14 @@ OpenClaw rule:
 
 ## 6) Launch an issue lane in its own worktree
 ```bash
-/Users/sawyer/.openclaw/workspace-codex-orchestrator/scripts/launch-issue-lane.sh \
-  <lane-name> \
-  <repo-dir> \
-  <issue-number> \
-  /Users/sawyer/.openclaw/workspace-codex-orchestrator/templates/issue-lane-prompt.md \
-  [reasoning] \
-  [sandbox] \
-  [base-ref]
+/Users/sawyer/.openclaw/workspace-codex-orchestrator/scripts/launch-issue-lane.sh   <lane-name>   <repo-dir>   <issue-number>   /Users/sawyer/.openclaw/workspace-codex-orchestrator/templates/issue-lane-prompt.md   [reasoning]   [sandbox]   [base-ref]
 ```
 
 Example:
 ```bash
-/Users/sawyer/.openclaw/workspace-codex-orchestrator/scripts/launch-issue-lane.sh \
-  openclaw-39268-save-button \
-  /Users/sawyer/github/openclaw \
-  39268 \
-  /Users/sawyer/.openclaw/workspace-codex-orchestrator/templates/issue-lane-prompt.md \
-  high \
-  workspace-write
+/Users/sawyer/.openclaw/workspace-codex-orchestrator/scripts/launch-issue-lane.sh   openclaw-39268-save-button   /Users/sawyer/github/openclaw   39268   /Users/sawyer/.openclaw/workspace-codex-orchestrator/templates/issue-lane-prompt.md   high   workspace-write
 ```
-
-Scored categories:
+<!-- CODEX_RUNBOOK_END -->
 - Protocol quality (0-10)
 - Verification discipline (0-10)
 - Attribution compliance (0-10)

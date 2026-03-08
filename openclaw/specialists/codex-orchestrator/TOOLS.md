@@ -6,12 +6,10 @@
 - OpenClaw workspace (canonical): `~/.openclaw/workspace`
 - Scry config repo: `~/github/scry-home`
 - Sync script: `~/github/scry-home/scripts/tasks/sync_openclaw.py`
-- Issue worktree root (Codex default): `~/.openclaw/worktrees/<repo>/<repo>-issue-<number>`
 
 ## OpenClaw Install
 
 - **Git-based install**: `~/openclaw` (main branch, v2026.3.3+)
-- **Contribution clone**: `~/github/openclaw` (use this for upstream issue work + per-issue worktrees)
 - **Runtime symlink**: `~/.openclaw/lib/node_modules/openclaw` → `~/openclaw`
 - **Binary**: `~/.local/bin/openclaw` → `~/openclaw/openclaw.mjs`
 - **Update method**: `cd ~/openclaw && git pull` then restart gateway
@@ -85,3 +83,11 @@ All repos use dual SSH remotes with host aliases:
 ## TTS
 
 - Default voice: whatever's configured (no specific preference noted yet)
+
+<!-- CODEX_TOOLS_START -->
+## Codex-Orchestrator Extras
+
+- Issue worktree root (Codex default): `~/.openclaw/worktrees/<repo>/<repo>-issue-<number>`
+- OpenClaw contribution clone for upstream issue work + per-issue worktrees: `~/github/openclaw`
+- Never implement upstream OpenClaw issues from the live runtime checkout at `~/openclaw`.
+<!-- CODEX_TOOLS_END -->

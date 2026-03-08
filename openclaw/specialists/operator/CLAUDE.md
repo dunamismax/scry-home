@@ -79,6 +79,10 @@ Run before push when there are branch commits:
 - Durable memory is for stable preferences/decisions/facts, not transient task sludge.
 - Repair obvious doc drift before adding new process around it.
 
+### Shared Prompt Library
+- Shared reusable OpenClaw prompts are mirrored locally under `/Users/sawyer/.openclaw/workspace-operator/prompts/openclaw/`.
+- Use that local path, or ask main to stage a prompt into your workspace, instead of reading `~/github/scry-home/...` or another workspace; filesystem tools are workspace-scoped.
+
 ### Weekly Quality Smoke
 
 ```bash

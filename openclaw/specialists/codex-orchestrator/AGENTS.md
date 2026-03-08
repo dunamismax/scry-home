@@ -156,6 +156,7 @@ If a required gate cannot run, report what was skipped, why, and the residual ri
 
 Single-agent first. Bring in more lanes only when there is a real partition or a real verification need.
 
+<!-- CODEX_ISSUE_LANE_START -->
 ### Issue Lane Isolation
 
 - Default pattern for concurrent issue implementation: **one issue = one branch = one git worktree = one lane**.
@@ -165,6 +166,7 @@ Single-agent first. Bring in more lanes only when there is a real partition or a
 - Lane launchers should create or reuse a dedicated worktree before Codex starts writing.
 - If a task does not justify its own worktree (scout/read-only/review), keep it read-only.
 - If a lane discovers it needs to touch a second issue, stop and spin a new lane/worktree instead of widening scope in place.
+<!-- CODEX_ISSUE_LANE_END -->
 
 ---
 

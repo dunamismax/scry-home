@@ -1,33 +1,35 @@
 # BUILD.md
 
-Status: **done** — issue-lane isolation pattern installed for codex-orchestrator; runtime config hardened with workspace-only FS tools.
+Status: done — scout-only bug-hunt pass selected one conservative upstream OpenClaw bug winner for implementation handoff.
 
 ## Phase plan
-- [x] Inspect current OpenClaw concurrency/safety config and active session state
-- [x] Choose the minimum safe runtime config change to reduce cross-lane collisions
-- [x] Encode durable Codex policy for worktree-per-issue in workspace docs/memory
-- [x] Add reusable worktree/lane launch helpers and prompt template
-- [x] Validate the new helpers against a disposable git repo
-- [x] Apply the runtime config patch and restart cleanly
+- [x] Read core instructions and select GitHub/repo scout lane
+- [x] Sync `~/github/openclaw` to latest `origin/main`
+- [x] Inspect recent open issues for narrow, current bug candidates
+- [x] Inspect recent open/merged PRs and review comments for in-flight overlap or fallout
+- [x] Verify shortlist against local `main` code and schema/tests
+- [x] Choose exactly one winner and draft implementation handoff prompt
+- [x] Deliver scout report with evidence, risks, and verification guidance
 
 ## Acceptance checks / validation commands
-- `bash -n scripts/prepare-issue-worktree.sh`
-- `bash -n scripts/launch-issue-lane.sh`
-- disposable functional test for `scripts/prepare-issue-worktree.sh` (temp git repo, branch/worktree/hooks assertions)
-- `gateway config.patch` → `tools.fs.workspaceOnly = true`
-- gateway restart confirmation in patch result
+- `git -C ~/github/openclaw checkout main && git -C ~/github/openclaw pull --ff-only origin main`
+- `gh issue list --repo openclaw/openclaw --state open --limit 30 --json number,title,labels,updatedAt,createdAt,author,url`
+- `gh pr list --repo openclaw/openclaw --state open --limit 20 --json number,title,updatedAt,createdAt,author,url,reviewDecision,isDraft,labels`
+- `gh pr list --repo openclaw/openclaw --state merged --limit 20 --json number,title,mergedAt,author,url,labels`
+- `node --import tsx --input-type=module` scripts against `src/config/schema.ts` + `ui/src/ui/views/config-form.analyze.ts` to confirm unsupported agent-schema paths on current `main`
+- `rg -n "Unsupported schema node|Form view can't safely edit some fields" ui/src/ui`
 
 ## Verification snapshot
-- Added `scripts/prepare-issue-worktree.sh` to create/reuse one worktree per issue with default branch `codex/issue-<number>`.
-- Added `scripts/launch-issue-lane.sh` to force issue lanes through the worktree-prep step before Codex runs.
-- Added `templates/issue-lane-prompt.md` with explicit single-issue/single-worktree scope rules.
-- Updated durable knowledge in `AGENTS.md`, `CLAUDE.md`, `BOOTSTRAP.md`, `MEMORY.md`, `TOOLS.md`, `RUNBOOK.md`, and `memory/2026-03-07.md`.
-- Functional test passed against a disposable temp repo: branch creation, worktree creation, and hooks wiring all verified.
-- Applied runtime config patch: `tools.fs.workspaceOnly = true`; gateway accepted patch and restarted via `SIGUSR1`.
+- Repo synced cleanly to current `origin/main`
+- Ruled out several recent issues because they already have linked PRs or explicit in-flight claims
+- Local schema analysis on current `main` confirms `agents` config remains form-unsafe in Control UI (`agents.list` unsupported; `defaults.model`, `defaults.imageModel`, `defaults.pdfModel`, `defaults.subagents.model`, `defaults.sandbox.docker.setupCommand`, `defaults.sandbox.docker.ulimits` also unsupported)
+- UI code still renders the exact warning/error strings reported in issue #39380
+- Nearby analyzer + browser tests exist, making the likely fix surface narrow and reviewable
 
 ## Immediate next-pass priorities
-1. Use `scripts/launch-issue-lane.sh` for the next real OpenClaw issue implementation lane.
-2. If needed later, add a lane registry check that warns when two active lanes point at the same repo checkout.
+- Hand implementation to a fresh Codex instance in a dedicated OpenClaw worktree
+- Keep scope tight to Control UI config-form support for agent schema nodes
 
 ## Blockers / pending decisions
-- Workspace is not a git repo, so there is no local workspace commit to create here.
+- None for scouting
+- Implementation should stay narrowly focused; avoid broad config-form refactors unless required by tests

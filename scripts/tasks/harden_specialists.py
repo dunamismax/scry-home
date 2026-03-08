@@ -1133,6 +1133,10 @@ Run before push when there are branch commits:
 - Durable memory is for stable preferences/decisions/facts, not transient task sludge.
 - Repair obvious doc drift before adding new process around it.
 
+### Shared Prompt Library
+- Shared reusable OpenClaw prompts are mirrored locally under `/Users/sawyer/.openclaw/workspace-{agent_id}/prompts/openclaw/`.
+- Use that local path, or ask main to stage a prompt into your workspace, instead of reading `~/github/scry-home/...` or another workspace; filesystem tools are workspace-scoped.
+
 ### Weekly Quality Smoke
 
 ```bash
@@ -1191,6 +1195,47 @@ def _copy_shared_doc(name: str, dest: Path) -> bool:
     return _write_if_changed(dest, src.read_text())
 
 
+def _sync_shared_prompt_pack(dest_dir: Path) -> int:
+    src_dir = MAIN_WORKSPACE / "prompts" / "openclaw"
+    if not src_dir.exists():
+        return 0
+
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    writes = 0
+    src_files = {
+        path.relative_to(src_dir)
+        for path in src_dir.rglob("*")
+        if path.is_file()
+    }
+    dest_files = {
+        path.relative_to(dest_dir)
+        for path in dest_dir.rglob("*")
+        if path.is_file()
+    } if dest_dir.exists() else set()
+
+    for rel in sorted(src_files):
+        src = src_dir / rel
+        dest = dest_dir / rel
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        if _write_if_changed(dest, src.read_text()):
+            writes += 1
+
+    for rel in sorted(dest_files - src_files, reverse=True):
+        target = dest_dir / rel
+        if target.exists():
+            target.unlink()
+            writes += 1
+
+    for directory in sorted(dest_dir.rglob("*"), reverse=True):
+        if directory.is_dir():
+            try:
+                next(directory.iterdir())
+            except StopIteration:
+                directory.rmdir()
+
+    return writes
+
+
 def _append_identity_line(path: Path) -> bool:
     lines = [
         "- Verify before claiming completion.",
@@ -1234,6 +1279,140 @@ def _upsert_hardening_section(path: Path, section: str) -> bool:
 
     path.write_text(f"{current.rstrip()}\n\n{section}\n")
     return True
+
+
+def _upsert_marked_section(
+    path: Path,
+    section: str,
+    *,
+    start_marker: str,
+    end_marker: str,
+    anchor: str | None = None,
+) -> bool:
+    current = path.read_text()
+
+    if start_marker in current and end_marker in current:
+        prefix = current.split(start_marker)[0].rstrip()
+        suffix = current.split(end_marker, 1)[1].lstrip("\n")
+        next_content = f"{prefix}\n\n{section}\n{suffix}"
+    elif anchor and anchor in current:
+        next_content = current.replace(anchor, f"{anchor}\n\n{section}", 1)
+    else:
+        next_content = f"{current.rstrip()}\n\n{section}\n"
+
+    if next_content == current:
+        return False
+    path.write_text(next_content)
+    return True
+
+
+def _apply_codex_specific_overlays(ws: Path) -> int:
+    if ws.name != "workspace-codex-orchestrator":
+        return 0
+
+    writes = 0
+
+    agents_section = """<!-- CODEX_ISSUE_LANE_START -->
+### Issue Lane Isolation
+
+- Default pattern for concurrent issue implementation: **one issue = one branch = one git worktree = one lane**.
+- Never run two implementation lanes against the same checkout at the same time.
+- Never share a dirty working tree between active issue lanes.
+- For OpenClaw upstream work, use `~/github/openclaw` as the base clone and create per-issue worktrees from it; never implement from the live runtime checkout at `~/openclaw`.
+- Lane launchers should create or reuse a dedicated worktree before Codex starts writing.
+- If a task does not justify its own worktree (scout/read-only/review), keep it read-only.
+- If a lane discovers it needs to touch a second issue, stop and spin a new lane/worktree instead of widening scope in place.
+<!-- CODEX_ISSUE_LANE_END -->"""
+    if _upsert_marked_section(
+        ws / "AGENTS.md",
+        agents_section,
+        start_marker="<!-- CODEX_ISSUE_LANE_START -->",
+        end_marker="<!-- CODEX_ISSUE_LANE_END -->",
+        anchor="Single-agent first. Bring in more lanes only when there is a real partition or a real verification need.",
+    ):
+        writes += 1
+
+    bootstrap_section = """<!-- CODEX_BOOTSTRAP_START -->
+## Codex Issue Lane Notes
+- For issue implementation, create a dedicated git worktree first; default launcher flow is `scripts/prepare-issue-worktree.sh` or `scripts/launch-issue-lane.sh`.
+- Never run OpenClaw issue implementation from the live runtime checkout at `~/openclaw`; use `~/github/openclaw` + a per-issue worktree.
+<!-- CODEX_BOOTSTRAP_END -->"""
+    if _upsert_marked_section(
+        ws / "BOOTSTRAP.md",
+        bootstrap_section,
+        start_marker="<!-- CODEX_BOOTSTRAP_START -->",
+        end_marker="<!-- CODEX_BOOTSTRAP_END -->",
+        anchor="- Before repo implementation work, set `core.hooksPath` to this workspace hook dir.",
+    ):
+        writes += 1
+
+    runbook_section = """<!-- CODEX_RUNBOOK_START -->
+## 5) Prepare a clean issue worktree
+```bash
+/Users/sawyer/.openclaw/workspace-codex-orchestrator/scripts/prepare-issue-worktree.sh \
+  <repo-dir> \
+  <issue-number> \
+  [base-ref]
+```
+
+Defaults:
+- branch: `codex/issue-<number>`
+- worktree root: `/Users/sawyer/.openclaw/worktrees/<repo>/<repo>-issue-<number>`
+- hooks: wired automatically to `/Users/sawyer/.openclaw/workspace-codex-orchestrator/hooks/git`
+
+OpenClaw rule:
+- use `~/github/openclaw` as the base repo for issue worktrees
+- never implement from `~/openclaw` (live runtime checkout)
+
+## 6) Launch an issue lane in its own worktree
+```bash
+/Users/sawyer/.openclaw/workspace-codex-orchestrator/scripts/launch-issue-lane.sh \
+  <lane-name> \
+  <repo-dir> \
+  <issue-number> \
+  /Users/sawyer/.openclaw/workspace-codex-orchestrator/templates/issue-lane-prompt.md \
+  [reasoning] \
+  [sandbox] \
+  [base-ref]
+```
+
+Example:
+```bash
+/Users/sawyer/.openclaw/workspace-codex-orchestrator/scripts/launch-issue-lane.sh \
+  openclaw-39268-save-button \
+  /Users/sawyer/github/openclaw \
+  39268 \
+  /Users/sawyer/.openclaw/workspace-codex-orchestrator/templates/issue-lane-prompt.md \
+  high \
+  workspace-write
+```
+<!-- CODEX_RUNBOOK_END -->"""
+    if _upsert_marked_section(
+        ws / "RUNBOOK.md",
+        runbook_section,
+        start_marker="<!-- CODEX_RUNBOOK_START -->",
+        end_marker="<!-- CODEX_RUNBOOK_END -->",
+        anchor="Scored categories:",
+    ):
+        writes += 1
+
+    tools_section = """<!-- CODEX_TOOLS_START -->
+## Codex-Orchestrator Extras
+
+- Issue worktree root (Codex default): `~/.openclaw/worktrees/<repo>/<repo>-issue-<number>`
+- OpenClaw contribution clone for upstream issue work + per-issue worktrees: `~/github/openclaw`
+- Never implement upstream OpenClaw issues from the live runtime checkout at `~/openclaw`.
+<!-- CODEX_TOOLS_END -->"""
+    if _upsert_marked_section(
+        ws / "TOOLS.md",
+        tools_section,
+        start_marker="<!-- CODEX_TOOLS_START -->",
+        end_marker="<!-- CODEX_TOOLS_END -->",
+        anchor=None,
+    ):
+        writes += 1
+
+    return writes
 
 
 def _resolve_targets() -> list[str]:
@@ -1300,6 +1479,7 @@ def harden_specialists() -> None:
             writes += 1
         if _copy_shared_doc("TOOLS.md", ws / "TOOLS.md"):
             writes += 1
+        writes += _sync_shared_prompt_pack(ws / "prompts" / "openclaw")
         if _append_identity_line(ws / "IDENTITY.md"):
             writes += 1
         if _upsert_hardening_section(
@@ -1307,6 +1487,7 @@ def harden_specialists() -> None:
             _universal_hardening_section(agent_id),
         ):
             writes += 1
+        writes += _apply_codex_specific_overlays(ws)
 
         print(f"  [OK] {agent_id}")
 

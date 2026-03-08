@@ -22,22 +22,22 @@
         {
           "id": "9519889d-4acf-4af6-a47a-792430b8f68d",
           "pattern": "/bin/ls",
-          "lastUsedAt": 1772932002631,
-          "lastUsedCommand": "ls /private/tmp/oc-pr-38977/node_modules/.bin | rg 'vitest|tsx|tsx' || true",
-          "lastResolvedPath": "/bin/ls"
+          "lastUsedAt": 1772937484086,
+          "lastUsedCommand": "pwd && ls -1 ~/github | rg '^changeledger(|-connectors|-labs|-site)$' || true",
+          "lastResolvedPath": "/bin/pwd"
         },
         {
           "id": "bfa8b5da-e7a3-4c88-aa15-ad85c058d89e",
           "pattern": "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
-          "lastUsedAt": 1772932430062,
-          "lastUsedCommand": "python3 - <<'PY'\nimport os, tempfile, subprocess, shutil\nroot = tempfile.mkdtemp(prefix='codex-issue-lane-test-')\nrepo = os.path.join(root, 'repo')\nos.makedirs(repo)\nsubprocess.run(['git','init','-b','main'], cwd=repo, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)\nsubprocess.run(['git','config','user.name','Stephen'], cwd=repo, check=True)\nsubprocess.run(['git','config','user.email','stephen@example.com'], cwd=repo, check=True)\nwith open(os.path.join(repo,'README.md'),'w') as f: f.write('hello\\n')\nsubprocess.run(['git','add','README.md'], cwd=repo, check=True)\nsubprocess.run(['git','commit','-m','init'], cwd=repo, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)\nscript = '/Users/sawyer/.openclaw/workspace-codex-orchestrator/scripts/prepare-issue-worktree.sh'\nout = subprocess.check_output([script, repo, '12345', 'main'], text=True)\nprint(out)\nvals = dict(line.split('=',1) for line in out.strip().splitlines())\nwt = vals['WORKTREE_DIR']\nassert os.path.isdir(wt), wt\nbranch = subprocess.check_output(['git','-C',wt,'rev-parse','--abbrev-ref','HEAD'], text=True).strip()\nassert branch == 'codex/issue-12345', branch\nhooks = subprocess.check_output(['git','-C',wt,'config','--get','core.hooksPath'], text=True).strip()\nassert hooks == '/Users/sawyer/.openclaw/workspace-codex-orchestrator/hooks/git', hooks\nprint('OK functional test')\nsubprocess.run(['git','-C',repo,'worktree','remove','--force',wt], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)\nsubprocess.run(['git','-C',repo,'branch','-D','codex/issue-12345'], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)\nshutil.rmtree(root)\nparent = os.path.dirname(wt)\nfor p in [parent, os.path.dirname(parent)]:\n    try:\n        os.rmdir(p)\n    except OSError:\n        pass\nPY",
+          "lastUsedAt": 1772937826040,
+          "lastUsedCommand": "python3 - <<'PY'\nfrom pathlib import Path\npath = Path('/Users/sawyer/github/changeledger/Makefile')\ntext = path.read_text()\ntext = text.replace('$(UV) run ruff format apps packages tests', '$(UV) run ruff format apps packages/core packages/modules tests')\ntext = text.replace('$(UV) run ruff check apps packages tests', '$(UV) run ruff check apps packages/core packages/modules tests')\npath.write_text(text)\nPY\ncd ~/github/changeledger && make check",
           "lastResolvedPath": "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3"
         },
         {
           "id": "da7c0235-c67f-4853-acfa-ec491c995b82",
           "pattern": "/bin/pwd",
-          "lastUsedAt": 1772931516757,
-          "lastUsedCommand": "pwd && ls -1 /Users/sawyer/github | sed -n '1,20p' && if [ -d /Users/sawyer/github/openclaw ]; then echo REPO=/Users/sawyer/github/openclaw; elif [ -d /Users/sawyer/openclaw ]; then echo REPO=/Users/sawyer/openclaw; fi",
+          "lastUsedAt": 1772937484085,
+          "lastUsedCommand": "pwd && ls -1 ~/github | rg '^changeledger(|-connectors|-labs|-site)$' || true",
           "lastResolvedPath": "/bin/pwd"
         },
         {
@@ -85,8 +85,8 @@
         {
           "id": "a73dfbc9-26b5-4efd-9b3a-de477c6e2acf",
           "pattern": "/bin/pwd",
-          "lastUsedAt": 1772929901076,
-          "lastUsedCommand": "pwd && echo '--- workspace ---' && fd -HI 'prompt|prompts|skill|skills' /Users/sawyer/.openclaw/workspace /Users/sawyer/github/scry-home /Users/sawyer/openclaw 2>/dev/null | sed 's#^#/##' | head -n 300",
+          "lastUsedAt": 1772937074972,
+          "lastUsedCommand": "pwd && [ -f BUILD.md ] && echo BUILD_EXISTS || echo BUILD_MISSING && echo '--- prompt tree ---' && find prompts/openclaw -maxdepth 3 -type f | sort",
           "lastResolvedPath": "/bin/pwd"
         },
         {
@@ -99,29 +99,29 @@
         {
           "id": "17af8e6f-9d51-4a2b-a92a-a22844065e67",
           "pattern": "/usr/bin/cd",
-          "lastUsedAt": 1772933487638,
-          "lastUsedCommand": "cd /Users/sawyer/github/scry-home && uv run python -m scripts sync:openclaw",
+          "lastUsedAt": 1772935750187,
+          "lastUsedCommand": "cd /Users/sawyer/.openclaw/workspace && rg -n \"Discord architecture decision|Prompt-storage decision|workspace channels|channel-plus-workspaces|Workspaces\" MEMORY.md BUILD.md",
           "lastResolvedPath": "/usr/bin/cd"
         },
         {
           "id": "a2840be7-5bce-4e4e-9c2e-c5a32a1c040d",
           "pattern": "/opt/homebrew/bin/rg",
-          "lastUsedAt": 1772933140691,
-          "lastUsedCommand": "rg -n \"Local repo commit created|commit\" /Users/sawyer/.openclaw/workspace/BUILD.md | sed -n '1,80p'",
-          "lastResolvedPath": "/opt/homebrew/bin/rg"
+          "lastUsedAt": 1772935750188,
+          "lastUsedCommand": "cd /Users/sawyer/.openclaw/workspace && rg -n \"Discord architecture decision|Prompt-storage decision|workspace channels|channel-plus-workspaces|Workspaces\" MEMORY.md BUILD.md",
+          "lastResolvedPath": "/usr/bin/cd"
         },
         {
           "id": "e51df518-3eac-45be-8dec-729f978eca01",
           "pattern": "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
-          "lastUsedAt": 1772920239637,
-          "lastUsedCommand": "python3 - <<'PY'\nimport json, pathlib\ncfg=json.loads(pathlib.Path('/Users/sawyer/.openclaw/openclaw.json').read_text())\nprint('agents:', [a.get('id') for a in cfg.get('agents',{}).get('list',[])])\nPY",
+          "lastUsedAt": 1772934253986,
+          "lastUsedCommand": "python3 - <<'PY'\nfrom pathlib import Path\npath = Path('/Users/sawyer/github/scry-home/scripts/tasks/harden_specialists.py')\ntext = path.read_text()\nstart = text.index('def _upsert_marked_section(')\nend = text.index('def _apply_codex_specific_overlays(ws: Path) -> int:\\n')\nnew_func = r'''def _upsert_marked_section(\n    path: Path,\n    section: str,\n    *,\n    start_marker: str,\n    end_marker: str,\n    anchor: str | None = None,\n) -> bool:\n    current = path.read_text()\n\n    if start_marker in current and end_marker in current:\n        prefix = current.split(start_marker)[0].rstrip()\n        suffix = current.split(end_marker, 1)[1].lstrip(\"\\n\")\n        next_content = f\"{prefix}\\n\\n{section}\\n{suffix}\"\n    elif anchor and anchor in current:\n        next_content = current.replace(anchor, f\"{anchor}\\n\\n{section}\", 1)\n    else:\n        next_content = f\"{current.rstrip()}\\n\\n{section}\\n\"\n\n    if next_content == current:\n        return False\n    path.write_text(next_content)\n    return True\n\n\n'''\ntext = text[:start] + new_func + text[end:]\npath.write_text(text)\nprint('fixed helper')\nPY",
           "lastResolvedPath": "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3"
         },
         {
           "id": "68793acf-b0f0-42e2-a723-424a6c624a27",
           "pattern": "/usr/bin/find",
-          "lastUsedAt": 1772933152414,
-          "lastUsedCommand": "find /Users/sawyer/github/scry-home/openclaw/prompts/openclaw -maxdepth 1 -type f | sort",
+          "lastUsedAt": 1772937793255,
+          "lastUsedCommand": "find prompts/openclaw -maxdepth 2 -type f | sort",
           "lastResolvedPath": "/usr/bin/find"
         },
         {
@@ -134,9 +134,9 @@
         {
           "id": "7e009642-08c3-4a10-9d1e-732add3a15e8",
           "pattern": "/usr/bin/sed",
-          "lastUsedAt": 1772933140691,
-          "lastUsedCommand": "rg -n \"Local repo commit created|commit\" /Users/sawyer/.openclaw/workspace/BUILD.md | sed -n '1,80p'",
-          "lastResolvedPath": "/opt/homebrew/bin/rg"
+          "lastUsedAt": 1772937896161,
+          "lastUsedCommand": "git diff -- AGENTS.md CLAUDE.md MEMORY.md BUILD.md prompts/openclaw/README.md prompts/openclaw/DISCORD_PINNED_QUICKSTART.md | sed -n '1,260p'",
+          "lastResolvedPath": "/usr/bin/git"
         },
         {
           "id": "170b4476-99bc-49b4-9e78-375f88faf802",
@@ -156,16 +156,16 @@
         {
           "id": "31cdf770-7330-4059-a8f5-926bfb9547a7",
           "pattern": "/usr/bin/git",
-          "lastUsedAt": 1772933133419,
-          "lastUsedCommand": "cd /Users/sawyer/github/scry-home && git diff -- openclaw/prompts/openclaw/bug-hunt-mergeable-fix-scout.md | sed -n '1,220p'",
-          "lastResolvedPath": "/usr/bin/cd"
+          "lastUsedAt": 1772937977278,
+          "lastUsedCommand": "git add BUILD.md && git commit --amend --no-edit",
+          "lastResolvedPath": "/usr/bin/git"
         },
         {
           "id": "0f1c197f-735d-4055-aaa4-83033dda60de",
           "pattern": "/usr/bin/printf",
-          "lastUsedAt": 1772932995798,
-          "lastUsedCommand": "printf '\\n--- RUNBOOK excerpt ---\\n' && rg -n \"worktrees|issue-lane|prepare-issue\" /Users/sawyer/.openclaw/workspace-codex-orchestrator/RUNBOOK.md /Users/sawyer/.openclaw/workspace-codex-orchestrator/TOOLS.md /Users/sawyer/.openclaw/workspace-codex-orchestrator/scripts/prepare-issue-worktree.sh /Users/sawyer/.openclaw/workspace-codex-orchestrator/scripts/launch-issue-lane.sh",
-          "lastResolvedPath": "/usr/bin/printf"
+          "lastUsedAt": 1772934998488,
+          "lastUsedCommand": "cd /Users/sawyer/.openclaw/workspace && printf '\\n== workspace root ==\\n' && ls -la && printf '\\n== workspace prompt tree ==\\n' && find prompts -maxdepth 3 -print 2>/dev/null | sort || true && printf '\\n== workspace BUILD exists? ==\\n' && if [ -f BUILD.md ]; then echo YES; sed -n '1,240p' BUILD.md; else echo NO; fi",
+          "lastResolvedPath": "/usr/bin/cd"
         },
         {
           "id": "c877937d-7eb2-4bb9-833f-8a7db57b848f",
