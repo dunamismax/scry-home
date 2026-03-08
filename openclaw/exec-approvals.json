@@ -92,8 +92,8 @@
         {
           "id": "8b70c9de-dc72-4c2c-af17-ea512bb7cdd7",
           "pattern": "/Users/sawyer/.local/bin/openclaw",
-          "lastUsedAt": 1772940179021,
-          "lastUsedCommand": "openclaw logs --limit 1000 --max-bytes 2000000 --plain --local-time | rg -i 'discord voice|voice channel|dave|decrypt|rejoin|decryptionfailed|auto-join|autojoin|voice receiver|opus|transcrib|joined.*voice|leaving.*voice'",
+          "lastUsedAt": 1772978504923,
+          "lastUsedCommand": "openclaw health --json",
           "lastResolvedPath": "/Users/sawyer/.local/bin/openclaw"
         },
         {
@@ -106,8 +106,8 @@
         {
           "id": "a2840be7-5bce-4e4e-9c2e-c5a32a1c040d",
           "pattern": "/opt/homebrew/bin/rg",
-          "lastUsedAt": 1772944102085,
-          "lastUsedCommand": "rg -n \"IDENTITY.md\" /Users/sawyer/github/scry-home/scripts/tasks/harden_specialists.py | sed -n '1,20p' && sed -n '1510,1490p' /Users/sawyer/github/scry-home/scripts/tasks/harden_specialists.py",
+          "lastUsedAt": 1772978467690,
+          "lastUsedCommand": "rg -n \"openclaw update|update status|update.run|self-update|Get Updates\" /Users/sawyer/openclaw/docs /Users/sawyer/openclaw/src /Users/sawyer/openclaw/README* | head -n 80",
           "lastResolvedPath": "/opt/homebrew/bin/rg"
         },
         {
@@ -156,8 +156,8 @@
         {
           "id": "31cdf770-7330-4059-a8f5-926bfb9547a7",
           "pattern": "/usr/bin/git",
-          "lastUsedAt": 1772944151461,
-          "lastUsedCommand": "git -C /Users/sawyer/github/scry-home diff -- openclaw/exec-approvals.json",
+          "lastUsedAt": 1772978490995,
+          "lastUsedCommand": "git remote -v",
           "lastResolvedPath": "/usr/bin/git"
         },
         {
@@ -170,8 +170,8 @@
         {
           "id": "c877937d-7eb2-4bb9-833f-8a7db57b848f",
           "pattern": "/usr/bin/head",
-          "lastUsedAt": 1772905325062,
-          "lastUsedCommand": "rg -n \"reviewer|builder-mobile|openclaw-maintainer|contributor|codex-orchestrator|sentinel|luma|specialist agents|bench\" /Users/sawyer/.openclaw/workspace /Users/sawyer/github/grimoire -g '*.md' -g '*.py' -g '*.sh' | head -n 400",
+          "lastUsedAt": 1772978467690,
+          "lastUsedCommand": "rg -n \"openclaw update|update status|update.run|self-update|Get Updates\" /Users/sawyer/openclaw/docs /Users/sawyer/openclaw/src /Users/sawyer/openclaw/README* | head -n 80",
           "lastResolvedPath": "/opt/homebrew/bin/rg"
         }
       ]

@@ -86,6 +86,7 @@ Workspace is canonical → synced to `scry-home` root + `openclaw/` dir via `syn
 - **PR #32397**: test — Numeric messageId coverage for Signal reaction handler
 - **PR #32398**: docs — Recommended DM configuration for personal assistant use
 - **PR #38156**: fix — Cron fallback watchdog stays independent from `payload.timeoutSeconds` for isolated cron agent turns (#37505)
+- **Release milestone (2026-03-08)**: Stephen was credited as **1 of 196 contributors** in a new OpenClaw release announcement, with his actual GitHub avatar/profile photo visible in the contributor post.
 - All authored as `dunamismax`. No Signal subsystem maintainer exists yet.
 
 ## Decisions (current-state only)
