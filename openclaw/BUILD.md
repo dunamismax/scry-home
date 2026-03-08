@@ -1,6 +1,6 @@
 # BUILD.md
 
-**Current status:** phase = prompt library expansion for Discord bench/workspace lanes finalized + verified · last updated = 2026-03-07 20:28 America/New_York · latest relevant focus = reusable prompt pack aligned to current agent homes, workspace channels, and specialist routing
+**Current status:** phase = Discord workspaces retired + thread-first prompt-library rebuild done · last updated = 2026-03-07 21:16 America/New_York · latest relevant focus = live Discord config now targets only the seven agent home channels and the canonical prompt pack has been reorganized into per-agent thread-first folders, mirrored into specialist workspaces and `scry-home`
 
 ## Phase plan
 
@@ -129,7 +129,7 @@
 - The Discord server remains on the channel-plus-workspaces architecture; no workspace channels were deleted.
 - The temporary config cutover to home-channels-only was reverted and full workspace bindings were restored.
 - Custom shared skills created during the experiment were removed.
-- The OpenClaw mergeable bug scout prompt remains as a plain markdown prompt in `~/.openclaw/workspace/prompts/openclaw/bug-hunt-mergeable-fix-scout.md`.
+- Historical note: at that point the OpenClaw mergeable bug scout prompt still existed as a standalone markdown file in the old flat prompt layout.
 
 ### Phase 13 — Prompt library expansion for the Discord bench
 - [x] Audit the current prompt directory and existing reusable prompt style
@@ -149,6 +149,34 @@
 - `bun run lint` ✅ passed in `~/github/scry-home`.
 - `uv run python -m scripts openclaw:audit` ✅ passed after creating the intended local worktree root at `~/.openclaw/worktrees`, which existing codex-orchestrator docs already referenced.
 - Local repo commits were created in `~/github/scry-home` for the prompt-library expansion; the working tree still contains unrelated pre-existing mirror noise outside this task.
+
+### Phase 14 — Specialist prompt locality + bootstrap ceiling
+- [x] Add a durable local mirror of shared OpenClaw prompt files inside specialist workspaces so file reads stay within sandbox roots
+- [x] Teach specialist baselines to prefer local prompt mirrors instead of the `scry-home` export path
+- [x] Trim canonical `AGENTS.md` below the injected-context ceiling and verify the new size
+- [x] Re-run hardening/sync verification after the fixes
+
+### Follow-up snapshot — 2026-03-07 20:56 ET
+- Canonical `AGENTS.md` is now `19,943` bytes, below the 20,000-byte injected bootstrap ceiling that previously caused truncation.
+- `scripts/tasks/harden_specialists.py` now mirrors the shared `workspace/prompts/openclaw/` pack into each specialist workspace at `prompts/openclaw/` and adds an explicit local-path rule to specialist `CLAUDE.md` hardening guidance.
+- `uv run python -m scripts specialists:harden` ✅ applied the prompt-locality baseline across all six active specialists; a targeted rerun for `codex-orchestrator` restored its issue-lane-specific overlays after the generic pass.
+- Historical note: at that point the live codex-orchestrator workspace still carried the old standalone mergeable-bug prompt plus the related shared prompt pack locally.
+- `uv run python -m scripts sync:openclaw` ✅ mirrored the updated canonical + specialist files back into `~/github/scry-home`.
+- `uv run python -m scripts openclaw:audit` ✅ passed after the final sync.
+
+### Phase 15 — Discord workspaces retirement + thread-first prompt rebuild
+- [x] Remove dead Discord workspace bindings from live OpenClaw config so only the seven home channels remain allowlisted/bound
+- [x] Retire the Discord `Workspaces` category and its scoped channels (user completed the server-side deletion directly)
+- [x] Reorganize the canonical prompt pack into per-agent folders for thread-first use
+- [x] Sync the rebuilt prompt pack into `scry-home`
+- [x] Run prompt/config verification after the Discord cleanup
+- [x] Commit the canonical workspace changes and the mirrored `scry-home` changes cleanly
+
+### Phase 15 snapshot — 2026-03-07 21:10 ET
+- The old `Workspaces` category and its scoped Discord channels are now gone from the server; Stephen deleted the server-side channels directly.
+- Live OpenClaw config has been cleaned so `bindings` target only `#scry`, `#codex`, `#research`, `#scribe`, `#operator`, `#sentinel`, and `#luma`, and the Discord guild allowlist now contains only those seven home-channel IDs.
+- The canonical prompt pack under `workspace/prompts/openclaw/` has been rebuilt into per-agent folders (`scry/`, `codex/`, `research/`, `scribe/`, `operator/`, `sentinel/`, `luma/`) with thread-first starter prompts.
+- This phase supersedes the earlier channel-plus-workspaces experiment documented above.
 
 ## Immediate next pass priorities
 
