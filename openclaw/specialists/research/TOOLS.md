@@ -9,10 +9,12 @@
 
 ## OpenClaw Install
 
-- **Git-based install**: `~/openclaw` (main branch, v2026.3.3+)
-- **Runtime symlink**: `~/.openclaw/lib/node_modules/openclaw` → `~/openclaw`
-- **Binary**: `~/.local/bin/openclaw` → `~/openclaw/openclaw.mjs`
-- **Update method**: `cd ~/openclaw && git pull` then restart gateway
+- **Live runtime install**: local-prefix package install under `~/.openclaw/lib/node_modules/openclaw` (currently 2026.3.7)
+- **CLI wrapper**: `~/.local/bin/openclaw` → `~/.openclaw/lib/node_modules/openclaw/openclaw.mjs`
+- **Repo checkouts**:
+  - `~/github/openclaw` — primary local repo clone
+  - `~/openclaw` — separate dev/install checkout kept around for source work, not the live runtime path
+- **Update method (live runtime)**: prefer `openclaw update` when detection works; if package-manager detection misses the custom prefix, use `npm i -g openclaw@latest --prefix ~/.openclaw`, then `openclaw doctor --non-interactive` and `openclaw gateway restart`
 - **Service**: LaunchAgent (`ai.openclaw.gateway.plist`), port 18789
 
 ## Reference Docs

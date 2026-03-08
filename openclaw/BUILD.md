@@ -1,6 +1,6 @@
 # BUILD.md
 
-**Current status:** phase = OpenClaw 2026.3.7 update + backup checkpoint complete · last updated = 2026-03-08 10:14 America/New_York · latest relevant focus = canonical workspace was synced to `scry-home`, encrypted runtime backup was refreshed/pushed, and the live OpenClaw package install was manually updated to 2026.3.7 with doctor + restart verification
+**Current status:** phase = heartbeat config + doc drift cleanup in progress · last updated = 2026-03-08 10:19 America/New_York · latest relevant focus = pinned `agents.defaults.heartbeat.directPolicy`, correcting stale OpenClaw install/channel notes in canonical docs, then re-syncing/auditing/backing up to `scry-home`
 
 ## Phase plan
 
@@ -255,7 +255,16 @@
 - The control-plane updater and `openclaw update` both skipped because this machine uses a **custom-prefix package install** at `~/.openclaw`, not a git checkout and not a globally detectable npm/pnpm prefix.
 - Safe manual workaround used: `npm i -g openclaw@2026.3.7 --prefix /Users/sawyer/.openclaw --no-fund --no-audit --loglevel=error`, followed by `openclaw doctor --non-interactive` and a gateway restart.
 - Verification: `openclaw --version` ✅ `2026.3.7`; `openclaw status --deep` ✅ gateway healthy, Discord OK, app `2026.3.7`; `openclaw update status` ✅ no update available, stable channel still set.
-- Noted but deferred: `openclaw doctor` still recommends reinstalling the gateway service without an embedded `OPENCLAW_GATEWAY_TOKEN`, and the existing personal-assistant/multi-user heuristic warning remains expected for this private Discord deployment.
+- Follow-up completed immediately after: the gateway LaunchAgent no longer embeds `OPENCLAW_GATEWAY_TOKEN`; the old doctor warning about reinstalling the service disappeared.
+- Remaining expected warning from that pass: the personal-assistant/multi-user heuristic for the private Discord deployment.
+
+### Phase 21 — heartbeat direct-policy + stale-doc cleanup
+- [x] Inspect heartbeat config schema and current config before editing
+- [x] Pin `agents.defaults.heartbeat.directPolicy` explicitly to preserve current behavior across upgrades
+- [x] Correct stale install/channel/auth notes in canonical workspace docs (`TOOLS.md`, `MEMORY.md`)
+- [ ] Re-harden/sync specialist mirrors, rerun audit, and confirm drift is gone
+- [ ] Run a fresh encrypted OpenClaw backup and push `scry-home` checkpoint
+- [ ] Re-run doctor/status verification and reconcile final notes
 
 ## Immediate next pass priorities
 

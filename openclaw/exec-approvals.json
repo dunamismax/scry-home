@@ -92,22 +92,22 @@
         {
           "id": "8b70c9de-dc72-4c2c-af17-ea512bb7cdd7",
           "pattern": "/Users/sawyer/.local/bin/openclaw",
-          "lastUsedAt": 1772978967133,
-          "lastUsedCommand": "openclaw update status",
+          "lastUsedAt": 1772979473792,
+          "lastUsedCommand": "openclaw status --deep",
           "lastResolvedPath": "/Users/sawyer/.local/bin/openclaw"
         },
         {
           "id": "17af8e6f-9d51-4a2b-a92a-a22844065e67",
           "pattern": "/usr/bin/cd",
-          "lastUsedAt": 1772935750187,
-          "lastUsedCommand": "cd /Users/sawyer/.openclaw/workspace && rg -n \"Discord architecture decision|Prompt-storage decision|workspace channels|channel-plus-workspaces|Workspaces\" MEMORY.md BUILD.md",
+          "lastUsedAt": 1772979330023,
+          "lastUsedCommand": "cd /Users/sawyer/.openclaw/workspace && rg -n \"anthropic:manual|Signal remains active|Git-based install|Symlink: ~/.openclaw/lib/node_modules/openclaw|~/.openclaw/lib/node_modules/openclaw → ~/openclaw|Signal \\+ Discord|enabled alongside Signal|Signal plugin|live install checkout used by the running system\" SOUL.md AGENTS.md CLAUDE.md TOOLS.md MEMORY.md BUILD.md BOOTSTRAP.md IDENTITY.md USER.md prompts/openclaw -g '!memory/**'",
           "lastResolvedPath": "/usr/bin/cd"
         },
         {
           "id": "a2840be7-5bce-4e4e-9c2e-c5a32a1c040d",
           "pattern": "/opt/homebrew/bin/rg",
-          "lastUsedAt": 1772978720927,
-          "lastUsedCommand": "rg -n \"install_openclaw_npm\\(|ensure_openclaw_bin_link|resolve_openclaw_bin\" /Users/sawyer/openclaw/scripts/install.sh | head -n 40",
+          "lastUsedAt": 1772979405810,
+          "lastUsedCommand": "rg -n \"config.patch|raw required|gateway config.patch|config\\.patch\" /Users/sawyer/openclaw/docs /Users/sawyer/openclaw/src -g '!**/node_modules/**' | head -n 80",
           "lastResolvedPath": "/opt/homebrew/bin/rg"
         },
         {
@@ -134,9 +134,9 @@
         {
           "id": "7e009642-08c3-4a10-9d1e-732add3a15e8",
           "pattern": "/usr/bin/sed",
-          "lastUsedAt": 1772978724253,
-          "lastUsedCommand": "sed -n '760,860p' /Users/sawyer/openclaw/scripts/install.sh && printf '\\n---\\n' && sed -n '1605,1875p' /Users/sawyer/openclaw/scripts/install.sh",
-          "lastResolvedPath": "/usr/bin/sed"
+          "lastUsedAt": 1772979472782,
+          "lastUsedCommand": "openclaw doctor --non-interactive | sed -n '1,220p'",
+          "lastResolvedPath": "/Users/sawyer/.local/bin/openclaw"
         },
         {
           "id": "170b4476-99bc-49b4-9e78-375f88faf802",
@@ -158,8 +158,8 @@
         {
           "id": "31cdf770-7330-4059-a8f5-926bfb9547a7",
           "pattern": "/usr/bin/git",
-          "lastUsedAt": 1772979039813,
-          "lastUsedCommand": "git status --short",
+          "lastUsedAt": 1772979052064,
+          "lastUsedCommand": "git add openclaw/BUILD.md openclaw/exec-approvals.json && git commit -m \"Record OpenClaw 2026.3.7 update checkpoint\" && git push origin main",
           "lastResolvedPath": "/usr/bin/git"
         },
         {
@@ -172,8 +172,8 @@
         {
           "id": "c877937d-7eb2-4bb9-833f-8a7db57b848f",
           "pattern": "/usr/bin/head",
-          "lastUsedAt": 1772978720927,
-          "lastUsedCommand": "rg -n \"install_openclaw_npm\\(|ensure_openclaw_bin_link|resolve_openclaw_bin\" /Users/sawyer/openclaw/scripts/install.sh | head -n 40",
+          "lastUsedAt": 1772979405810,
+          "lastUsedCommand": "rg -n \"config.patch|raw required|gateway config.patch|config\\.patch\" /Users/sawyer/openclaw/docs /Users/sawyer/openclaw/src -g '!**/node_modules/**' | head -n 80",
           "lastResolvedPath": "/opt/homebrew/bin/rg"
         }
       ]

@@ -15,6 +15,7 @@ Durable operating memory for Codex.
 - Use `scripts/codex-lanes-overview.py` before launching new work and during monitoring-heavy tasks.
 - For multi-lane work, prefer a tracked batch manifest via `scripts/codex-batch.py`.
 - For interactive Codex PTY work, track the session with `scripts/codex-pty-lane.py` snapshots.
+- Default launch pattern for non-trivial/background Codex CLI runs: create a timestamped `runs/<timestamp>-<lane>/` directory, persist the exact prompt, tee Codex stdout/stderr to a lane log, keep a concise status markdown file, wrap Codex in an outer shell that records exit status, and emit an OpenClaw completion event on success/failure. Use this richer observability setup by default unless the task is a truly trivial foreground one-shot.
 - Use `scripts/codex-watchdog.py` for stale/failed-only alert views.
 - Keep prompts standardized with `templates/codex-lane-prompt.md` unless a task needs a sharper custom prompt.
 - For implementation work on issues/PRs, use **one git worktree per issue lane**. Never point two implementation lanes at the same checkout.
