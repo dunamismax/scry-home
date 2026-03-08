@@ -1,6 +1,6 @@
 # BUILD.md
 
-**Current status:** phase = cleanup + memory-search remediation complete and verifying backups · last updated = 2026-03-07 17:12 America/New_York · latest relevant focus = local Ollama memory indexing, inactive workspace pruning, artifact trim, and `scry-home` sync/backup verification
+**Current status:** phase = Discord infrastructure cutover finalized + verified · last updated = 2026-03-07 18:58 America/New_York · latest relevant focus = channel-based agent/workspace architecture, binding cleanup, and thread-sprawl removal
 
 ## Phase plan
 
@@ -87,6 +87,21 @@
 - Inactive legacy specialist workspaces from the old Claude/Codex era were removed. Codex-orchestrator run artifacts were trimmed to the current useful set.
 - Memory search anomaly was root-caused and fixed: without an embedding provider, OpenClaw intentionally skipped file/session sync entirely in FTS-only mode. Local Ollama embeddings (`nomic-embed-text`) are now configured and the index was rebuilt successfully.
 - `openclaw status` now reports populated memory (`11 files · 39 chunks`) and `openclaw memory status --deep` shows ready vector + FTS indexing across all active agents.
+
+### Phase 10 — Discord infrastructure cutover
+- [x] Audit the live Discord server layout and existing thread sprawl
+- [x] Decide on durable channel-based architecture instead of permanent-thread sprawl
+- [x] Create `Agents` and `Workspaces` categories plus durable workspace channels
+- [x] Rebind all new workspace channels in OpenClaw config and restart cleanly
+- [x] Delete the obsolete seeded threads so only the new architecture remains
+- [x] Verify gateway health plus zero remaining threads under the agent home channels
+
+### Discord cutover snapshot — 2026-03-07 18:58 ET
+- Durable structure is now **channels for homes/workspaces, threads only for short-lived branches**.
+- `Agents` now holds the seven home channels: `scry`, `codex`, `research`, `scribe`, `operator`, `sentinel`, `luma`.
+- `Workspaces` now holds the durable scoped lanes: `codex-lab`, `codex-shipyard`, `codex-review-desk`, `codex-bug-hunt`, `research-market-radar`, `research-deep-dive`, `research-kill-or-pursue`, `scribe-draft-room`, `scribe-docs-distillery`, `operator-ops-watch`, `operator-openclaw-ops`, `operator-automation-yard`, `sentinel-security-audit`, `luma-shot-lab`.
+- OpenClaw config was patched so every new workspace channel is explicitly allowlisted and bound to the correct agent.
+- Verification: `openclaw status` stayed healthy after restart, and Discord `thread-list` now returns zero threads under `#scry`, `#codex`, `#research`, `#scribe`, `#operator`, `#sentinel`, and `#luma`.
 
 ## Immediate next pass priorities
 

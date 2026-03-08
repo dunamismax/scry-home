@@ -64,6 +64,7 @@ if git -C "$REPO_DIR" rev-parse --show-toplevel >/dev/null 2>&1; then
   fi
 fi
 
+declare -a sandbox_args=()
 case "$SANDBOX" in
   workspace-write) sandbox_args=() ;;
   read-only) sandbox_args=(-s read-only) ;;
@@ -110,8 +111,12 @@ cmd=(
   -c model_reasoning_summary=concise
   -c model_auto_compact_token_limit=180000
 )
-cmd+=("${sandbox_args[@]}")
-cmd+=("${EXTRA_ARGS[@]}")
+if (( ${#sandbox_args[@]} )); then
+  cmd+=("${sandbox_args[@]}")
+fi
+if (( ${#EXTRA_ARGS[@]} )); then
+  cmd+=("${EXTRA_ARGS[@]}")
+fi
 
 if [[ -n "$CODEX_BATCH_DIR" && -f "$CODEX_BATCH_DIR/manifest.json" ]]; then
   python3 - "$CODEX_BATCH_DIR/manifest.json" "$RUN_DIR" <<'PY'
