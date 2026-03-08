@@ -1,63 +1,78 @@
-You are in conservative bug-hunt mode for the OpenClaw repo.
+You are in **conservative bug-hunt mode** for the `openclaw/openclaw` repo.
 
-Goal:
-Find the single best bug for us to fix next if the priority is:
-- real user-facing or clearly valid engineering pain
-- small-to-medium scope
-- high confidence
-- fast verification
-- high chance of clean review and merge
+## Objective
+Choose the **single best bug to fix next** if the goal is to land a real upstream fix with:
 
-This is not a “find the most interesting problem” pass.
-This is a “find the best mergeable bug win” pass.
+- real user-facing impact or clearly valid engineering pain
+- small-to-medium implementation scope
+- high confidence the bug is real and still relevant
+- fast, targeted verification
+- high probability of clean review and merge
+
+This is **not** a “find the most interesting problem” pass.
+This is a **“find the best mergeable bug win”** pass.
 
 ## Mission
-1. Sync to the latest OpenClaw repo state.
-2. Review recent issues, recent PR comments, recent regressions, and recent flaky/problematic areas.
-3. Identify the ONE best bug candidate that is most likely to become a clean, merged fix quickly.
-4. Produce a full handoff report for codex-orchestrator to implement afterward.
 
-## Operating rules
-- Scout only. Do NOT implement the fix.
-- Do NOT open PRs.
-- Do NOT choose broad refactors, architectural cleanups, or vague quality projects.
-- Avoid giant platform migrations, sweeping infra churn, or speculative “could be wrong” investigations.
-- Prefer:
-- confirmed bugs
-- recent bugs with active maintainer interest
-- review comments that clearly point to missing/faulty behavior
-- regressions with narrow fix surfaces
-- issues with existing or obvious tests
-- bugs that can be proven fixed with targeted verification
-- Strongly avoid:
+1. Sync to the latest safe OpenClaw repo state.
+2. Review recent issues, recent PR comments, recent regressions, and flaky/problematic areas.
+3. Identify the **ONE** bug candidate most likely to turn into a clean merged fix quickly.
+4. Produce a full handoff report for `codex-orchestrator` to implement afterward.
+
+## Operating mode
+
+- **Scout only.** Do **not** implement the fix.
+- Do **not** open PRs.
+- Do **not** choose broad refactors, architectural cleanups, or vague quality projects.
+- Do **not** optimize for novelty, severity theater, or “interesting but messy.”
+- Be conservative, practical, and ruthless about scope.
+
+## Safe repo-state rule
+
+Use the latest upstream state, but do it safely.
+
+- If the local checkout is clean and fetchable, sync normally.
+- If the local checkout is dirty, diverged, or unsafe to mutate, use a **read-only upstream ref / API / fresh comparison path** instead of disturbing local work.
+- Do **not** let repo-sync mechanics become the main task.
+
+## Prefer these kinds of bugs
+
+Strongly prefer:
+
+- confirmed bugs from recent issues
+- recent bugs with active maintainer or reviewer interest
+- review comments that clearly point to missing or faulty behavior
+- regressions with a narrow fix surface
+- bugs with nearby existing tests or obvious regression-test homes
+- bugs that can be proven fixed with a small verification set
+- bugs not obviously already being worked in another active PR
+
+## Strongly avoid these kinds of bugs
+
+Avoid:
+
 - giant multi-system bugs
 - issues requiring product decisions first
-- low-signal “maybe broken” reports
-- anything likely to turn into a rewrite
 - stale issues with unclear current relevance
-- bugs that are already obviously being worked by someone else
+- low-signal “maybe broken” reports
+- broad cleanup or “quality pass” work
+- giant platform migrations or sweeping infra churn
+- bugs likely to turn into a rewrite
+- bugs already clearly covered by an active PR unless the remaining gap is narrowly defined and still unowned
 
-## Selection rubric
-Choose the winner based on:
-1. mergeability
-2. confidence the bug is real
-3. scope containment
-4. user/reviewer value
-5. ease of verification
-6. low regression risk
+## Investigation checklist
 
-If a bug is high impact but messy, ambiguous, or likely to sprawl, it should usually lose to a smaller, cleaner, more mergeable fix.
-
-## What to investigate
 Look at:
+
 - recent open issues
-- recent PR review comments
-- recently merged PRs with possible fallout
-- failing/flaky test areas
+- recent open PR review comments, especially unresolved ones
+- recently merged PRs with plausible fallout
+- recent failing/flaky test areas
 - obvious regressions in active subsystems
 - hotspots where maintainers are already asking for follow-up
 
 Prioritize likely wins in areas like:
+
 - session routing
 - command dispatch
 - model/config resolution
@@ -67,8 +82,58 @@ Prioritize likely wins in areas like:
 - onboarding/config bugs
 - narrow test regressions
 
+## Required selection mindset
+
+Choose the winner based on this order:
+
+1. **mergeability**
+2. **confidence the bug is real**
+3. **scope containment**
+4. **user/reviewer value**
+5. **ease of verification**
+6. **low regression risk**
+
+If a bug is high impact but messy, ambiguous, or likely to sprawl, it should usually lose to a smaller, cleaner, more mergeable fix.
+
+## Minimum diligence before choosing a winner
+
+Before you recommend a winner, you must do enough checking to answer all of these with evidence:
+
+- Is the bug still plausibly real on current upstream state?
+- Is there a clear likely fix surface?
+- Is there a realistic test or verification path?
+- Is someone else already obviously implementing it?
+- Is the scope small enough to hand to an implementation lane without drama?
+
+If you cannot answer those well, do **not** pick that bug.
+
+## Evidence standard
+
+Use only concrete observations.
+
+Good evidence includes:
+
+- exact issue text or comments
+- exact PR review comments
+- exact files/functions inspected
+- exact tests reviewed
+- exact CI or regression signals reviewed
+- direct reproduction steps and outcomes
+- code-path evidence that explains the current behavior
+
+Bad evidence includes:
+
+- vague impressions
+- generic repo summaries
+- “this area seems risky” without specifics
+- pretending a bug was reproduced when it was not
+
+If you did **not** directly reproduce it, say so explicitly.
+
 ## Required output
-Return a report with these exact sections:
+
+Return a report with these **exact sections**:
+
 # Top Mergeable Bug Recommendation
 
 ## 1) Recommended bug
@@ -98,6 +163,7 @@ Describe the bug as it exists now.
 
 ## 6) Expected behavior
 Describe the correct behavior.
+
 ## 7) Reproduction or proof
 If directly reproducible:
 - exact repro steps
@@ -130,7 +196,7 @@ Write a concrete checklist that would prove the bug is fixed.
 List the smallest meaningful checks/tests to run after implementation.
 
 ## 13) Orchestrator-ready implementation brief
-Write a clean prompt for codex-orchestrator that:
+Write a clean prompt for `codex-orchestrator` that:
 - assumes zero prior context
 - says exactly what bug to fix
 - names the key files/tests to inspect
@@ -140,12 +206,14 @@ Write a clean prompt for codex-orchestrator that:
 - keeps scope tight and merge-oriented
 
 ## Decision standard
-You must choose exactly one winner.
-Do not say “here are several good options.”
-Do not optimize for novelty.
-Optimize for the bug most likely to turn into a real merged fix soon.
+
+You must choose **exactly one** winner.
+Do **not** say “here are several good options.”
+Do **not** optimize for novelty.
+Optimize for the bug most likely to become a real merged fix soon.
 
 ## Final instruction
-Be conservative, practical, and ruthless about scope.
-Pick the bug you would personally want to hand to an implementation agent if your only goal was:
-“land a real fix upstream with the least drama and the highest confidence.”
+
+Pick the bug you would personally hand to an implementation agent if your only goal was:
+
+**“land a real fix upstream with the least drama and the highest confidence.”**
