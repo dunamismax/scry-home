@@ -23,6 +23,8 @@ OPENCLAW_ROOT = Path.home() / ".openclaw"
 MAIN_WS = OPENCLAW_ROOT / "workspace"
 MIRROR_ROOT = REPO_ROOT / "openclaw"
 SPECIALIST_MIRROR_ROOT = MIRROR_ROOT / "specialists"
+SHARED_SKILLS_ROOT = OPENCLAW_ROOT / "skills"
+SHARED_SKILLS_MIRROR_ROOT = MIRROR_ROOT / "shared-skills"
 SPECIALIST_EXCLUDE = {"main", "claude", "codex"}
 REQUIRED_MAIN_DOCS = {
     "SOUL.md",
@@ -88,6 +90,12 @@ def _main_mirror_markdown_files(root: Path) -> set[Path]:
 
 def _files_match(a: Path, b: Path) -> bool:
     return a.exists() and b.exists() and a.read_bytes() == b.read_bytes()
+
+
+def _tree_files(root: Path) -> set[Path]:
+    if not root.exists():
+        return set()
+    return {p.relative_to(root) for p in root.rglob("*") if p.is_file()}
 
 
 def _specialist_ids() -> list[str]:
@@ -172,6 +180,17 @@ def audit_openclaw_docs() -> None:
         if not _files_match(MAIN_WS / rel, MIRROR_ROOT / rel):
             issues.append(f"mirror-drift:openclaw/{rel.as_posix()}")
 
+    log_step("Checking shared skills mirror")
+    shared_src_files = _tree_files(SHARED_SKILLS_ROOT)
+    shared_dest_files = _tree_files(SHARED_SKILLS_MIRROR_ROOT)
+    for rel in sorted(shared_src_files - shared_dest_files):
+        issues.append(f"shared-skills-mirror-missing:openclaw/shared-skills/{rel.as_posix()}")
+    for rel in sorted(shared_dest_files - shared_src_files):
+        issues.append(f"shared-skills-mirror-stale:openclaw/shared-skills/{rel.as_posix()}")
+    for rel in sorted(shared_src_files & shared_dest_files):
+        if not _files_match(SHARED_SKILLS_ROOT / rel, SHARED_SKILLS_MIRROR_ROOT / rel):
+            issues.append(f"shared-skills-mirror-drift:openclaw/shared-skills/{rel.as_posix()}")
+
     log_step("Checking specialist workspace markdown mirrors")
     specialist_ids = _specialist_ids()
     seen = set(specialist_ids)
@@ -208,6 +227,7 @@ def audit_openclaw_docs() -> None:
                     issues.append(f"stale-path:{file_path}:{token}")
 
     print(f"checked main markdown files: {len(main_src_files)}")
+    print(f"checked shared skill files: {len(shared_src_files)}")
     print(f"checked specialists: {len(specialist_ids)}")
     print(f"checked local path references: {checked_refs}")
 
