@@ -1,6 +1,6 @@
 # BUILD.md
 
-**Current status:** phase = prompt library expansion for Discord bench/workspace lanes in progress · last updated = 2026-03-07 20:26 America/New_York · latest relevant focus = reusable prompt pack aligned to current agent homes, workspace channels, and specialist routing
+**Current status:** phase = prompt library expansion for Discord bench/workspace lanes finalized + verified · last updated = 2026-03-07 20:28 America/New_York · latest relevant focus = reusable prompt pack aligned to current agent homes, workspace channels, and specialist routing
 
 ## Phase plan
 
@@ -139,7 +139,7 @@
 - [x] Add a prompt index so future routing is obvious
 - [x] Sync the updated prompt library into `scry-home`
 - [x] Run repo verification relevant to the mirrored prompt changes
-- [ ] Commit the prompt-library expansion cleanly
+- [x] Commit the prompt-library expansion cleanly
 
 ### Prompt library snapshot — 2026-03-07 20:24 ET
 - The prompt library now mirrors the current Discord architecture instead of carrying only a single bug-hunt prompt.
@@ -148,6 +148,7 @@
 - `uv run python -m scripts sync:openclaw` ✅ propagated the new prompt pack into `~/github/scry-home/openclaw/prompts/openclaw/`.
 - `bun run lint` ✅ passed in `~/github/scry-home`.
 - `uv run python -m scripts openclaw:audit` ✅ passed after creating the intended local worktree root at `~/.openclaw/worktrees`, which existing codex-orchestrator docs already referenced.
+- Local repo commit created in `~/github/scry-home`: `97b3aa3` — `Add reusable OpenClaw prompt pack`.
 
 ## Immediate next pass priorities
 
