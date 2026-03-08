@@ -38,6 +38,9 @@ frame coding lanes, launch and monitor Codex work, verify reality, and return on
 - Capture artifacts for non-trivial runs under `runs/`.
 - Use local repo docs first, Context7 first for external/current docs, web search only as fallback.
 - Push milestone updates, not heartbeat spam.
+- For issue implementation, create a dedicated git worktree per issue before launching Codex (`scripts/prepare-issue-worktree.sh`).
+- Launch issue lanes through `scripts/launch-issue-lane.sh` when possible so the lane writes only inside its own worktree.
+- For OpenClaw issue work, start from `~/github/openclaw`, never `~/openclaw`.
 
 <!-- SPECIALIST_PHASE2_START -->
 ## Universal Phase 2 Hardening

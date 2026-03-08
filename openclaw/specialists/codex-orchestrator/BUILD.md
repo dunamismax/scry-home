@@ -1,35 +1,33 @@
 # BUILD.md
 
-Status: **in progress** — fix issue #39268 in `openclaw/openclaw`, verify, and open a PR.
+Status: **done** — issue-lane isolation pattern installed for codex-orchestrator; runtime config hardened with workspace-only FS tools.
 
 ## Phase plan
-- [x] Read core workspace instructions and bug-hunt brief
-- [x] Check OpenClaw PR queue headroom
-- [ ] Create a clean worktree/branch from current `main`
-- [ ] Reproduce or otherwise prove the agents-page dirty-state bug on current source
-- [ ] Patch the smallest safe UI fix
-- [ ] Add or update the nearest useful test
-- [ ] Run targeted verification
-- [ ] Commit, push, and open PR
+- [x] Inspect current OpenClaw concurrency/safety config and active session state
+- [x] Choose the minimum safe runtime config change to reduce cross-lane collisions
+- [x] Encode durable Codex policy for worktree-per-issue in workspace docs/memory
+- [x] Add reusable worktree/lane launch helpers and prompt template
+- [x] Validate the new helpers against a disposable git repo
+- [x] Apply the runtime config patch and restart cleanly
 
 ## Acceptance checks / validation commands
-- `corepack pnpm install --frozen-lockfile`
-- `corepack pnpm vitest run ui/src/ui/controllers/config.test.ts`
-- `corepack pnpm vitest run ui/src/ui/views/agents-panels-tools-skills.browser.test.ts`
-- `corepack pnpm check`
-- `corepack pnpm build`
-- Manual/code-path proof that changing an agent setting flips `configFormDirty` and enables Save
+- `bash -n scripts/prepare-issue-worktree.sh`
+- `bash -n scripts/launch-issue-lane.sh`
+- disposable functional test for `scripts/prepare-issue-worktree.sh` (temp git repo, branch/worktree/hooks assertions)
+- `gateway config.patch` → `tools.fs.workspaceOnly = true`
+- gateway restart confirmation in patch result
 
 ## Verification snapshot
-- Skill selected: `codex-bug-hunt`
-- Open PR headroom checked: **2** open PRs by `dunamismax` on `openclaw/openclaw` (under cap of 10)
-- Contribution repo: `/Users/sawyer/github/openclaw`
-- Live install repo intentionally not used: `/Users/sawyer/openclaw`
+- Added `scripts/prepare-issue-worktree.sh` to create/reuse one worktree per issue with default branch `codex/issue-<number>`.
+- Added `scripts/launch-issue-lane.sh` to force issue lanes through the worktree-prep step before Codex runs.
+- Added `templates/issue-lane-prompt.md` with explicit single-issue/single-worktree scope rules.
+- Updated durable knowledge in `AGENTS.md`, `CLAUDE.md`, `BOOTSTRAP.md`, `MEMORY.md`, `TOOLS.md`, `RUNBOOK.md`, and `memory/2026-03-07.md`.
+- Functional test passed against a disposable temp repo: branch creation, worktree creation, and hooks wiring all verified.
+- Applied runtime config patch: `tools.fs.workspaceOnly = true`; gateway accepted patch and restarted via `SIGUSR1`.
 
 ## Immediate next-pass priorities
-1. Create fresh worktree from updated `main`
-2. Inspect agents/config UI state flow
-3. Patch and verify with focused tests
+1. Use `scripts/launch-issue-lane.sh` for the next real OpenClaw issue implementation lane.
+2. If needed later, add a lane registry check that warns when two active lanes point at the same repo checkout.
 
-## Blockers / pending human decisions
-- None currently
+## Blockers / pending decisions
+- Workspace is not a git repo, so there is no local workspace commit to create here.

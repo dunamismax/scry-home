@@ -156,6 +156,16 @@ If a required gate cannot run, report what was skipped, why, and the residual ri
 
 Single-agent first. Bring in more lanes only when there is a real partition or a real verification need.
 
+### Issue Lane Isolation
+
+- Default pattern for concurrent issue implementation: **one issue = one branch = one git worktree = one lane**.
+- Never run two implementation lanes against the same checkout at the same time.
+- Never share a dirty working tree between active issue lanes.
+- For OpenClaw upstream work, use `~/github/openclaw` as the base clone and create per-issue worktrees from it; never implement from the live runtime checkout at `~/openclaw`.
+- Lane launchers should create or reuse a dedicated worktree before Codex starts writing.
+- If a task does not justify its own worktree (scout/read-only/review), keep it read-only.
+- If a lane discovers it needs to touch a second issue, stop and spin a new lane/worktree instead of widening scope in place.
+
 ---
 
 ## Build Tracker Protocol (`BUILD.md`)

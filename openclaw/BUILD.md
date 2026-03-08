@@ -148,7 +148,7 @@
 - `uv run python -m scripts sync:openclaw` ✅ propagated the new prompt pack into `~/github/scry-home/openclaw/prompts/openclaw/`.
 - `bun run lint` ✅ passed in `~/github/scry-home`.
 - `uv run python -m scripts openclaw:audit` ✅ passed after creating the intended local worktree root at `~/.openclaw/worktrees`, which existing codex-orchestrator docs already referenced.
-- Local repo commit created in `~/github/scry-home`: `97b3aa3` — `Add reusable OpenClaw prompt pack`.
+- Local repo commits were created in `~/github/scry-home` for the prompt-library expansion; the working tree still contains unrelated pre-existing mirror noise outside this task.
 
 ## Immediate next pass priorities
 

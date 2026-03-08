@@ -17,6 +17,10 @@ Durable operating memory for Codex.
 - For interactive Codex PTY work, track the session with `scripts/codex-pty-lane.py` snapshots.
 - Use `scripts/codex-watchdog.py` for stale/failed-only alert views.
 - Keep prompts standardized with `templates/codex-lane-prompt.md` unless a task needs a sharper custom prompt.
+- For implementation work on issues/PRs, use **one git worktree per issue lane**. Never point two implementation lanes at the same checkout.
+- For OpenClaw upstream work, use the contribution clone at `~/github/openclaw`; never use the live runtime checkout at `~/openclaw` for issue implementation.
+- Preferred launcher flow for issue work: `scripts/prepare-issue-worktree.sh` → `scripts/launch-issue-lane.sh` → `templates/issue-lane-prompt.md`.
+- Branch naming default for issue lanes: `codex/issue-<number>` unless the repo already has a stronger local convention.
 
 ## Reporting
 - Push updates proactively on launch, plan confirmation, midpoint, blockers, and completion.

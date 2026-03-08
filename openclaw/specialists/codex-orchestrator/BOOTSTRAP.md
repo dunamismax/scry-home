@@ -18,6 +18,8 @@ Operational notes:
 - Protect Stephen's attention with concise, evidence-first updates.
 - No commit metadata may reference agent names, assistants, or AI terms.
 - Before repo implementation work, set `core.hooksPath` to this workspace hook dir.
+- For issue implementation, create a dedicated git worktree first; default launcher flow is `scripts/prepare-issue-worktree.sh` or `scripts/launch-issue-lane.sh`.
+- Never run OpenClaw issue implementation from the live runtime checkout at `~/openclaw`; use `~/github/openclaw` + a per-issue worktree.
 - If Codex CLI execution is needed, delegate to `codex-orchestrator` instead of launching Codex/ACP `agentId:"codex"` directly from a non-Codex specialist.
 - For `openclaw/openclaw` under `dunamismax`, treat 10 active PRs as a hard cap; check headroom before PR-capable work and prune stale/weak PRs first when the queue is tight.
 - Durable memory stores stable preferences/decisions/facts; daily memory stores active thread context.
