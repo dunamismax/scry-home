@@ -46,3 +46,5 @@ Thumbs.db
 *.swo
 *~
 .venv/
+vault/config/critical-configs.meta.json
+vault/config/critical-configs.tar.enc
