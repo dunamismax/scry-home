@@ -1,1 +1,0 @@
-"""scry-home CLI scripts."""

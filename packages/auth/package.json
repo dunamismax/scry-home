@@ -1,0 +1,22 @@
+{
+  "name": "@scry-home/auth",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "format": "biome format --write .",
+    "lint": "biome check .",
+    "test": "vitest run --passWithNoTests",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@better-auth/drizzle-adapter": "^1.5.5",
+    "@scry-home/core": "workspace:*",
+    "@scry-home/db": "workspace:*",
+    "better-auth": "^1.5.5"
+  }
+}

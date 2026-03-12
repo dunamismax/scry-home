@@ -1,50 +1,30 @@
-# Bun / Node
 node_modules/
+.pnpm-store/
 .bun/
-.bundle/
-vendor/
-
+dist/
+**/.output/
+coverage/
+.turbo/
+.cache/
+tmp/
+artifacts/
 tsconfig.tsbuildinfo
 
-# Environment & secrets
 .env
 .env.*
+*.log
 *.pem
 *.key
 *.cert
-credentials.json
 service-account*.json
 **/secrets/
 
-# Vault (encrypted backups — only commit intentionally)
 vault/
 
-# Logs
-*.log
-
-# Build output
-dist/
-coverage/
-artifacts/
-tmp/
-
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-.ruff_cache/
-.mypy_cache/
-
-# OS
 .DS_Store
 Thumbs.db
-
-# IDE
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
-.venv/
-vault/config/critical-configs.meta.json
-vault/config/critical-configs.tar.enc

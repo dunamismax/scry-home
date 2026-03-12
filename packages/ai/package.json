@@ -1,0 +1,28 @@
+{
+  "name": "@scry-home/ai",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./chat": "./src/chat.ts",
+    "./mastra": "./src/mastra.ts",
+    "./profile": "./src/profile.ts"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "format": "biome format --write .",
+    "lint": "biome check .",
+    "test": "vitest run --passWithNoTests",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@mastra/core": "^1.12.0",
+    "@scry-home/core": "workspace:*",
+    "@tanstack/ai": "^0.6.3",
+    "@tanstack/ai-openai": "^0.6.0",
+    "@tanstack/ai-react": "^0.6.4",
+    "effect": "^3.19.19",
+    "zod": "^4.1.11"
+  }
+}

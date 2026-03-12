@@ -1,0 +1,27 @@
+{
+  "name": "@scry-home/cli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "scry-home": "./src/index.ts"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "bun build ./src/index.ts --outfile dist/index.js --target bun",
+    "cli": "bun ./src/index.ts",
+    "format": "biome format --write .",
+    "lint": "biome check .",
+    "test": "vitest run --passWithNoTests",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@scry-home/cab": "workspace:*",
+    "@scry-home/core": "workspace:*",
+    "@scry-home/db": "workspace:*",
+    "@scry-home/observability": "workspace:*",
+    "effect": "^3.19.19"
+  }
+}

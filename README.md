@@ -1,97 +1,58 @@
 # scry-home
 
-<p align="center">
-  <img src="assets/images/scry-clawdbot-profile.jpg" width="200" alt="Scry" />
-</p>
+Control plane monorepo for local repo operations, encrypted backup workflows, CAB packet scaffolding, and an in-app operator dashboard.
 
-Personal control plane for Scry and the local OpenClaw workspace.
+## Stack
 
-Python-only ops repo. No Bun, Biome, or Node-based toolchain is required here.
+- Runtime: Bun
+- Workspace / package manager: pnpm
+- Language: TypeScript
+- Effect system: Effect
+- Frontend: TanStack Start + Router + Query
+- Database: PostgreSQL + Drizzle ORM
+- Validation: Effect Schema
+- AI: TanStack AI with a Mastra-ready server runtime split behind server-only entrypoints
+- Auth: Better Auth
+- Observability: OpenTelemetry
+- Lint / format: Biome
+- Tests: Vitest
 
-This repo is the versioned home for:
-- operator docs copied out of the live OpenClaw workspace
-- local backup and restore automation
-- workstation bootstrap and config snapshots
-- small repo-management and audit scripts
-- CAB / Change Factory packets for repo work
+## Workspace Layout
 
-The live OpenClaw workspace is canonical for synced identity files. This repo is the durable export and operations repo around that workspace.
+- `apps/web` — TanStack Start app for repo, backup, and assistant views
+- `packages/core` — shared Effect-based domain utilities
+- `packages/cab` — CAB packet templates and scaffolding
+- `packages/db` — Drizzle schema and PostgreSQL client
+- `packages/auth` — Better Auth integration
+- `packages/ai` — TanStack AI server adapters and orchestration profile
+- `packages/observability` — OpenTelemetry bootstrap
+- `packages/cli` — Bun CLI for local operations
+- `vault` — encrypted backup artifacts only
 
-## Active Keeper Repos
-
-`projects:doctor` and workstation bootstrap treat this as the active keeper set:
-
-- `scry-home`
-- `dunamismax`
-- `boring-go-web`
-- `c-from-the-ground-up`
-- `scryfall-discord-bot`
-- `hello-world-from-hell`
-- `trade-desk-cli`
-- `Sawyer-Visual-Media`
-- `openclaw` — contribution clone at `~/github/openclaw`; live git install remains at `~/openclaw`
-
-## What This Repo Is
-
-- `SOUL.md` / `AGENTS.md` — synced copies of canonical workspace docs
-- `reference/` — CAB templates and dated historical review notes
-- `scripts/` — CLI tasks for sync, bootstrap, backup, remotes, and audits
-- `workstation/` — tracked workstation config snapshots folded in from the former `dotfiles` repo
-- `openclaw/` — auto-synced from OpenClaw workspace (do not edit directly)
-- `vault/` — encrypted backup artifacts
-
-## Setup
+## Commands
 
 ```bash
-git clone git@github.com-dunamismax:dunamismax/scry-home.git
-cd scry-home
-uv sync
-uv run python -m scripts doctor
+pnpm install
+pnpm dev
+pnpm check
+pnpm cli doctor
+pnpm cli projects:list
+pnpm cli cab:new --project=scry-home --packet=repo-control-plane-slice
+pnpm cli setup:config_backup
+pnpm cli verify:config_backup
 ```
 
-## Core Commands
+## Environment
 
-```bash
-uv run ruff check .                     # Repo lint
-uv run pytest                          # Repo tests
-uv run python -m scripts cab:new --project=scry-home --packet=repo-control-plane-slice
-uv run python -m scripts doctor           # Verify prerequisites and project health
-uv run python -m scripts projects:doctor  # Check active keeper repos tracked by this repo
-uv run python -m scripts sync:remotes     # Inspect/fix managed mirror remotes without rewriting custom clones
-uv run python -m scripts sync:openclaw    # Sync OpenClaw workspace → this repo
-uv run python -m scripts setup:config_backup  # Create/update encrypted critical config backup
-```
+- `DATABASE_URL`
+- `BETTER_AUTH_SECRET`
+- `BETTER_AUTH_URL`
+- `OPENAI_API_KEY`
+- `SCRY_CONFIG_BACKUP_PASSPHRASE`
+- `SCRY_SSH_BACKUP_PASSPHRASE`
 
-## CAB / Change Factory
+## Notes
 
-- Workflow doc: `reference/cab/WORKFLOW.md`
-- Template pack: `reference/cab/templates/`
-- Default packet output: `artifacts/cab/`
-- Research Forge is folded into each packet via `09-research-memo.md` and `research/source-log.md`
-
-Example:
-
-```bash
-uv run python -m scripts cab:new --project=scry-home --packet=repo-control-plane-slice
-uv run python -m scripts cab:new --project=openclaw --packet=weekly-review --dry-run
-```
-
-## Workstation Snapshots
-
-- Snapshot tree: `workstation/`
-- Refresh tracked macOS configs: `bash scripts/ops/backup-macos-configs.sh`
-- The long-term scheduler is the existing nightly OpenClaw-to-`scry-home` flow.
-- `scripts/ops/install-backup-launchagent.sh` is retained only as an imported legacy helper from the former `dotfiles` repo.
-- Combined runner: `scripts/ops/run-automated-backups.sh`
-
-## OpenClaw Backups
-
-- Daily backup runner: `scripts/ops/daily-openclaw-backup.sh`
-- LaunchAgent installer: `scripts/ops/install-openclaw-backup-launchagent.sh`
-- Sensitive/manual backup scope notes: `workstation/macOS/metadata/manual-items.md`
-
-## OpenClaw Prompt Pack
-
-- Prompt pack index: `openclaw/prompts/openclaw/README.md`
-- Discord pinned quickstart: `openclaw/prompts/openclaw/DISCORD_PINNED_QUICKSTART.md`
-- Orchestrator templates: `openclaw/specialists/codex-orchestrator/templates/`
+- `apps/web/src/routeTree.gen.ts` is generated by TanStack Router.
+- Do not commit decrypted material into `vault/`.
+- Use `pnpm` for dependency management and `bunx --bun` for package-local binaries.
