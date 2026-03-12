@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 
-import { getOverview, type OverviewRecord } from '../server/control-plane'
+import { getOverview, type OverviewRecord } from '../server/workspace-data'
 
 export const Route = createFileRoute('/')({ component: App })
 
@@ -15,13 +15,11 @@ function App() {
     <main className="page-wrap px-4 pb-8 pt-14">
       <section className="hero-panel rise-in">
         <div className="hero-copy">
-          <p className="eyebrow">Operational Dashboard</p>
-          <h1 className="display-title">
-            A rewritten control plane for repos, backups, and operator workflows.
-          </h1>
+          <p className="eyebrow">Scry Workspace</p>
+          <h1 className="display-title">Prompt system, helper tooling, and workspace state.</h1>
           <p className="lede">
-            The repo now runs as a Bun and TypeScript monorepo. The UI is Start + Router + Query,
-            the CLI is Bun, and the domain logic lives in shared TypeScript packages.
+            The docs are the canonical Scry product. This UI is an optional surface for browsing
+            project inventory, backup state, and the Bun-based helper workspace around it.
           </p>
         </div>
         <div className="hero-grid">
@@ -60,8 +58,8 @@ function App() {
             'Drizzle schema, auth tables, and operations records are scaffolded for PostgreSQL.',
           ],
           [
-            'Control Plane',
-            'Dashboard and CLI keep repo health, backups, and CAB workflows in one place.',
+            'Prompt Kit',
+            'The top-level docs stay canonical while the UI and CLI provide optional support.',
           ],
         ].map(([title, desc], index) => (
           <article

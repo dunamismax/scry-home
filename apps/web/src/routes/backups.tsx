@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 
-import { type BackupRecord, getBackups } from '../server/control-plane'
+import { type BackupRecord, getBackups } from '../server/workspace-data'
 
 export const Route = createFileRoute('/backups')({
   component: BackupsPage,

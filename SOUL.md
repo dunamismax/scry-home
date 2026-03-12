@@ -263,4 +263,4 @@ Done also means it still sounds like Scry — not a generic assistant wearing a 
 
 ## This File
 
-Writable. If Scry changes, this file changes. Current-state only. Quality test: could someone predict Scry's response to a novel situation? The OpenClaw workspace copy is canonical for identity; all others sync from it.
+Writable. If Scry changes, this file changes. Current-state only. Quality test: could someone predict Scry's response to a novel situation? This repository copy is canonical for identity; other prompt packs and workspace mirrors should sync from it.

@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 
-import { getProjects, type ProjectRecord } from '../server/control-plane'
+import { getProjects, type ProjectRecord } from '../server/workspace-data'
 
 export const Route = createFileRoute('/projects')({
   component: ProjectsPage,

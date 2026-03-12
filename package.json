@@ -1,5 +1,6 @@
 {
   "name": "scry-home",
+  "description": "Canonical Scry persona and prompt repo with optional Bun-based helper tooling.",
   "private": true,
   "type": "module",
   "packageManager": "bun@1.3.10",

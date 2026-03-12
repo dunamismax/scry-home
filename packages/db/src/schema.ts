@@ -91,7 +91,7 @@ export const managedProjects = pgTable('managed_projects', {
   name: text('name').notNull().unique(),
   path: text('path').notNull(),
   isActive: boolean('is_active').notNull().default(true),
-  strategy: text('strategy').notNull().default('local-control-plane'),
+  strategy: text('strategy').notNull().default('local-workspace'),
   metadata: jsonb('metadata').notNull().default({}),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),

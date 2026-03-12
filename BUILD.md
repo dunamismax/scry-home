@@ -1,17 +1,17 @@
 # Build Tracker
 
-**Status:** stack cleanup complete
+**Status:** prompt repo alignment complete
 
 ## Completed
 
-- Consolidated the repo onto a Bun workspace with TypeScript, TanStack Start, Drizzle, Better Auth, Zod, Biome, Vitest, and OpenTelemetry.
-- Removed the legacy shared utility layer and replaced validation/contracts with Zod.
-- Removed the in-repo AI layer, stale workspace metadata, and outdated top-level instructions.
+- Reframed the repo around the Scry prompt system instead of an app-first workspace utility pitch.
+- Added `CLAUDE.md` so the documented wake sequence is complete.
+- Rewrote the root docs to make agent adoption and prompt reuse the primary use case.
+- Removed the last legacy product-specific canonical reference from `SOUL.md`.
+- Kept the Bun workspace documented as optional support tooling.
 
 ## Verification
 
 ```bash
-bun run check
+git diff --check
 ```
-
-Repo-wide verification is currently green.
