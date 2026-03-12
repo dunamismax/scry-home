@@ -5,9 +5,9 @@ TanStack Start frontend for the `scry-home` control plane.
 ## Scripts
 
 ```bash
-pnpm --filter @scry-home/web dev
-pnpm --filter @scry-home/web typecheck
-pnpm --filter @scry-home/web build
+bun run --filter @scry-home/web dev
+bun run --filter @scry-home/web typecheck
+bun run --filter @scry-home/web build
 ```
 
 ## Notes

@@ -23,7 +23,7 @@ function ProjectsPage() {
           </div>
           <p className="lede">
             This view mirrors the Bun CLI registry. Presence, install commands, and verification
-            hooks all come from the shared Effect domain.
+            hooks all come from the shared workspace core.
           </p>
         </div>
 

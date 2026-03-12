@@ -2,22 +2,26 @@
   "name": "scry-home",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@10.30.3",
+  "packageManager": "bun@1.3.10",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "engines": {
     "bun": ">=1.3.10",
     "node": ">=24.0.0"
   },
   "scripts": {
-    "build": "pnpm --recursive --filter './apps/*' --filter './packages/*' run build",
-    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build",
-    "dev": "pnpm --filter @scry-home/web dev",
-    "format": "pnpm --recursive --filter './apps/*' --filter './packages/*' run format",
-    "lint": "pnpm --recursive --filter './apps/*' --filter './packages/*' run lint",
-    "test": "pnpm --recursive --filter './apps/*' --filter './packages/*' run test",
-    "typecheck": "pnpm --recursive --filter './apps/*' --filter './packages/*' run typecheck",
-    "db:generate": "pnpm --filter @scry-home/db generate",
-    "db:migrate": "pnpm --filter @scry-home/db migrate",
-    "cli": "pnpm --filter @scry-home/cli cli"
+    "build": "bun run --workspaces --if-present build",
+    "check": "bun run lint && bun run typecheck && bun run test && bun run build",
+    "dev": "bun run --filter @scry-home/web dev",
+    "format": "bun run --workspaces --if-present format",
+    "lint": "bun run --workspaces --if-present lint",
+    "test": "bun run --workspaces --if-present test",
+    "typecheck": "bun run --workspaces --if-present typecheck",
+    "db:generate": "bun run --filter @scry-home/db generate",
+    "db:migrate": "bun run --filter @scry-home/db migrate",
+    "cli": "bun run ./packages/cli/src/index.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.6",

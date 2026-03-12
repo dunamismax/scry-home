@@ -351,78 +351,6 @@ a {
   background: rgba(255, 255, 255, 0.54);
 }
 
-.assistant-shell {
-  padding: 1.5rem;
-}
-
-.assistant-layout {
-  display: grid;
-  gap: 1.25rem;
-  grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
-}
-
-.assistant-transcript {
-  min-height: 22rem;
-  border-radius: 1.5rem;
-  border: 1px solid var(--line);
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.5);
-  display: grid;
-  gap: 0.9rem;
-}
-
-.assistant-empty {
-  color: var(--sea-ink-soft);
-  align-self: center;
-}
-
-.bubble {
-  max-width: 92%;
-  padding: 0.95rem 1rem;
-  border-radius: 1.25rem;
-  display: grid;
-  gap: 0.35rem;
-}
-
-.bubble.user {
-  margin-left: auto;
-  background: linear-gradient(145deg, rgba(0, 149, 168, 0.18), rgba(0, 149, 168, 0.08));
-}
-
-.bubble.assistant {
-  background: rgba(255, 255, 255, 0.72);
-}
-
-.bubble-role {
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  font-size: 0.68rem;
-  color: var(--sea-ink-soft);
-}
-
-.assistant-form {
-  display: grid;
-  gap: 1rem;
-}
-
-.assistant-input {
-  width: 100%;
-  min-height: 14rem;
-  resize: vertical;
-  border-radius: 1.5rem;
-  border: 1px solid var(--line);
-  padding: 1rem;
-  font: inherit;
-  color: var(--sea-ink);
-  background: rgba(255, 255, 255, 0.7);
-}
-
-.assistant-actions {
-  display: flex;
-  gap: 0.75rem;
-  justify-content: flex-end;
-}
-
 .primary-button,
 .ghost-button {
   border-radius: 999px;
@@ -480,7 +408,6 @@ a {
 
 @media (max-width: 640px) {
   .hero-panel,
-  .assistant-layout,
   .section-head {
     grid-template-columns: 1fr;
   }

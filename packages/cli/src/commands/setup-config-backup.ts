@@ -4,9 +4,11 @@ import os from 'node:os'
 import path from 'node:path'
 
 import {
+  ConfigBackupMetadataSchema,
   encryptPayload,
   ensureDir,
   ensureParentDir,
+  formatZodError,
   logStep,
   runCommand,
   sourceSnapshot,
@@ -128,14 +130,17 @@ export const setupConfigBackup = async () => {
 
   if (hasExisting) {
     try {
-      const metadata = JSON.parse(await fs.readFile(metadataFile, 'utf8')) as {
-        includedPaths?: Array<string>
-        sourceFingerprint?: string
+      const metadataResult = ConfigBackupMetadataSchema.safeParse(
+        JSON.parse(await fs.readFile(metadataFile, 'utf8')),
+      )
+
+      if (!metadataResult.success) {
+        throw new Error(formatZodError(metadataResult.error))
       }
 
       if (
-        metadata.sourceFingerprint === snapshot.fingerprint &&
-        JSON.stringify(metadata.includedPaths ?? []) === JSON.stringify(pathSet.includedPaths)
+        metadataResult.data.sourceFingerprint === snapshot.fingerprint &&
+        JSON.stringify(metadataResult.data.includedPaths) === JSON.stringify(pathSet.includedPaths)
       ) {
         logStep('Config backup unchanged')
         process.stdout.write(`source fingerprint: ${snapshot.fingerprint}\n`)

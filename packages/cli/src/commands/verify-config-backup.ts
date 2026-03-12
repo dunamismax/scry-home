@@ -3,7 +3,13 @@ import fs from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
 
-import { decryptPayload, logStep, runCommand } from '@scry-home/core'
+import {
+  ConfigBackupMetadataSchema,
+  decryptPayload,
+  formatZodError,
+  logStep,
+  runCommand,
+} from '@scry-home/core'
 
 const configFormat = { magic: 'SCRYCFG1' } as const
 
@@ -26,15 +32,15 @@ export const verifyConfigBackup = async () => {
   }
 
   const encrypted = await fs.readFile(encryptedFile)
-  const metadata = JSON.parse(await fs.readFile(metadataFile, 'utf8')) as {
-    encryptedBackupSha256?: string
-    includedPaths?: Array<string>
-    sourceFingerprint?: string
+  const metadataResult = ConfigBackupMetadataSchema.safeParse(
+    JSON.parse(await fs.readFile(metadataFile, 'utf8')),
+  )
+
+  if (!metadataResult.success) {
+    throw new Error(`Config backup metadata is invalid: ${formatZodError(metadataResult.error)}`)
   }
 
-  if (!Array.isArray(metadata.includedPaths) || metadata.includedPaths.some((item) => !item)) {
-    throw new Error('Config backup metadata is missing a valid includedPaths list.')
-  }
+  const metadata = metadataResult.data
 
   if (metadata.encryptedBackupSha256) {
     const actualSha = createHash('sha256').update(encrypted).digest('hex')

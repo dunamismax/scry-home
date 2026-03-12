@@ -1,7 +1,13 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { gitRemotePushUrls, isGitRepo, managedProjects, runCommandText } from '@scry-home/core'
-import { Effect } from 'effect'
+import {
+  CabRequestSchema,
+  formatZodError,
+  gitRemotePushUrls,
+  isGitRepo,
+  managedProjects,
+  runCommandText,
+} from '@scry-home/core'
 
 export interface CabRequest {
   readonly dryRun: boolean
@@ -57,8 +63,8 @@ const projectContext = (
   PACKET_SLUG: path.basename(outputDir),
   PROJECT_BRANCH: branch || '(detached)',
   PROJECT_CONTROL_PLANE_COMMANDS: [
-    '- `pnpm --filter @scry-home/cli cli doctor`',
-    '- `pnpm --filter @scry-home/cli cli projects:doctor`',
+    '- `bun run cli doctor`',
+    '- `bun run cli projects:doctor`',
     project.verifyCommands[0]
       ? `- \`cd ${project.path} && ${project.verifyCommands[0].join(' ')}\``
       : '- Add project-specific verification once the repo has one.',
@@ -102,12 +108,18 @@ const walkTemplates = async (root: string) => {
 }
 
 export const scaffoldCabPacket = (request: CabRequest) =>
-  Effect.gen(function* () {
-    const project = managedProjects.find((entry) => entry.name === request.projectName)
+  (async () => {
+    const parsedRequest = CabRequestSchema.safeParse(request)
+    if (!parsedRequest.success) {
+      throw new Error(`Invalid CAB request: ${formatZodError(parsedRequest.error)}`)
+    }
+
+    const nextRequest = parsedRequest.data
+    const project = managedProjects.find((entry) => entry.name === nextRequest.projectName)
 
     if (!project) {
       throw new Error(
-        `Unknown managed project: ${request.projectName}. Available projects: ${managedProjects.map((entry) => entry.name).join(', ')}`,
+        `Unknown managed project: ${nextRequest.projectName}. Available projects: ${managedProjects.map((entry) => entry.name).join(', ')}`,
       )
     }
 
@@ -117,20 +129,20 @@ export const scaffoldCabPacket = (request: CabRequest) =>
       )
     }
 
-    const branch = yield* runCommandText(['git', 'branch', '--show-current'], {
+    const branch = await runCommandText(['git', 'branch', '--show-current'], {
       cwd: project.path,
       quiet: true,
     })
-    const status = yield* runCommandText(['git', 'status', '--short'], {
+    const status = await runCommandText(['git', 'status', '--short'], {
       cwd: project.path,
       quiet: true,
     })
-    const originUrls = yield* gitRemotePushUrls(project.path, 'origin')
-    const forkUrls = yield* gitRemotePushUrls(project.path, 'fork')
-    const packetSlug = `${new Date().toISOString().slice(0, 10)}-${slugify(project.name)}-${slugify(request.packetName)}`
-    const outputDir = path.join(path.resolve(request.outputRoot), packetSlug)
+    const originUrls = await gitRemotePushUrls(project.path, 'origin')
+    const forkUrls = await gitRemotePushUrls(project.path, 'fork')
+    const packetSlug = `${new Date().toISOString().slice(0, 10)}-${slugify(project.name)}-${slugify(nextRequest.packetName)}`
+    const outputDir = path.join(path.resolve(nextRequest.outputRoot), packetSlug)
     const context = projectContext(
-      request,
+      nextRequest,
       project,
       branch,
       status ? 'dirty' : 'clean',
@@ -139,20 +151,18 @@ export const scaffoldCabPacket = (request: CabRequest) =>
       outputDir,
     )
 
-    const templates = yield* Effect.promise(() => walkTemplates(templatesRoot))
+    const templates = await walkTemplates(templatesRoot)
 
-    if (request.dryRun) {
+    if (nextRequest.dryRun) {
       return templates.map((template: string) =>
         path.join(outputDir, path.relative(templatesRoot, template)),
       )
     }
 
-    const outputExists = yield* Effect.promise(() =>
-      fs
-        .access(outputDir)
-        .then(() => true)
-        .catch(() => false),
-    )
+    const outputExists = await fs
+      .access(outputDir)
+      .then(() => true)
+      .catch(() => false)
 
     if (outputExists) {
       throw new Error(`CAB packet already exists: ${outputDir}`)
@@ -161,12 +171,10 @@ export const scaffoldCabPacket = (request: CabRequest) =>
     for (const template of templates) {
       const relativePath = path.relative(templatesRoot, template)
       const nextPath = path.join(outputDir, relativePath)
-      const raw = yield* Effect.promise(() => fs.readFile(template, 'utf8'))
-      yield* Effect.promise(async () => {
-        await fs.mkdir(path.dirname(nextPath), { recursive: true })
-        await fs.writeFile(nextPath, renderTemplate(raw, context), 'utf8')
-      })
+      const raw = await fs.readFile(template, 'utf8')
+      await fs.mkdir(path.dirname(nextPath), { recursive: true })
+      await fs.writeFile(nextPath, renderTemplate(raw, context), 'utf8')
     }
 
     return [outputDir]
-  })
+  })()

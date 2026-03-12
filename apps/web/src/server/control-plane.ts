@@ -3,7 +3,6 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { gitRemotePushUrls, isGitRepo, managedProjects } from '@scry-home/core'
 import { createServerFn } from '@tanstack/react-start'
-import { Effect } from 'effect'
 
 const workspaceRoot = path.resolve(fileURLToPath(new URL('../../../..', import.meta.url)))
 
@@ -23,7 +22,6 @@ export interface ProjectRecord {
 }
 
 export interface OverviewRecord {
-  readonly aiConfigured: boolean
   readonly authConfigured: boolean
   readonly backup: {
     readonly config: boolean
@@ -82,9 +80,7 @@ export const getOverview = createServerFn({ method: 'GET' }).handler(
     const projectRows: Array<ProjectRecord> = await Promise.all(
       managedProjects.map(async (project) => {
         const present = isGitRepo(project.path)
-        const pushUrls = present
-          ? await Effect.runPromise(gitRemotePushUrls(project.path, 'origin'))
-          : []
+        const pushUrls = present ? await gitRemotePushUrls(project.path, 'origin') : []
 
         return {
           installCommand: project.installCommand,
@@ -102,7 +98,6 @@ export const getOverview = createServerFn({ method: 'GET' }).handler(
     const cabTemplatesPath = path.join(repoPath, 'packages', 'cab', 'templates')
 
     return {
-      aiConfigured: Boolean(process.env.OPENAI_API_KEY),
       authConfigured: Boolean(process.env.BETTER_AUTH_SECRET),
       backup: {
         config: await statExists(configBackupPath),
@@ -135,9 +130,7 @@ export const getProjects = createServerFn({ method: 'GET' }).handler(
     Promise.all(
       managedProjects.map(async (project) => {
         const present = isGitRepo(project.path)
-        const pushUrls = present
-          ? await Effect.runPromise(gitRemotePushUrls(project.path, 'origin'))
-          : []
+        const pushUrls = present ? await gitRemotePushUrls(project.path, 'origin') : []
         return {
           installCommand: project.installCommand,
           name: project.name,

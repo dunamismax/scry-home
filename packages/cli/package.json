@@ -19,9 +19,6 @@
   },
   "dependencies": {
     "@scry-home/cab": "workspace:*",
-    "@scry-home/core": "workspace:*",
-    "@scry-home/db": "workspace:*",
-    "@scry-home/observability": "workspace:*",
-    "effect": "^3.19.19"
+    "@scry-home/core": "workspace:*"
   }
 }

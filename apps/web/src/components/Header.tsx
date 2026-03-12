@@ -40,17 +40,10 @@ export default function Header() {
           >
             Backups
           </Link>
-          <Link
-            to="/assistant"
-            className="nav-link"
-            activeProps={{ className: 'nav-link is-active' }}
-          >
-            Assistant
-          </Link>
         </div>
 
         <div className="ml-auto flex items-center gap-2">
-          <span className="status-pill">Effect + Start + Bun</span>
+          <span className="status-pill">Start + Bun + Zod</span>
           <ThemeToggle />
         </div>
       </nav>

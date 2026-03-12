@@ -7,7 +7,7 @@ export default function Footer() {
         <div>
           <p className="m-0">&copy; {year} scry-home control plane.</p>
           <p className="m-0">
-            TanStack Start app, Effect domain packages, Bun CLI, PostgreSQL-ready data layer.
+            TanStack Start app, shared TypeScript packages, Bun CLI, PostgreSQL-ready data layer.
           </p>
         </div>
         <div className="footer-meta">

@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
 
-import type { Snapshot } from './schema'
+import { type Snapshot, SnapshotSchema } from './schema'
 
 const octalMode = (mode: number) => (mode & 0o777).toString(8).padStart(3, '0')
 
@@ -58,11 +58,11 @@ export const sourceSnapshot = (root: string, relativePaths: ReadonlyArray<string
     addEntries(path.join(root, relativePath), relativePath, entries, counters)
   }
 
-  return {
+  return SnapshotSchema.parse({
     fileCount: counters.fileCount,
     fingerprint: sha256Hex(entries.join('\n')),
     totalBytes: counters.totalBytes,
-  }
+  })
 }
 
 export const directorySnapshot = (root: string): Snapshot => {
@@ -73,9 +73,9 @@ export const directorySnapshot = (root: string): Snapshot => {
     addEntries(path.join(root, child), child, entries, counters)
   }
 
-  return {
+  return SnapshotSchema.parse({
     fileCount: counters.fileCount,
     fingerprint: sha256Hex(entries.join('\n')),
     totalBytes: counters.totalBytes,
-  }
+  })
 }

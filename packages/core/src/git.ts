@@ -1,28 +1,22 @@
 import fs from 'node:fs'
 
-import { Effect } from 'effect'
 import { runCommandText } from './command'
-import type { CommandFailure } from './errors'
 
 export const isGitRepo = (target: string) =>
   fs.existsSync(target) && fs.existsSync(`${target}/.git`)
 
-export const gitRemotePushUrls = (
-  cwd: string,
-  remote: string,
-): Effect.Effect<ReadonlyArray<string>, never> =>
+export const gitRemotePushUrls = (cwd: string, remote: string): Promise<ReadonlyArray<string>> =>
   runCommandText(['git', 'remote', 'get-url', '--all', '--push', remote], {
     cwd,
     quiet: true,
-  }).pipe(
-    Effect.map((output) =>
+  })
+    .then((output) =>
       output
         .split('\n')
         .map((line) => line.trim())
         .filter(Boolean),
-    ),
-    Effect.catchAll(() => Effect.succeed([] as ReadonlyArray<string>)),
-  )
+    )
+    .catch(() => [] as ReadonlyArray<string>)
 
-export const currentGitBranch = (cwd: string): Effect.Effect<string, CommandFailure> =>
+export const currentGitBranch = (cwd: string): Promise<string> =>
   runCommandText(['git', 'branch', '--show-current'], { cwd, quiet: true })

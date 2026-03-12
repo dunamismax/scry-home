@@ -1,21 +1,17 @@
 # Build Tracker
 
-**Status:** rewrite complete
+**Status:** stack cleanup complete
 
 ## Completed
 
-- Rebuilt the repo as a Bun + pnpm TypeScript workspace.
-- Added TanStack Start web app, shared Effect-based packages, Bun CLI, Drizzle schema, Better Auth integration, TanStack AI server route, OpenTelemetry bootstrap, Biome config, and Vitest wiring.
-- Removed the legacy repo surface, mirrored workspace exports, and outdated top-level instructions.
+- Consolidated the repo onto a Bun workspace with TypeScript, TanStack Start, Drizzle, Better Auth, Zod, Biome, Vitest, and OpenTelemetry.
+- Removed the legacy shared utility layer and replaced validation/contracts with Zod.
+- Removed the in-repo AI layer, stale workspace metadata, and outdated top-level instructions.
 
 ## Verification
 
 ```bash
-pnpm check
+bun run check
 ```
 
 Repo-wide verification is currently green.
-
-## Remaining Risk
-
-- `packages/ai` depends on both Mastra and `@tanstack/ai-openai`; keep the dependency graph aligned when updating AI packages.

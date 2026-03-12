@@ -1,10 +1,8 @@
 import path from 'node:path'
 import process from 'node:process'
 
-import { Effect } from 'effect'
-
 import { runCommand, runCommandText } from './command'
-import type { RepoRemotePolicy } from './schema'
+import { type RepoRemotePolicy, RepoRemotePolicySchema } from './schema'
 
 export interface ParsedGitUrl {
   readonly host: string
@@ -69,7 +67,7 @@ export const buildRepoRemotePolicy = (
   const githubUrl = personalGithubUrl(config.owner, repoName, config.githubHostAlias)
   const codebergUrl = personalCodebergUrl(config.owner, repoName, config.codebergHostAlias)
 
-  return {
+  return RepoRemotePolicySchema.parse({
     cloneUrl: githubUrl,
     extraRemotes: {},
     origin: {
@@ -77,94 +75,105 @@ export const buildRepoRemotePolicy = (
       pushUrls: [githubUrl, codebergUrl],
     },
     pushDefault: null,
-  }
+  })
 }
 
-export const listGitRemotes = (repoPath: string) =>
-  runCommandText(['git', '-C', repoPath, 'remote'], { quiet: true }).pipe(
-    Effect.map((output) =>
-      output
-        .split('\n')
-        .map((line) => line.trim())
-        .filter(Boolean),
-    ),
+export const listGitRemotes = async (repoPath: string) =>
+  runCommandText(['git', '-C', repoPath, 'remote'], { quiet: true }).then((output) =>
+    output
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean),
   )
 
-export const getRemoteUrls = (repoPath: string, remoteName = 'origin') =>
-  Effect.all({
-    fetchUrl: runCommandText(['git', '-C', repoPath, 'remote', 'get-url', remoteName], {
-      quiet: true,
-    }),
-    pushRaw: runCommandText(
-      ['git', '-C', repoPath, 'remote', 'get-url', '--push', '--all', remoteName],
-      { quiet: true },
-    ),
-  }).pipe(
-    Effect.map(({ fetchUrl, pushRaw }) => ({
+export const getRemoteUrls = async (repoPath: string, remoteName = 'origin') => {
+  try {
+    const [fetchUrl, pushRaw] = await Promise.all([
+      runCommandText(['git', '-C', repoPath, 'remote', 'get-url', remoteName], {
+        quiet: true,
+      }),
+      runCommandText(['git', '-C', repoPath, 'remote', 'get-url', '--push', '--all', remoteName], {
+        quiet: true,
+      }),
+    ])
+
+    return {
       fetchUrl,
       pushUrls: pushRaw
         .split('\n')
         .map((line) => line.trim())
         .filter(Boolean),
-    })),
-    Effect.catchAll(() => Effect.succeed(null)),
-  )
-
-export const getRemotePushDefault = (repoPath: string) =>
-  runCommandText(['git', '-C', repoPath, 'config', '--get', 'remote.pushDefault'], {
-    quiet: true,
-  }).pipe(
-    Effect.map((value) => value || null),
-    Effect.catchAll(() => Effect.succeed(null)),
-  )
-
-const applyRemoteTarget = (repoPath: string, remoteName: string, target: RemoteTarget) =>
-  Effect.gen(function* () {
-    const remotes = new Set(yield* listGitRemotes(repoPath))
-
-    if (!remotes.has(remoteName)) {
-      yield* runCommand(['git', '-C', repoPath, 'remote', 'add', remoteName, target.fetchUrl], {
-        quiet: true,
-      })
     }
+  } catch {
+    return null
+  }
+}
 
-    yield* runCommand(['git', '-C', repoPath, 'remote', 'set-url', remoteName, target.fetchUrl], {
+export const getRemotePushDefault = async (repoPath: string) => {
+  try {
+    const value = await runCommandText(
+      ['git', '-C', repoPath, 'config', '--get', 'remote.pushDefault'],
+      {
+        quiet: true,
+      },
+    )
+    return value || null
+  } catch {
+    return null
+  }
+}
+
+const applyRemoteTarget = async (repoPath: string, remoteName: string, target: RemoteTarget) => {
+  const remotes = new Set(await listGitRemotes(repoPath))
+
+  if (!remotes.has(remoteName)) {
+    await runCommand(['git', '-C', repoPath, 'remote', 'add', remoteName, target.fetchUrl], {
       quiet: true,
     })
+  }
 
-    yield* Effect.ignore(
-      runCommand(['git', '-C', repoPath, 'config', '--unset-all', `remote.${remoteName}.pushurl`], {
-        quiet: true,
-      }),
-    )
-
-    for (const pushUrl of target.pushUrls) {
-      yield* runCommand(
-        ['git', '-C', repoPath, 'remote', 'set-url', '--add', '--push', remoteName, pushUrl],
-        { quiet: true },
-      )
-    }
+  await runCommand(['git', '-C', repoPath, 'remote', 'set-url', remoteName, target.fetchUrl], {
+    quiet: true,
   })
 
-export const applyRepoRemotePolicy = (repoPath: string, policy: RepoRemotePolicy) =>
-  Effect.gen(function* () {
-    yield* applyRemoteTarget(repoPath, 'origin', policy.origin)
-
-    for (const [remoteName, target] of Object.entries(policy.extraRemotes)) {
-      yield* applyRemoteTarget(repoPath, remoteName, target)
-    }
-
-    if (policy.pushDefault) {
-      yield* runCommand(
-        ['git', '-C', repoPath, 'config', 'remote.pushDefault', policy.pushDefault],
-        { quiet: true },
-      )
-      return
-    }
-
-    yield* Effect.ignore(
-      runCommand(['git', '-C', repoPath, 'config', '--unset', 'remote.pushDefault'], {
+  try {
+    await runCommand(
+      ['git', '-C', repoPath, 'config', '--unset-all', `remote.${remoteName}.pushurl`],
+      {
         quiet: true,
-      }),
+      },
     )
-  })
+  } catch {
+    // The remote might not have push URLs yet.
+  }
+
+  for (const pushUrl of target.pushUrls) {
+    await runCommand(
+      ['git', '-C', repoPath, 'remote', 'set-url', '--add', '--push', remoteName, pushUrl],
+      { quiet: true },
+    )
+  }
+}
+
+export const applyRepoRemotePolicy = async (repoPath: string, policy: RepoRemotePolicy) => {
+  await applyRemoteTarget(repoPath, 'origin', policy.origin)
+
+  for (const [remoteName, target] of Object.entries(policy.extraRemotes)) {
+    await applyRemoteTarget(repoPath, remoteName, target)
+  }
+
+  if (policy.pushDefault) {
+    await runCommand(['git', '-C', repoPath, 'config', 'remote.pushDefault', policy.pushDefault], {
+      quiet: true,
+    })
+    return
+  }
+
+  try {
+    await runCommand(['git', '-C', repoPath, 'config', '--unset', 'remote.pushDefault'], {
+      quiet: true,
+    })
+  } catch {
+    // No pushDefault is configured.
+  }
+}

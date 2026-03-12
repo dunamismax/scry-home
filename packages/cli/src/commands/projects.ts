@@ -6,7 +6,6 @@ import {
   managedProjects,
   runCommand,
 } from '@scry-home/core'
-import { Effect } from 'effect'
 
 import { hasEnv } from '../lib/system'
 
@@ -40,7 +39,7 @@ export const installProjects = async () => {
     }
 
     process.stdout.write(`project: ${project.name}\n`)
-    await Effect.runPromise(runCommand(project.installCommand, { cwd: project.path }))
+    await runCommand(project.installCommand, { cwd: project.path })
   }
 }
 
@@ -54,7 +53,7 @@ export const verifyProjects = async () => {
 
     process.stdout.write(`project: ${project.name}\n`)
     for (const command of project.verifyCommands) {
-      await Effect.runPromise(runCommand(command, { cwd: project.path }))
+      await runCommand(command, { cwd: project.path })
     }
   }
 }
@@ -69,15 +68,15 @@ export const doctorProjects = async () => {
       continue
     }
 
-    const branch = await Effect.runPromise(currentGitBranch(project.path))
+    const branch = await currentGitBranch(project.path)
     process.stdout.write(`branch: ${branch}\n`)
 
-    const originUrls = await Effect.runPromise(gitRemotePushUrls(project.path, 'origin'))
+    const originUrls = await gitRemotePushUrls(project.path, 'origin')
     if (originUrls.length > 0) {
       process.stdout.write(`push(origin): ${originUrls.join(' | ')}\n`)
     }
 
-    const forkUrls = await Effect.runPromise(gitRemotePushUrls(project.path, 'fork'))
+    const forkUrls = await gitRemotePushUrls(project.path, 'fork')
     if (forkUrls.length > 0) {
       process.stdout.write(`push(fork): ${forkUrls.join(' | ')}\n`)
     }

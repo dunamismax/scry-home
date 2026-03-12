@@ -1,56 +1,62 @@
-import { Schema } from 'effect'
+import { z } from 'zod'
 
-export const CommandOutputSchema = Schema.Struct({
-  command: Schema.Array(Schema.String),
-  exitCode: Schema.Number,
-  stdout: Schema.String,
-  stderr: Schema.String,
+const commandSchema = z.array(z.string().min(1)).min(1)
+
+export const ManagedProjectSchema = z.object({
+  name: z.string().min(1),
+  path: z.string().min(1),
+  installCommand: commandSchema,
+  verifyCommands: z.array(commandSchema),
 })
 
-export const ManagedProjectSchema = Schema.Struct({
-  name: Schema.String,
-  path: Schema.String,
-  installCommand: Schema.Array(Schema.String),
-  verifyCommands: Schema.Array(Schema.Array(Schema.String)),
+export const ManagedProjectListSchema = z.array(ManagedProjectSchema)
+
+export const RemoteTargetSchema = z.object({
+  fetchUrl: z.string().min(1),
+  pushUrls: z.array(z.string().min(1)),
 })
 
-export const RemoteTargetSchema = Schema.Struct({
-  fetchUrl: Schema.String,
-  pushUrls: Schema.Array(Schema.String),
-})
-
-export const RepoRemotePolicySchema = Schema.Struct({
-  cloneUrl: Schema.String,
+export const RepoRemotePolicySchema = z.object({
+  cloneUrl: z.string().min(1),
   origin: RemoteTargetSchema,
-  extraRemotes: Schema.Record({
-    key: Schema.String,
-    value: RemoteTargetSchema,
-  }),
-  pushDefault: Schema.NullOr(Schema.String),
+  extraRemotes: z.record(z.string(), RemoteTargetSchema),
+  pushDefault: z.string().min(1).nullable(),
 })
 
-export const SnapshotSchema = Schema.Struct({
-  fingerprint: Schema.String,
-  fileCount: Schema.Number,
-  totalBytes: Schema.Number,
+export const SnapshotSchema = z.object({
+  fingerprint: z.string().min(1),
+  fileCount: z.number().nonnegative(),
+  totalBytes: z.number().nonnegative(),
 })
 
-export const ConfigBackupMetadataSchema = Schema.Struct({
-  includedPaths: Schema.Array(Schema.String),
-  encryptedBackupSha256: Schema.optional(Schema.String),
-  sourceFingerprint: Schema.optional(Schema.String),
-  createdAt: Schema.optional(Schema.String),
+export const ConfigBackupMetadataSchema = z.object({
+  includedPaths: z.array(z.string().min(1)).min(1),
+  encryptedBackupSha256: z.string().min(1).optional(),
+  sourceFingerprint: z.string().min(1).optional(),
+  createdAt: z.string().min(1).optional(),
 })
 
-export const CabRequestSchema = Schema.Struct({
-  projectName: Schema.String,
-  packetName: Schema.String,
-  outputRoot: Schema.String,
-  dryRun: Schema.Boolean,
+export const SshBackupMetadataSchema = z.object({
+  sourceFingerprint: z.string().min(1).optional(),
 })
 
-export type ManagedProject = Schema.Schema.Type<typeof ManagedProjectSchema>
-export type RepoRemotePolicy = Schema.Schema.Type<typeof RepoRemotePolicySchema>
-export type Snapshot = Schema.Schema.Type<typeof SnapshotSchema>
-export type ConfigBackupMetadata = Schema.Schema.Type<typeof ConfigBackupMetadataSchema>
-export type CabRequest = Schema.Schema.Type<typeof CabRequestSchema>
+export const CabRequestSchema = z.object({
+  projectName: z.string().min(1),
+  packetName: z.string().min(1),
+  outputRoot: z.string().min(1),
+  dryRun: z.boolean(),
+})
+
+export const formatZodError = (error: z.ZodError) =>
+  error.issues
+    .map(
+      (issue) => `${issue.path.length === 0 ? '(root)' : issue.path.join('.')}: ${issue.message}`,
+    )
+    .join('; ')
+
+export type ManagedProject = z.infer<typeof ManagedProjectSchema>
+export type RepoRemotePolicy = z.infer<typeof RepoRemotePolicySchema>
+export type Snapshot = z.infer<typeof SnapshotSchema>
+export type ConfigBackupMetadata = z.infer<typeof ConfigBackupMetadataSchema>
+export type SshBackupMetadata = z.infer<typeof SshBackupMetadataSchema>
+export type CabRequest = z.infer<typeof CabRequestSchema>

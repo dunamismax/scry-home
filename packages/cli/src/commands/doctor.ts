@@ -8,19 +8,18 @@ import {
   managedProjects,
   runCommandText,
 } from '@scry-home/core'
-import { Effect } from 'effect'
 
 import { commandExists } from '../lib/system'
 
 export const doctor = async () => {
   logStep('Toolchain status')
-  for (const tool of ['git', 'docker', 'bun', 'pnpm', 'node']) {
+  for (const tool of ['git', 'docker', 'bun', 'node']) {
     if (!commandExists(tool)) {
       process.stdout.write(`missing: ${tool}\n`)
       continue
     }
 
-    const version = await Effect.runPromise(runCommandText([tool, '--version'], { quiet: true }))
+    const version = await runCommandText([tool, '--version'], { quiet: true })
     process.stdout.write(`${tool}: ${version.split('\n')[0]}\n`)
   }
 
@@ -43,15 +42,15 @@ export const doctor = async () => {
       continue
     }
 
-    const branch = await Effect.runPromise(currentGitBranch(project.path))
+    const branch = await currentGitBranch(project.path)
     process.stdout.write(`branch: ${branch}\n`)
 
-    const originUrls = await Effect.runPromise(gitRemotePushUrls(project.path, 'origin'))
+    const originUrls = await gitRemotePushUrls(project.path, 'origin')
     if (originUrls.length > 0) {
       process.stdout.write(`push(origin): ${originUrls.join(' | ')}\n`)
     }
 
-    const forkUrls = await Effect.runPromise(gitRemotePushUrls(project.path, 'fork'))
+    const forkUrls = await gitRemotePushUrls(project.path, 'fork')
     if (forkUrls.length > 0) {
       process.stdout.write(`push(fork): ${forkUrls.join(' | ')}\n`)
     }

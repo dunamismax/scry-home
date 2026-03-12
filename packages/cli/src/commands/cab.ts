@@ -1,8 +1,7 @@
 import path from 'node:path'
 import { scaffoldCabPacket } from '@scry-home/cab'
 
-import { logStep } from '@scry-home/core'
-import { Effect } from 'effect'
+import { CabRequestSchema, formatZodError, logStep } from '@scry-home/core'
 
 const usage = () =>
   [
@@ -46,14 +45,18 @@ export const cabNew = async (argv: ReadonlyArray<string>) => {
   process.stdout.write(`output: ${outputRoot}\n`)
   process.stdout.write(`mode: ${dryRun ? 'dry-run' : 'write'}\n\n`)
 
-  const result = await Effect.runPromise(
-    scaffoldCabPacket({
-      dryRun,
-      outputRoot,
-      packetName,
-      projectName,
-    }),
-  )
+  const request = CabRequestSchema.safeParse({
+    dryRun,
+    outputRoot,
+    packetName,
+    projectName,
+  })
+
+  if (!request.success) {
+    throw new Error(`Invalid CAB request: ${formatZodError(request.error)}`)
+  }
+
+  const result = await scaffoldCabPacket(request.data)
 
   if (dryRun) {
     process.stdout.write('would create:\n')

@@ -11,7 +11,6 @@ import {
   remoteDefaults,
   repoUrlMatches,
 } from '@scry-home/core'
-import { Effect } from 'effect'
 
 interface RepoResult {
   readonly detail?: string
@@ -31,8 +30,8 @@ const isCorrect = (
   pushUrls[1] === codebergUrl
 
 const customTopologyReason = async (repoPath: string, repoName: string, fetchUrl: string) => {
-  const remotes = await Effect.runPromise(listGitRemotes(repoPath))
-  const pushDefault = await Effect.runPromise(getRemotePushDefault(repoPath))
+  const remotes = await listGitRemotes(repoPath)
+  const pushDefault = await getRemotePushDefault(repoPath)
 
   if (pushDefault && pushDefault !== 'origin') {
     return `custom pushDefault=${pushDefault}`
@@ -56,7 +55,7 @@ const processRepo = async (repoPath: string, fix: boolean): Promise<RepoResult> 
     return { detail: 'not a git repo', name, status: 'skip' }
   }
 
-  const urls = await Effect.runPromise(getRemoteUrls(repoPath))
+  const urls = await getRemoteUrls(repoPath)
   if (!urls) {
     return { detail: 'no origin remote', name, status: 'skip' }
   }
@@ -97,7 +96,7 @@ const processRepo = async (repoPath: string, fix: boolean): Promise<RepoResult> 
     }
 
     try {
-      await Effect.runPromise(applyRepoRemotePolicy(repoPath, policy))
+      await applyRepoRemotePolicy(repoPath, policy)
       return { name, status: 'fixed' }
     } catch (error) {
       return {

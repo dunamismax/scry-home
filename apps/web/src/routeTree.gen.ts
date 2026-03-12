@@ -11,9 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as BackupsRouteImport } from './routes/backups'
-import { Route as AssistantRouteImport } from './routes/assistant'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ApiAiChatRouteImport } from './routes/api/ai/chat'
 
 const ProjectsRoute = ProjectsRouteImport.update({
   id: '/projects',
@@ -25,64 +23,40 @@ const BackupsRoute = BackupsRouteImport.update({
   path: '/backups',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AssistantRoute = AssistantRouteImport.update({
-  id: '/assistant',
-  path: '/assistant',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiAiChatRoute = ApiAiChatRouteImport.update({
-  id: '/api/ai/chat',
-  path: '/api/ai/chat',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/assistant': typeof AssistantRoute
   '/backups': typeof BackupsRoute
   '/projects': typeof ProjectsRoute
-  '/api/ai/chat': typeof ApiAiChatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/assistant': typeof AssistantRoute
   '/backups': typeof BackupsRoute
   '/projects': typeof ProjectsRoute
-  '/api/ai/chat': typeof ApiAiChatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/assistant': typeof AssistantRoute
   '/backups': typeof BackupsRoute
   '/projects': typeof ProjectsRoute
-  '/api/ai/chat': typeof ApiAiChatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/assistant' | '/backups' | '/projects' | '/api/ai/chat'
+  fullPaths: '/' | '/backups' | '/projects'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/assistant' | '/backups' | '/projects' | '/api/ai/chat'
-  id:
-    | '__root__'
-    | '/'
-    | '/assistant'
-    | '/backups'
-    | '/projects'
-    | '/api/ai/chat'
+  to: '/' | '/backups' | '/projects'
+  id: '__root__' | '/' | '/backups' | '/projects'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AssistantRoute: typeof AssistantRoute
   BackupsRoute: typeof BackupsRoute
   ProjectsRoute: typeof ProjectsRoute
-  ApiAiChatRoute: typeof ApiAiChatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -101,13 +75,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BackupsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/assistant': {
-      id: '/assistant'
-      path: '/assistant'
-      fullPath: '/assistant'
-      preLoaderRoute: typeof AssistantRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -115,22 +82,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/ai/chat': {
-      id: '/api/ai/chat'
-      path: '/api/ai/chat'
-      fullPath: '/api/ai/chat'
-      preLoaderRoute: typeof ApiAiChatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AssistantRoute: AssistantRoute,
   BackupsRoute: BackupsRoute,
   ProjectsRoute: ProjectsRoute,
-  ApiAiChatRoute: ApiAiChatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

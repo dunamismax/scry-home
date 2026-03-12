@@ -21,7 +21,7 @@ function App() {
           </h1>
           <p className="lede">
             The repo now runs as a Bun and TypeScript monorepo. The UI is Start + Router + Query,
-            the CLI is Bun, and the domain logic is shared through Effect-based packages.
+            the CLI is Bun, and the domain logic lives in shared TypeScript packages.
           </p>
         </div>
         <div className="hero-grid">
@@ -41,11 +41,8 @@ function App() {
             <small>Drizzle + PostgreSQL scaffolded</small>
           </article>
           <article className="metric-card accent">
-            <span className="metric-label">AI / Auth</span>
-            <strong>
-              {data?.aiConfigured ? 'AI configured' : 'AI fallback'} /{' '}
-              {data?.authConfigured ? 'Auth ready' : 'Auth scaffolded'}
-            </strong>
+            <span className="metric-label">Auth / CAB</span>
+            <strong>{data?.authConfigured ? 'Auth ready' : 'Auth scaffolded'}</strong>
             <small>{data?.cabTemplateCount ?? 0} CAB templates available</small>
           </article>
         </div>
@@ -55,7 +52,7 @@ function App() {
         {[
           ['Bun CLI', 'Core repo workflows are ported into TypeScript command modules.'],
           [
-            'Effect Domain',
+            'Shared Core',
             'Remote policy, snapshotting, crypto, and contracts live in shared packages.',
           ],
           [
@@ -63,8 +60,8 @@ function App() {
             'Drizzle schema, auth tables, and operations records are scaffolded for PostgreSQL.',
           ],
           [
-            'In-App AI',
-            'TanStack AI powers the operator chat surface with a live or fallback stream.',
+            'Control Plane',
+            'Dashboard and CLI keep repo health, backups, and CAB workflows in one place.',
           ],
         ].map(([title, desc], index) => (
           <article
@@ -82,13 +79,13 @@ function App() {
         <p className="eyebrow mb-2">Command Surface</p>
         <ul className="m-0 list-disc space-y-2 pl-5 text-sm text-[var(--sea-ink-soft)]">
           <li>
-            <code>pnpm --filter @scry-home/cli cli doctor</code>
+            <code>bun run cli doctor</code>
           </li>
           <li>
-            <code>pnpm --filter @scry-home/cli cli sync:remotes --fix</code>
+            <code>bun run cli sync:remotes --fix</code>
           </li>
           <li>
-            <code>pnpm --filter @scry-home/cli cli setup:config_backup</code>
+            <code>bun run cli setup:config_backup</code>
           </li>
         </ul>
       </section>

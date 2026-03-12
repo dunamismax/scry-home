@@ -15,7 +15,6 @@
   },
   "dependencies": {
     "@better-auth/drizzle-adapter": "^1.5.5",
-    "@scry-home/core": "workspace:*",
     "@scry-home/db": "workspace:*",
     "better-auth": "^1.5.5"
   }

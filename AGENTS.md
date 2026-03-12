@@ -2,12 +2,11 @@
 
 ## Scope
 
-Local repo instructions for `scry-home`. This repository is Bun + pnpm + TypeScript only.
+Local repo instructions for `scry-home`. This repository is Bun + TypeScript only.
 
 ## Stack Rules
 
-- Use `pnpm` for dependency management and workspace commands.
-- Use `bun` / `bunx --bun` for runtime-facing package commands.
+- Use `bun` for dependency management, workspace commands, and runtime-facing scripts.
 - Use Biome for lint and formatting.
 - Use Vitest for tests.
 - Do not reintroduce the legacy toolchain or non-TypeScript workspace manifests.
@@ -24,11 +23,11 @@ Local repo instructions for `scry-home`. This repository is Bun + pnpm + TypeScr
 Run the narrowest useful command while iterating, then finish with the broad repo checks when the task warrants it:
 
 ```bash
-pnpm lint
-pnpm typecheck
-pnpm test
-pnpm build
-pnpm check
+bun run lint
+bun run typecheck
+bun run test
+bun run build
+bun run check
 ```
 
-For package-local work, use `pnpm --filter <package> <script>`.
+For package-local work, use `bun run --filter <package> <script>`.

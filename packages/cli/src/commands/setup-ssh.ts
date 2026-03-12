@@ -10,8 +10,10 @@ import {
   encryptPayload,
   ensureDir,
   ensureParentDir,
+  formatZodError,
   logStep,
   runCommand,
+  SshBackupMetadataSchema,
 } from '@scry-home/core'
 
 import { commandExists } from '../lib/system'
@@ -81,10 +83,15 @@ export const setupSshBackup = async () => {
 
   if (hasExisting) {
     try {
-      const metadata = JSON.parse(await fsp.readFile(metadataFile, 'utf8')) as {
-        sourceFingerprint?: string
+      const metadataResult = SshBackupMetadataSchema.safeParse(
+        JSON.parse(await fsp.readFile(metadataFile, 'utf8')),
+      )
+
+      if (!metadataResult.success) {
+        throw new Error(formatZodError(metadataResult.error))
       }
-      if (metadata.sourceFingerprint === snapshot.fingerprint) {
+
+      if (metadataResult.data.sourceFingerprint === snapshot.fingerprint) {
         logStep('SSH backup unchanged')
         process.stdout.write(`source fingerprint: ${snapshot.fingerprint}\n`)
         process.stdout.write('backup is already current; no files changed\n')
