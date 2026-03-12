@@ -141,7 +141,7 @@
       "name": "healthcheck:agent-bench-daily",
       "enabled": true,
       "createdAtMs": 1772542721502,
-      "updatedAtMs": 1773217981594,
+      "updatedAtMs": 1773303422359,
       "schedule": {
         "kind": "cron",
         "expr": "20 3 * * *",
@@ -159,13 +159,13 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1773300000000,
-        "lastRunAtMs": 1773215389630,
+        "nextRunAtMs": 1773386400000,
+        "lastRunAtMs": 1773301613379,
         "lastRunStatus": "error",
         "lastStatus": "error",
-        "lastDurationMs": 2591964,
+        "lastDurationMs": 1808980,
         "lastDeliveryStatus": "not-requested",
-        "consecutiveErrors": 2,
+        "consecutiveErrors": 3,
         "lastError": "cron: job execution timed out"
       }
     },
@@ -176,7 +176,7 @@
       "name": "sync-and-validate-daily",
       "enabled": true,
       "createdAtMs": 1772542733941,
-      "updatedAtMs": 1773220500569,
+      "updatedAtMs": 1773305439294,
       "schedule": {
         "kind": "cron",
         "expr": "30 3 * * *",
@@ -194,13 +194,13 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1773300600000,
-        "lastRunAtMs": 1773217981594,
+        "nextRunAtMs": 1773387000000,
+        "lastRunAtMs": 1773303422359,
         "lastRunStatus": "error",
         "lastStatus": "error",
-        "lastDurationMs": 2518975,
+        "lastDurationMs": 2016935,
         "lastDeliveryStatus": "not-requested",
-        "consecutiveErrors": 2,
+        "consecutiveErrors": 3,
         "lastError": "cron: job execution timed out"
       }
     },
@@ -241,7 +241,7 @@
       "name": "healthcheck:sessions-autocleanup",
       "enabled": true,
       "createdAtMs": 1772636458182,
-      "updatedAtMs": 1773215387576,
+      "updatedAtMs": 1773301611319,
       "schedule": {
         "kind": "cron",
         "expr": "0 3 * * *",
@@ -259,13 +259,13 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1773298800000,
-        "lastRunAtMs": 1773213320587,
+        "nextRunAtMs": 1773385200000,
+        "lastRunAtMs": 1773299607323,
         "lastRunStatus": "error",
         "lastStatus": "error",
-        "lastDurationMs": 2066989,
+        "lastDurationMs": 2003996,
         "lastDeliveryStatus": "not-requested",
-        "consecutiveErrors": 2,
+        "consecutiveErrors": 3,
         "lastError": "cron: job execution timed out"
       }
     },
@@ -350,7 +350,7 @@
       "name": "healthcheck:workspace-doc-drift",
       "enabled": true,
       "createdAtMs": 1772893167048,
-      "updatedAtMs": 1773223057549,
+      "updatedAtMs": 1773307882295,
       "schedule": {
         "kind": "cron",
         "expr": "40 3 * * *",
@@ -369,13 +369,13 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1773301200000,
-        "lastRunAtMs": 1773220500569,
+        "nextRunAtMs": 1773387600000,
+        "lastRunAtMs": 1773305439294,
         "lastRunStatus": "error",
         "lastStatus": "error",
-        "lastDurationMs": 2556980,
+        "lastDurationMs": 2443001,
         "lastDeliveryStatus": "not-requested",
-        "consecutiveErrors": 2,
+        "consecutiveErrors": 3,
         "lastError": "cron: job execution timed out"
       }
     },
